@@ -1,0 +1,33 @@
+,from,to,length,directed
+1,neoblast 1,epidermal neoblasts,1,True
+2,epidermal neoblasts,early epidermal progenitors,1,True
+3,early epidermal progenitors,late epidermal progenitors 1,1,True
+4,late epidermal progenitors 1,late epidermal progenitors 2,1,True
+5,late epidermal progenitors 2,epidermis,1,True
+6,neoblast 1,parenchymal progenitors,1,True
+7,parenchymal progenitors,pigment,1,True
+8,parenchymal progenitors,aqp+ parenchymal cells,1,True
+9,parenchymal progenitors,psap+ parenchymal cells,1,True
+10,parenchymal progenitors,ldlrr-1+ parenchymal cells,1,True
+11,neoblast 1,neural progenitors,1,True
+12,neural progenitors,ChAT neurons 1,1,True
+13,neural progenitors,ChAT neurons 2,1,True
+14,neural progenitors,spp-11+ neurons,1,True
+15,neural progenitors,npp-18+ neurons,1,True
+16,neural progenitors,GABA neurons,1,True
+17,neural progenitors,cav-1+ neurons,1,True
+18,neoblast 1,muscle progenitors,1,True
+19,muscle progenitors,muscle body,1,True
+20,muscle progenitors,muscle pharynx,1,True
+21,neoblast 1,pharynx cell type progenitors,1,True
+22,pharynx cell type progenitors,pharynx cell type,1,True
+23,neoblast 1,gut progenitors,1,True
+24,gut progenitors,phagocytes,1,True
+25,neoblast 1,otf+ cells 1,1,True
+26,neoblast 1,otf+ cells 2,1,True
+27,neoblast 1,secretory 2,1,True
+28,neoblast 1,secretory 1,1,True
+29,neoblast 1,secretory 3,1,True
+30,neoblast 1,secretory 4,1,True
+31,neoblast 1,goblet cells,1,True
+32,neoblast 1,protonephridia,1,True

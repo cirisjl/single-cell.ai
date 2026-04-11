@@ -1,0 +1,31 @@
+{
+    "type": "object",
+    "required": [
+        "title",
+        "n_cells"
+    ],
+    "properties": {
+        "title": {
+            "type": "string",
+            "title": "Title",
+            "classNames": "form__title",
+            "readOnly": true
+        },
+        "n_cells": {
+            "type": "integer",
+            "title": "Number of Cells",
+            "classNames": "form__cells"
+        },
+        "reference": {
+            "type": "string",
+            "title": "Reference",
+            "classNames": "form__reference"
+        },
+        "summary": {
+            "type": "string",
+            "title": "Summary",
+            "classNames": "form__summary",
+            "format": "textarea"
+        }
+    }
+}

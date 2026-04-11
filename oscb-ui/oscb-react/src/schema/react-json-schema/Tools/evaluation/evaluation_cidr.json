@@ -1,0 +1,93 @@
+{
+    "type": "object",
+    "properties": {
+      "parameters": {
+        "type":"object",
+        "title": "Parameters for Evaluation",  
+        "required": [
+          "methods"  ,
+        "output_format"    ],
+        "properties": {
+          "methods": {
+            "type": "array",
+            "title": "Method",
+            "items": {
+              "type": ["string", "null"],
+              "enum": ["CIDR"]
+            },
+            "default": ["CIDR"],
+            "uniqueItems": true
+          },
+          "output_format": { 
+            "type": ["string", "null"],
+            "title": "Output Format",
+            "description": "Some more details about the parameter",
+            "enum": [".h5ad", ".rds", ".h5Seurat"]
+           },
+          "default_assay": { 
+            "type": ["string", "null"],
+             "default": "RNA",
+             "title": "Default Assay",
+             "description": "Some more details about the parameter"
+             },
+          "layer": { 
+            "type": "string" ,
+            "title": "Layer",
+            "description": "Some more details about the parameter"
+          },
+          "path_of_scrublet_calls": { 
+            "type": ["string", "null"], 
+            "default": "./scrublet_calls.tsv",
+            "title": "Path of Scrublet Calls",
+            "description": "Some more details about the parameter" 
+          },
+          "species": { 
+            "type": ["string", "null"],
+            "title": "Species Type",
+            "enum": ["human", "mouse"]
+           },
+          "organ_part": {
+            "type": ["string", "null"],
+            "title": "Organ Part"
+          },
+          "idtype": {
+             "type": ["string", "null"],
+             "title": "ID Type",
+             "description": "Some more details about the parameter"
+           },
+          "genes": { 
+            "type": "array",
+            "title": "Genes List",
+            "description": "Some more details about the parameter",
+             "items": { 
+                "type": "string"
+              }
+          },
+          "ncores": { 
+            "type": "integer",
+            "title": "Cores",
+            "description": "Some more details about the parameter",
+            "default": 12,
+            "minimum": 1,
+            "maximum": 12,
+            "multipleOf": 1
+          },
+          "show_umap": {
+            "type": "boolean",
+            "title": "Do you want to analyse umap after processing ?",
+            "default": true,
+            "format": "switch",
+            "description": "Some description about the umap"
+          },
+          "show_error": {
+            "type": "boolean",
+            "title": "Do you want to see the errors of the task execution ?",
+            "default": true,
+            "format": "switch",
+            "description": "Some description about the boolean flag"
+          }
+        }
+      }
+    }
+  }
+  

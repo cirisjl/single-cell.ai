@@ -1,0 +1,14 @@
+{
+    "mongoUrl": "mongodb://mongodb:65530",
+    "dbName": "oscb",
+    "optionsCollectionName": "form_options",
+    "datasetCollection": "datasets",
+    "taskBuilderCollectionName": "benchmarks",
+    "userDatasetsCollection": "user_datasets",
+    "jobsCollection": "jobs",
+    "preProcessResultsCollection": "pp_results",
+    "benchmarksCollection": "benchmarks",
+    "errorlogcollection": "error_log",
+    "projectsCollection": "projects",
+    "chatHistoryCollection": "chat_history"
+}

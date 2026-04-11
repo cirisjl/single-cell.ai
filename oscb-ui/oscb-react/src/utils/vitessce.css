@@ -1,0 +1,13 @@
+.vitessce-container {
+    height: 900px;
+    width: 100%;
+}
+
+.vitessce-container button[type="submit"] {
+    cursor: pointer;
+    border: 0px;
+    border-radius: 0px;
+    padding: 1px 6px;
+    background-color: transparent;
+    color: rgb(98, 98, 98);
+}

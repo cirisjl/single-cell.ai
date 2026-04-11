@@ -1,0 +1,365 @@
+services:
+  mongodb:
+    container_name: oscbdb
+    image: mongo:7.0  
+    restart: always
+    command: mongod --port 65530
+    volumes:
+      - /data/oscb/db/mongodb:/data/db
+      - ./initMongo.js:/docker-entrypoint-initdb.d/initMongo.js
+    networks:
+      - oscb-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--port", "65530", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    env_file:
+      - .env 
+    ports:
+      - "127.0.0.1:8081:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - oscb-network
+    secrets:
+      - mongo_express_password
+
+  oscb_redis:
+    image: "redis:6-alpine"
+    container_name: oscb_redis 
+    hostname: oscb_redis
+    restart: always
+    command: sh -c 'redis-server --port 6388 --save 20 1 --loglevel warning --requirepass "$$(cat /run/secrets/redis_password)"'
+    volumes:
+      - /data/oscb/db/redis:/data
+    networks:
+      - oscb-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -p 6388 -a \"$$(cat /run/secrets/redis_password)\" ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    secrets:
+      - redis_password
+
+  oscb_rabbitmq:
+    image: "rabbitmq:management"
+    container_name: oscb_rabbitmq 
+    restart: always
+    ports:
+      - "127.0.0.1:15672:15672"
+    env_file:
+      - .env 
+    volumes:
+      - /data/oscb/db/rabbitmq/data/:/var/lib/rabbitmq/
+      - /data/oscb/db/rabbitmq/log/:/var/log/rabbitmq
+    command: >
+      sh -c '
+        export RABBITMQ_DEFAULT_PASS=$$(cat /run/secrets/rabbitmq_password) &&
+        rabbitmq-server
+      '
+    networks:
+      - oscb-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    secrets:
+      - rabbitmq_password
+
+  celery-api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: oscb_celery_api
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
+        REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        exec python3 main.py
+    restart: always
+    ports:
+      - "127.0.0.1:5005:5005"
+    volumes:
+      - /data/oscb/results:/data/results
+      - /data/oscb/uploads:/data/upload
+      - /data/oscb/logs:/data/logs
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    networks:
+      - oscb-network
+    env_file:
+      - .env 
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      oscb_redis:
+        condition: service_healthy
+      oscb_rabbitmq:
+        condition: service_healthy
+    secrets:
+      - rabbitmq_password
+      - redis_password
+
+  worker:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: always
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
+        REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        exec celery -A main.celery worker --loglevel=info -Q tools,benchmarks,workflows,web --max-tasks-per-child=50 --max-memory-per-child=200000000
+    env_file:
+      - .env 
+    deploy:
+      replicas: 2
+      resources:
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: all
+        #       capabilities: [gpu]
+        limits:
+          cpus: 6
+    volumes:
+      - /data/oscb/results:/data/results
+      - /data/oscb/uploads:/data/upload
+      - /data/oscb/logs:/data/logs
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    networks:
+      - oscb-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      oscb_redis:
+        condition: service_healthy
+      oscb_rabbitmq:
+        condition: service_healthy
+      celery-api:
+        condition: service_started
+    secrets:
+      - rabbitmq_password
+      - redis_password
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: oscb_dashboard
+    restart: always
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
+        REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        exec celery --app main.celery flower --port=5555 --basic-auth="admin:$$(cat /run/secrets/flower_basicauth_password)"
+    ports:
+      - "127.0.0.1:5555:5555"
+    env_file:
+      - .env 
+    depends_on:
+      celery-api:
+        condition: service_started
+      oscb_rabbitmq:
+        condition: service_healthy
+      oscb_redis:
+        condition: service_healthy
+    networks:
+      - oscb-network
+    secrets:
+      - rabbitmq_password
+      - redis_password
+      - flower_basicauth_password
+
+  oscb_mysql:
+    container_name: oscb_mysql
+    image: mysql:8.0
+    build:
+      context: ./oscb-ui/oscb-mysql
+    volumes:
+      - /data/oscb/mysql_db:/var/lib/mysql
+      - ./oscb-ui/oscb-mysql/oscb_schema_latest.sql:/docker-entrypoint-initdb.d/oscb_schema_latest.sql
+    restart: unless-stopped
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      - "--default-authentication-plugin=mysql_native_password"
+      - "--port=3308"
+    env_file:
+      - .env 
+    networks:
+      - oscb-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -P 3308 -u root -p$$(cat /run/secrets/mysql_password)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    secrets:
+      - mysql_password
+
+  oscb_node:
+    container_name: oscb_node
+    image: oscb_node
+    build:
+      context: .
+      dockerfile: oscb-ui/oscb-node/Dockerfile
+    restart: always
+    ports:
+      - "127.0.0.1:3001:3001"
+      - "127.0.0.1:3020:3020"
+    env_file:
+      - .env  
+    depends_on:
+      oscb_mysql:
+        condition: service_healthy
+    volumes:
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    networks:
+      - oscb-network
+    secrets:
+      - mysql_password
+      - openai_api_key
+      - gemini_api_key
+      - googledrive_key
+      - googledrive_secret
+      - dropbox_key
+      - dropbox_secret
+      - onedrive_key
+      - onedrive_secret
+      - email_password
+      - jwt_token_secret
+
+  oscb_react:
+    container_name: oscb_react
+    restart: always
+    build: 
+      context: .
+      dockerfile: oscb-ui/oscb-react/Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      oscb_node:
+        condition: service_started
+    env_file:
+      - .env 
+    networks:
+      - oscb-network
+    secrets:
+      - github_token
+      - googledrive_key
+      - googledrive_secret
+      - dropbox_key
+      - dropbox_secret
+      - onedrive_key
+      - onedrive_secret
+
+  directus:
+    container_name: oscb_directus
+    image: directus/directus:9.24.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8055:8055"
+    volumes:
+      - /data/oscb/Directus_uploads:/directus/uploads
+    depends_on:
+      oscb_mysql:
+        condition: service_healthy
+    env_file:
+      - .env 
+    networks:
+      - oscb-network
+    secrets:
+      - mysql_password
+      - directus_password
+
+  jupyter:
+    image: stormgod/oscb-cuda126-r45-seurat440:1.2.1
+    container_name: jupyter
+    working_dir: /ps
+    command: sh -c 'jupyter lab --ip=0.0.0.0 --no-browser --allow-root --ServerApp.iopub_data_rate_limit=10000000000 --ServerApp.token="$$(cat /run/secrets/jupyter_token | tr -d '"'"'\n'"'"')"'
+    restart: always
+    ports:
+      - "127.0.0.1:8888:8888"
+    deploy:
+      # resources:
+      #   reservations:
+      #     devices:
+      #       - driver: nvidia
+      #         count: all 
+      #         capabilities: [gpu]
+    networks:
+      - oscb-network
+    volumes:
+      - /data/:/ps/
+      - /data/oscb/results:/data/results
+      - /data/oscb/uploads:/data/upload
+      - /data/oscb/logs:/data/logs
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    secrets:
+      - jupyter_token
+
+networks:
+  oscb-network:
+    driver: bridge
+
+secrets:
+  mongo_express_password:
+    file: ./secrets/mongo_express_password.txt
+  redis_password:
+    file: ./secrets/redis_password.txt
+  rabbitmq_password:
+    file: ./secrets/rabbitmq_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
+  jupyter_token:
+    file: ./secrets/jupyter_token.txt
+  github_token:
+    file: ./secrets/github_token.txt
+  email_password:
+    file: ./secrets/email_password.txt
+  openai_api_key:
+    file: ./secrets/openai_api_key.txt
+  gemini_api_key:
+    file: ./secrets/gemini_api_key.txt
+  jwt_token_secret:
+    file: ./secrets/jwt_token_secret.txt
+  directus_password:
+    file: ./secrets/directus_password.txt
+  flower_basicauth_password:
+    file: ./secrets/flower_basicauth_password.txt
+  googledrive_key:
+    file: ./secrets/googledrive_key.txt
+  googledrive_secret:
+    file: ./secrets/googledrive_secret.txt
+  dropbox_key:
+    file: ./secrets/dropbox_key.txt
+  dropbox_secret:
+    file: ./secrets/dropbox_secret.txt
+  onedrive_key:
+    file: ./secrets/onedrive_key.txt
+  onedrive_secret:
+    file: ./secrets/onedrive_secret.txt

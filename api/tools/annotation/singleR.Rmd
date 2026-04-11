@@ -1,0 +1,108 @@
+---
+title: "SingleR annotation for `r params$dataset`"
+author: "Lei Jiang"
+date: "`r Sys.Date()`"
+params:
+  unique_id: NULL
+  dataset: NA
+  input: NULL # Input file path to scRNA data.
+  output_folder: NULL # Output file path of the Seurat object.
+  dims: 20
+  npcs: 20
+  resolution: 0.3
+  species: mouse
+  default_assay: RNA
+  reference: MouseRNAseqData
+  user_ref: NULL
+  user_label: NULL
+  show_code: FALSE
+  show_warning: FALSE
+  show_message: FALSE
+output: html_document
+---
+```{r setup, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+knitr::opts_chunk$set(echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message)
+```
+## Load data
+Load or create a SingleCellExperiment object from a expression matrix where each row corresponds to a gene (or transcript) and each column corresponds to a single cell.
+```{r load data, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+library(reticulate)
+source("../formating/formating.R")
+if(is.null(params$input)) stop("Input_path can not be NULL.")
+if(is.null(params$output)) stop("Output_path can not be NULL.")
+# Set altExp to contain ERCC, removing ERCC features from the main object
+srat <- tryCatch(
+    LoadSeurat(params$input, project=params$dataset),
+    error = function(e) {
+        stop("The file format is not supported.")
+        if(params$show_error) print(e)
+    }
+  )
+if(is.null(srat)) stop("The file format is not supported.")
+unique_id <- params$unique_id
+default_assay <- params$default_assay
+reference <- params$reference
+species <- params$species
+output_folder <- params$output_folder
+if(!default_assay %in% names(x = srat)) stop(paste(default_assay, "does not exist."))
+DefaultAssay(object = srat) <- ifelse((is.null(default_assay)|| is.na(default_assay)), "RNA", default_assay)
+RedisInfo(unique_id, paste0(paste("Seurat object is loaded and default assay is set to", default_assay, ".")))
+
+```
+### Annotation
+```{r Annotation, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+if(!IsNormalized(srat[[default_assay]]$counts, min_genes=200)){
+  srat <- NormalizeData(object = srat, verbose = FALSE)
+}
+
+srat <- FindVariableFeatures(object = srat, nfeatures = 3000, verbose = FALSE, selection.method = 'vst')
+srat <- ScaleData(srat, verbose = FALSE)
+srat <- RunPCA(srat, npcs = params$npcs, verbose = FALSE)
+srat <- FindNeighbors(srat, dims = 1:params$dims)
+srat <- FindClusters(srat, resolution = params$resolution)
+srat <- RunUMAP(srat, reduction = "pca", dims = 1:params$dims)
+
+library(SingleR)
+library(scater)
+ref <- switch(  
+    reference,  
+    "MouseRNAseqData" = celldex::MouseRNAseqData(),  
+    "HumanPrimaryCellAtlasData" = celldex::HumanPrimaryCellAtlasData(),  
+    "DatabaseImmuneCellExpressionData"= celldex::DatabaseImmuneCellExpressionData(),  
+    "BlueprintEncodeData" = celldex::BlueprintEncodeData(),
+    "ImmGenData" = celldex::ImmGenData(),
+    "MonacoImmuneData" = celldex::MonacoImmuneData(),
+    "NovershternHematopoieticData" = celldex::NovershternHematopoieticData()
+)
+RedisInfo(unique_id, paste0(paste("Reference is set to", reference, ".")))
+
+results_main <- SingleR(test = as.SingleCellExperiment(srat), ref = ref, labels = ref$label.main)
+results_fine <- SingleR(test = as.SingleCellExperiment(srat), ref = ref, labels = ref$label.fine)
+
+RedisInfo(unique_id, "SingleR annotation is done. Saving output files...")
+write.csv(results_main, paste0(output_folder, "/results_main.csv"))
+write.csv(results_fine, paste0(output_folder, "/results_fine.csv"))
+
+```
+### User's reference
+```{r User selected reference, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+user_ref <- params$user_ref
+user_label <- params$user_label
+if(!(is.null(user_ref) && is.null(user_label))){
+  library(scuttle)
+  RedisInfo(unique_id, "Using user's reference for annotation...")
+  tryCatch({
+    user_ref <- LoadSCE(user_ref)
+    user_ref <- user_ref[,!is.na(user_ref[[user_label]])]
+    user_ref <- logNormCounts(user_ref)
+    results_user_ref <- SingleR(test = as.SingleCellExperiment(srat), ref = user_ref, labels = user_ref[[user_label]])
+    RedisInfo(unique_id, "User's reference annotation is done. Saving output file...")
+    write.csv(results_user_ref, paste0(output_folder, "/results_user.csv"))
+  }, error = function(e) {
+    print(e$message)
+    RedisWarning(unique_id, paste0("An error happened during user selected reference annotation, skipped: ", e$message))
+  }) 
+}
+
+srat <- NULL
+```

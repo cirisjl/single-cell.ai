@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>File Data</title>
+</head>
+<body>
+  <div class="preview-dataset-container">
+   <div id="tung-dataset" class="section level3" number="6.1.2">
+       <h3 class="hasAnchor">
+           <span class="header-section-number">6.1.2</span>
+            Tung Dataset
+       </h3>
+    <p>To illustrate cell QC, we consider a <a href="http://jdblischak.github.io/singleCellSeq/analysis/">dataset</a> of induced pluripotent stem cells generated from three different individuals <span class="citation">(<a href="#ref-Tung2017-ba" role="doc-biblioref">Tung et al. 2017</a>)</span> in <a href="http://giladlab.uchicago.edu/">Yoav Gilad</a>’s lab at the University of Chicago. The experiments were carried out on the Fluidigm C1 platform and to facilitate the quantification both unique molecular identifiers (UMIs) and ERCC <em>spike-ins</em> were used. Due to rapid increase in droplet-based method use, spike-ins are not widely used anymore; however, they can serve as an informative control for low throughput methods. The data files are located in the <code>tung</code> folder in your working directory. These files are the copies of the original files made on the 15/03/16. We will use these copies for reproducibility purposes.</p>
+    <p>We’ll use <code>scater</code> package, as well as <code>AnnotationDbi</code> and <code>org.Hs.eg.db</code> to convert ENSEMBL IDs into gene names (symbols).</p>
+
+    <div class="sourceCode" id="cb239">
+
+        <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb239-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scater)</span><br><span id="cb239-2"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb239-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(SingleCellExperiment)</span><br><span id="cb239-3"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb239-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(AnnotationDbi)</span><br><span id="cb239-4"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb239-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(org.Hs.eg.db)</span><br><span id="cb239-5"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb239-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(EnsDb.Hsapiens.v86)</span></code></pre>
+    </div>
+
+    <p>Next we’ll read in the matrix and the per-cell annotation. The latter is converted to factors on the fly.</p>
+
+
+    <div class="sourceCode" id="cb240">
+        <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+
+        <pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb240-1" aria-hidden="true" tabindex="-1"></a>molecules <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">{{absolute_molecules_path}}</span>,<span class="at">row.names=</span><span class="dv">1</span>)</span><br><span id="cb240-2"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb240-2" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="st">{{absolute_annotation_path}}</span>,<span class="at">stringsAsFactors =</span> T)</span></code></pre>
+    </div>
+
+
+    <p>Take a quick look at the dataset:</p>
+
+
+
+   <div class="sourceCode" id="cb241">
+       <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+
+       <pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb241-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(molecules[,<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span></code></pre>
+   </div>
+   <pre><code>{{pandas_molecules_df}}</code></pre>
+
+   <div class="sourceCode" id="cb243">
+       <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+       <pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb243-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(annotation)</span></code></pre>
+   </div>
+   <pre><code>{{pandas_annotation_df}}</code></pre>
+
+    <p>Here we set <code>altExp</code> to contain ERCC, removing ERCC features from the main object:</p>
+
+    <div class="sourceCode" id="cb245">
+        <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+        <pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb245-1" aria-hidden="true" tabindex="-1"></a>umi <span class="ot">&lt;-</span> <span class="fu">SingleCellExperiment</span>(<span class="at">assays =</span> <span class="fu">list</span>(<span class="at">counts =</span> <span class="fu">as.matrix</span>(molecules)), <span class="at">colData =</span> annotation)</span><br><span id="cb245-2"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb245-2" aria-hidden="true" tabindex="-1"></a><span class="fu">altExp</span>(umi,<span class="st">"ERCC"</span>) <span class="ot">&lt;-</span> umi[<span class="fu">grep</span>(<span class="st">"^ERCC-"</span>,<span class="fu">rownames</span>(umi)), ]</span><br><span id="cb245-3"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb245-3" aria-hidden="true" tabindex="-1"></a>umi <span class="ot">&lt;-</span> umi[<span class="fu">grep</span>(<span class="st">"^ERCC-"</span>,<span class="fu">rownames</span>(umi),<span class="at">invert =</span> T), ]</span></code></pre>
+    </div>
+
+       <p>Now, let’s map ENSEMBL IDs to gene symbols. From the <code>table</code> command, we can see that most genes were annotated; however, 846 returned “NA.” By default, <code>mapIds</code> returs one symbol per ID; this behaviour can be changed using <code>multiVals</code> argument.</p>
+
+
+       <div class="sourceCode" id="cb246">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb246-1" aria-hidden="true" tabindex="-1"></a>gene_names <span class="ot">&lt;-</span> <span class="fu">mapIds</span>(org.Hs.eg.db, <span class="at">keys=</span><span class="fu">rownames</span>(umi), <span class="at">keytype=</span><span class="st">"ENSEMBL"</span>, <span class="at">columns=</span><span class="st">"SYMBOL"</span>,<span class="at">column=</span><span class="st">"SYMBOL"</span>)</span></code></pre>
+       </div>
+
+       <pre><code>## 'select()' returned 1:many mapping between keys and columns</code></pre>
+
+
+       <div class="sourceCode" id="cb248">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><br><span id="cb248-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb248-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowData</span>(umi)<span class="sc">$</span>SYMBOL <span class="ot">&lt;-</span> gene_names</span><br><span id="cb248-2"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb248-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">is.na</span>(gene_names))</span></code></pre>
+       </div>
+
+       <pre><code>{{r_table_geneNames}}</code></pre>
+
+       <p>Let’s remove all genes for which no symbols were found:</p>
+
+       <div class="sourceCode" id="cb250">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb250-1" aria-hidden="true" tabindex="-1"></a>umi <span class="ot">&lt;-</span> umi[<span class="sc">!</span> <span class="fu">is.na</span>(<span class="fu">rowData</span>(umi)<span class="sc">$</span>SYMBOL),]</span></code></pre>
+       </div>
+
+       <p>Let’s check if we can find mitochondrial proteins in the newly annotated symbols.</p>
+
+       <div class="sourceCode" id="cb251">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb251-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"^MT-"</span>,<span class="fu">rowData</span>(umi)<span class="sc">$</span>SYMBOL,<span class="at">value =</span> T)</span></code></pre>
+       </div>
+
+       <pre><code>{{r_grep_not_mt}}</code></pre>
+
+       <p>Strangely, this returns nothing. Similar command to find ribosomal proteins (which start with RPL or RPS) works as expected:</p>
+
+       <div class="sourceCode" id="cb253">
+
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb253-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"^RP[LS]"</span>,<span class="fu">rowData</span>(umi)<span class="sc">$</span>SYMBOL,<span class="at">value =</span> T)</span></code></pre>
+       </div>
+
+       <pre><code>{{r_grep_not_rpls}}</code></pre>
+
+
+       <p>Quick search for mitochondrial protein <em>ATP8</em>, which is also called <em>MT-ATP8</em>, shows that the name does not contain “MT-.” However, the correct feature (ENSEMBL ID <em>ENSG00000228253</em>) is present in our annotation.</p>
+
+       <div class="sourceCode" id="cb255">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb255-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span>(<span class="st">"ATP8"</span>,<span class="fu">rowData</span>(umi)<span class="sc">$</span>SYMBOL,<span class="at">value =</span> T)</span></code></pre>
+       </div>
+
+       <pre><code>{{r_grep_atp8}}</code></pre>
+
+       <p>Most modern annotations, e.g.&nbsp;ones used by <code>Cell Ranger</code>, will have mitochondrial genes names that start with <em>MT-</em>. For some reason, the one we have found does not. Annotation problems in general are very common and should be always considered carefully. In our case, we also can’t find the location of genes since chromosomes are not supported in <code>org.Hs.eg.db</code> - there are no genome location columns in this database:</p>
+
+       <div class="sourceCode" id="cb257">
+           <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+           <pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb257-1" aria-hidden="true" tabindex="-1"></a><span class="fu">columns</span>(org.Hs.eg.db)</span></code></pre>
+       </div>
+
+       <pre><code>{{r_columns}}</code></pre>
+
+       <p>Let’s try a different, more detailed database - <code>EnsDb.Hsapiens.v86</code>. Using this resource, we can find 13 protein-coding genes located in the mitochondrion:</p>
+<div class="sourceCode" id="cb259">
+       <button type="button" class="copy-to-clipboard-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="fa fa-copy"></i></button>
+       <pre class="sourceCode r"><code class="sourceCode r"><br><span id="cb259-1"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb259-1" aria-hidden="true" tabindex="-1"></a>ensdb_genes <span class="ot">&lt;-</span> <span class="fu">genes</span>(EnsDb.Hsapiens.v86)</span><br><span id="cb259-2"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb259-2" aria-hidden="true" tabindex="-1"></a>MT_names <span class="ot">&lt;-</span> ensdb_genes[<span class="fu">seqnames</span>(ensdb_genes) <span class="sc">==</span> <span class="st">"MT"</span>]<span class="sc">$</span>gene_id</span><br><span id="cb259-3"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb259-3" aria-hidden="true" tabindex="-1"></a>is_mito <span class="ot">&lt;-</span> <span class="fu">rownames</span>(umi) <span class="sc">%in%</span> MT_names</span><br><span id="cb259-4"><a href="basic-quality-control-qc-and-exploration-of-scrna-seq-datasets.html#cb259-4" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(is_mito)</span></code></pre>
+   </div>
+
+
+    <pre><code>{{r_is_mitro}}</code></pre>
+</div>
+  </div>
+</body>
+</html>

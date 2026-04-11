@@ -1,0 +1,1004 @@
+.benchmarks-left-nav ul {
+    margin-top: 20%;
+}
+
+.benchmarks-left-nav li {
+    padding: 11px 0px;
+    padding-left: 40px;
+    word-break: break-word;
+    cursor: not-allowed;
+    color: #ccc;
+}
+
+.benchmarks-left-nav a {
+    cursor: not-allowed;
+}
+
+.benchmarks-left-nav li.active, .benchmarks-left-nav li.active a {
+    cursor: pointer; 
+    background-color: hsl(0, 0%, 90%) !important;
+    color: #000;
+}
+
+.benchmarks-left-nav li.completed, .benchmarks-left-nav li.completed a {
+    cursor: pointer; 
+    color: #000;
+}
+
+.upload-task .uppy-comp {
+    margin: 2% 15%;
+}
+
+.upload-task, .validation-task {
+    padding: 3%;
+}
+
+.uppy-uploader-component {
+    margin-top: 3%;
+}
+
+/* .uppy-uploader-component span{
+    margin-left: 2rem;
+} */
+
+.upload-task .uppy-Dashboard {
+    height: 23rem;
+}
+
+.next-upon-success button{
+    float: right;
+    cursor: pointer;
+}
+.next-upon-success button{
+    margin-top: 5px;
+}
+
+.upload-task .uploaded-files {
+    margin-left: 2rem;
+    margin-top: 20px;
+}
+
+.upload-task .file-list-heading {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .upload-task .file-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .upload-task .file-list-item {
+    font-size: 16px;
+    margin-bottom: 5px;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  
+  .upload-task .file-list-item:hover {
+    color: #007bff; /* Change the color on hover */
+  }
+  
+
+
+  /* ValidationTaskComponent.css */
+
+.validation-task .container {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+  }
+  
+  .validation-task .header {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .validation-task .spinner-container, .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+  }
+  
+  .navigation-buttons .button, .next-upon-success button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .navigation-buttons .button:hover {
+    background-color: #0056b3;
+  }
+
+.navigation-buttons {
+    display: flex;
+    margin-top: 2rem;
+}
+
+.navigation-buttons .previous, .navigation-buttons .next-upon-success {
+    flex: 1;
+}
+
+
+.task-builder-task .task-section, .task-builder-task .task-id-section, .task-builder-task .metadata-section, .task-builder-task .metadata-item, .task-builder-task .split-parameters {
+  margin-bottom: 15px;
+}
+
+.task-builder-task h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.task-builder-task label {
+  display: block;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.task-builder-task label p{
+  margin-bottom: 5px;
+}
+
+.task-builder-task input[type="range"] {
+  width: 80%;
+}
+
+.task-builder-task button {
+  margin: 10px;
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.task-builder-task button:hover {
+  background-color: #0056b3;
+}
+
+
+
+.review-task {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-heading {
+  background-color: rgb(248, 249, 250)  ;
+  color: black;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 2rem;
+}
+
+.section-heading i {
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.section-content {
+  display: none;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+
+/* FlowControl.css */
+.flow-messaging {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 5rem 25rem;
+  padding: 4rem 2rem;
+}
+
+.flow-messaging h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 0 7rem;
+}
+
+.flow-messaging button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007BFF;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.flow-messaging button:hover {
+  background-color: #0056b3;
+}
+
+.uppy-uploader-component .info-icon {
+  top: 0px !important;
+  float: left;
+}
+
+.upload-task .files-selected button.cross-button {
+  cursor: pointer;
+}
+
+#files-selected ul {
+  padding-left: 0px;
+}
+
+.task-builder-task .dialog-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.task-builder-task .dialog {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 80%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+
+/* Additional styles for FilterComponent */
+.task-builder-task .dialog-container .filter {
+  flex: 1;
+}
+
+.task-builder-task .dialog-container .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.task-builder-task .dialog-container .pagination button {
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.task-builder-task .dialog-container .pagination button:disabled {
+  background-color: #e0e0e0;
+  cursor: default;
+}
+
+.task-builder-task .dialog-container .pagination span {
+  margin: 0 10px;
+}
+
+.task-builder-task .dialog-container .filters-and-search-container {
+  display: flex;
+}
+
+.task-builder-task .dialog-container span.search-title {
+  font-weight: 700;
+  color: #666;
+  display: block;
+  margin: 3px 0;
+}
+
+.task-builder-task .dialog-container .facet {
+    white-space: nowrap;
+    display: inline-block;
+    margin-right: 8px;
+    box-sizing: border-box;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.task-builder-task .dialog-container .table-results {
+  overflow-y: auto;
+}
+
+.task-builder-task .dialog-container .table-results table{
+
+  width: 100%;
+}
+
+.task-builder-task .dialog-container .facet p {
+  background-color: #fff;
+  padding: 8px 16px;
+  border-radius: 15px;
+  border: 0.64px solid #4d72aa;
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.task-builder-task .dialog-container .facet .filters-box-searchable {
+  width: 375px;
+  border: 1px solid #aaa;
+  background: #fff;
+  position: absolute;
+  z-index: 9000;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-top: 2px;
+}
+
+.task-builder-task .dialog-container .facet .filters-box-searchable {
+  display: flex;
+  flex-direction: column;
+}
+
+
+.task-builder-task .dialog-container .facet .filters-box-footer {
+  height: 40px;
+}
+
+.task-builder-task .dialog-container button.filters-toggle{
+  margin-top: 18px;
+  white-space: nowrap;
+    margin-right: 8px;
+    vertical-align: top;
+
+    background-color: #fff;
+    color: black;
+    border-radius: 15px;
+    border: 0.64px solid #4d72aa;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    padding: 0px 16px;
+    height: 40px;
+}
+
+.task-builder-task .dialog-container .filters-toggle-div {
+  display: inline-block;
+}
+
+.task-builder-task .dialog-container .metadata-search-wrap {
+  flex: 0 0 60%;
+}
+
+.task-builder-task .dialog-container .study-keyword-search {
+  flex: 0 0 37%;
+}
+
+.task-builder-task .dialog-container .facet .filters-options{
+  overflow: auto;
+  max-height: 200px;
+}
+
+.task-builder-task .dialog-container .facet .filters-options ul {
+  list-style-type: none;
+  padding-left: 0px;
+}
+
+.task-builder-task .dialog-container .facet .filters-options input[type="checkbox"]  {
+  margin-right: 10px;
+}
+
+.task-builder-task .dialog-container .facet .filters-options li {
+  list-style-type: none;
+}
+
+.task-builder-task .dialog-container .study-keyword-search form{
+  margin-top: 18px;
+}
+
+.task-builder-task .dialog-container button.filters-toggle svg{
+  margin-right: 5px;
+}
+
+.task-builder-task .dialog-container .study-keyword-search svg.right {
+  right: 9rem;
+}
+
+.task-builder-task .dialog-container .study-keyword-search svg.top-1\/2 {
+  top: 4.5rem;
+}
+
+/* ResultsTable.css */
+
+/* Reset table styling */
+.task-builder-task .dialog-container .table-results table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  min-width: 400px;
+  background-color: #fff; /* White background for the table */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.task-builder-task .dialog-container .table-results th,
+.task-builder-task .dialog-container .table-results td {
+  padding: 12px 15px;
+  text-align: center;
+  /* border-bottom: 1px solid #ddd; Light grey border for rows */
+  border-top: 1px solid #e1e1e1; /* Light grey border */
+  border-bottom: 1px solid #e1e1e1; /* Light grey border */
+}
+
+.task-builder-task .dialog-container .table-results th {
+  /* background-color: #f8f8f8; */
+  /* background-color: #f9f9f9;*/
+  color: black;
+  text-transform: capitalize;
+  font-weight: bold;
+}
+
+/* .task-builder-task .dialog-container .table-results tr {
+  border-bottom: 1px solid #dddddd;
+} */
+
+/* .task-builder-task .dialog-container .table-results tr:nth-of-type(odd) {
+  /* background-color: #f1f1f1; */
+  /* background-color: #f2f2f2; 
+
+} */
+
+/* .task-builder-task .dialog-container .table-results tr:last-of-type {
+  border-bottom: 2px solid #009879;
+} */
+
+.task-builder-task .dialog-container .table-results tr:hover {
+  background-color: #f2f2f2;
+}
+
+.task-builder-task .dialog-container .table-results td {
+  /* border-right: 1px solid #dddddd; */
+  max-width: 200px; /* Adjust the max-width as necessary */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.task-builder-task .dialog-container .table-results td:hover {
+  cursor: pointer;
+  position: relative;
+}
+
+.task-builder-task .dialog-container .table-results .cell-ellipsis {
+  display: block; /* or inline-block */
+  max-width: 250px; /* or a specific width */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer; /* or default, depending on your need */
+}
+
+
+.task-builder-task .dialog-container .table-results td:last-child {
+  border-right: none;
+}
+
+
+.task-builder-task .dialog-container .facet .filter-category {
+  /* Your default styles for filter category */
+  cursor: pointer;
+}
+
+.task-builder-task .dialog-container .facet .filter-category .filters-box-searchable {
+  display: none;
+  position: absolute;
+}
+
+.task-builder-task .dialog-container .facet .filter-category:hover .filters-box-searchable {
+  margin-top: -13px;
+  display: block;
+}
+
+
+.task-builder-task .dialog-container .facet .filter-category:hover p{
+  /* Styles for the highlighted state */
+  background-color: #f0f0f0;
+}
+
+/* Add styles for applied filters */
+.task-builder-task .dialog-container .applied-filters {
+  margin-top: 10px;
+}
+
+.task-builder-task .dialog-container .applied-filter {
+  display: inline-flex;
+  align-items: center;
+  background-color: #007bff; /* Applied filter background color */
+  color: #fff; /* Text color for applied filter */
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add a smooth transition effect */
+}
+
+.task-builder-task .dialog-container .applied-filters .applied-filter:hover {
+  background-color: #0056b3; /* Hover effect color */
+}
+
+.task-builder-task .dialog-container .applied-filters .cross-icon {
+  margin-left: 5px;
+  color: #fff; /* Cross icon color */
+  cursor: pointer;
+  transition: color 0.3s ease; /* Add a smooth transition effect */
+}
+
+.task-builder-task .dialog-container .applied-filters .cross-icon:hover {
+  color: #ff6363; /* Hover effect color for cross icon */
+}
+
+
+/* ResultsTable.css */
+.task-builder-task .dialog-container .table-results .action-buttons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+}
+
+.task-builder-task .dialog-container .table-results .action-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.task-builder-task .dialog-container .table-results .action-button:hover {
+  background-color: #f2f2f2;
+}
+
+.task-builder-task .dialog-container .table-results .action-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.task-builder-task .dialog-container .table-results .table-container {
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* .task-builder-task .dialog-container .table-results .table-container thead {
+  background-color: #f0f0f0;
+} */
+
+.task-builder-task .dialog-container .table-results .table-container th, .table-container td {
+  text-align: center;
+  padding: 8px;
+}
+
+/* .task-builder-task .dialog-container .table-results .table-container tr:nth-child(even) {
+  background-color: #f2f2f2;
+} */
+
+@media screen and (max-width: 768px) {
+  .task-builder-task .dialog-container .table-results .action-buttons {
+      flex-direction: column;
+  }
+}
+
+.task-builder-task .dialog-container .dialog-close {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+
+.task-builder-task .metadata-section .label-table-container .table-container {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  margin: 1rem; /* Add some spacing around the table */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+}
+
+.task-builder-task .metadata-section .label-table-container .table-container table {
+  width: 100%; /* Full width of the container */
+  border-collapse: collapse; /* Collapse borders */
+  background-color: #fff; /* White background for the table */
+}
+
+.task-builder-task .metadata-section .label-table-container .table-container th, td {
+  padding: 0.5rem 1rem; /* Padding for table cells */
+  text-align: left; /* Align text to the left */
+  border-bottom: 1px solid #ddd; /* Light grey border for rows */
+}
+
+.task-builder-task .metadata-section .label-table-container .table-container th {
+  background-color: #f8f8f8; /* Slightly grey background for headers */
+  font-weight: bold; /* Make header text bold */
+}
+
+.task-builder-task .metadata-section .label-table-container .table-container tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+/* Responsive table */
+@media screen and (max-width: 600px) {
+  .task-builder-task .metadata-section .label-table-container .table-container {
+    margin: 0; /* Remove margin in small screens */
+  }
+  .task-builder-task .metadata-section .label-table-container .table-container th, td {
+    padding: 0.5rem; /* Smaller padding for small screens */
+  }
+}
+
+
+.task-builder-task .dialog-container .table-results .dropdown{
+  display: inline-flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+/* LogViewer.css */
+
+.live_logs_container {
+  padding: 10px;
+  width: 95%;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 2px 1px;
+  margin: 2rem 0px;
+  border-radius: 0.5rem;
+}
+
+.live_logs_container .live_logs_card {
+  /* box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.2);
+  background-color: #232323; */
+  color: black;
+  margin-bottom: 10px;
+}
+
+.live_logs_container .live_logs_header {
+  /* background-color: #323232; */
+  margin: 0;
+  padding: 10px;
+}
+
+.live_logs_container .live_logs_content {
+  max-height: 300px;
+  overflow: auto;
+  background-color: #222222;
+  color: white;
+  padding: 10px;
+  font-size: 0.875rem;
+  font-family: monospace;
+  border-radius: 1rem;
+}
+
+/* For Chrome, Safari, and Opera */
+.live_logs_container .live_logs_content::-webkit-scrollbar {
+  width: 0.4em;
+}
+
+.live_logs_container .live_logs_content::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,.1);
+  border-radius: 4px;
+}
+
+
+.message-box{
+  top: 25px;
+  position: fixed !important;
+}
+
+.dialog1{
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 65%;
+  height: 90vh;
+  overflow-y: auto;
+  background-color: grey;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+/* ------------------------------------------------------------- */
+
+.my-form-container1 {
+  /* max-width: 500px; */
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 2850px !important;
+
+}
+
+.my-form-container1 .message-box{
+  top: 25px;
+  position: fixed !important;
+}
+
+.my-form-container1 .form-input:not([type=radio]):not([type=checkbox]) {
+  width: auto !important;
+}
+
+.form-title1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form1 {
+  display: grid;
+  gap: 15px;
+}
+
+.form-field1 {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label1 {
+  font-size: 16px;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.form-input1 {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.tab {
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+  color:#3d5a87;
+}
+
+.tab button:hover {
+  background-color: #ddd;
+}
+
+.tab button.active {
+  background-color: #fff;
+  color:#333;
+}
+
+.tab-content {
+  padding: 20px;
+  background-color: #f1f1f1;
+  border: 1px solid #e3e3e3;
+  border-top: none;
+}
+
+.tab-content h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
+
+.tab-content p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.tab-content .close-button {
+  background-color: #007BFF;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 20px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tab-content .close-button:hover {
+  background-color: dodgerblue;
+}
+
+.tab-content{
+  width: 100vh;
+  /* height: 100vh; */
+  border: 2px solid #f00;
+  background-color: white;
+  margin-top: 20px;
+}
+
+.dialog1 {
+  /* background-color: #fafafa; */
+  border-radius: 4px;
+  /* width: 70%;  */
+}
+
+.tab-panel {
+  padding: 20px;
+}
+
+.tab-panel > h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.tab-panel > p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-top: 10px;
+  text-align:justify;
+}
+
+.tab-panel > hr {
+  margin: 10px 0;
+  border: none;
+  border-bottom: 1px solid black;
+}
+
+
+/* --------------------------------------------------------------------- */
+
+.dataset-container {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.dataset-dialog-container {
+  display: flex;
+  max-width: 1200px;
+}
+
+.side-panel {
+  flex: 1;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.dataset-dialog {
+  flex: 2;
+  padding: 20px;
+  margin-bottom: 40px;
+
+}
+
+.dataset-tabs {
+  display: flex;
+  justify-content: flex-start; /* Align items to the start (left) */
+  gap: 10px;
+  margin-bottom: 40px;
+  position: absolute;
+  top: 90px; /* Adjust this value according to your design */
+  left: 145px; /* Adjusted left value */
+  z-index: 999; /* Ensure it's above other content */
+}
+
+
+
+.dataset-tabs button {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dataset-tabs button.active-tab {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.dataset-tab-panel {
+  margin-top: 20px;
+}
+
+.dataset-tab-panel h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.dataset-tab-panel p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.dataset-tab-panel hr {
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+.dataset-tab-content {
+  background-color: #fefefe;
+
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 60px; /* Adjusted margin-top value to move it below the tabs */
+  margin-bottom: 30px;}
+
+.side-panel {
+  background-color: #fefefe;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  margin-top: 78px !important;
+
+}
+
+.side-panel h2 {
+  font-size: 18px;
+  margin-top: 0;
+}
+
+.side-panel p {
+  margin: 5px 0;
+}
+
+.side-panel hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
+}
+
+.dataset-container {
+  background-color: #ebe8e8;
+}
+
+#plot-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 10vh; /* Makes the container take the full height of the viewport */
+  font-size: 1.5rem; /* Increases the font size */
+}

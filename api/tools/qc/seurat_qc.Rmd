@@ -1,0 +1,96 @@
+---
+title: "Quality Control using Seurat for `r params$dataset`"
+author: "Lei Jiang"
+date: "`r Sys.Date()`"
+params:
+  dataset: NA
+  input: NULL # Input file path to scRNA data.
+  output: NULL # Output file path of the Seurat object.
+  path_of_scrublet_calls: NA
+  default_assay: RNA
+  output_format: Seurat
+  show_code: FALSE
+  show_warning: FALSE
+  show_message: FALSE
+output: html_document
+---
+```{r setup, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+knitr::opts_chunk$set(echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message)
+```
+## Load data
+Load or create a SingleCellExperiment object from a expression matrix where each row corresponds to a gene (or transcript) and each column corresponds to a single cell.
+```{r load data, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+library(ggplot2)
+library(SingleR)
+library(dplyr)
+library(celldex)
+library(RColorBrewer)
+source("../formating/formating.R")
+if(is.null(params$input)) stop("Input_path can not be NULL.")
+if(is.null(params$output)) stop("Output_path can not be NULL.")
+# Set altExp to contain ERCC, removing ERCC features from the main object
+srat <- tryCatch(
+    LoadSeurat(params$input, project=params$dataset, raw=TRUE),
+    error = function(e) {
+        stop("The file format is not supported.")
+        if(params$show_error) print(e)
+    }
+  )
+if(is.null(srat)) stop("The file format is not supported.")
+default_assay <- params$default_assay
+if(!default_assay %in% names(x = srat)) stop(paste(default_assay, "does not exist."))
+DefaultAssay(object = srat) <- ifelse((is.null(default_assay)|| is.na(default_assay)), "RNA", default_assay)
+print(paste("Seurat object is loaded and default assay is set to", default_assay, "."))
+srat
+if(!paste0("nCount_", default_assay) %in% names(x = srat[[]])) srat[[paste0("nCount_", default_assay)]] <- colSums(x = srat[[default_assay]], slot = "counts")  # nCount of the default assay
+if(!paste0("nFeature_", default_assay) %in% names(x = srat[[]])) srat[[paste0("nFeature_", default_assay)]] <- colSums(x = GetAssayData(object = srat[[default_assay]], slot = "counts") > 0)  # nFeature of the default assay
+meta <- srat@meta.data
+dim(meta)
+head(meta)
+summary(meta[paste0("nCount_", default_assay)])
+summary(meta[paste0("nFeature_", default_assay)])
+srat[["percent.mt"]] <- PercentageFeatureSet(srat, pattern = "^MT-") # Michochondrial genes
+srat[["percent.rb"]] <- PercentageFeatureSet(srat, pattern = "^RP[SL]") # Ribosomal proteins (their names begin with RPS or RPL)
+# add the doublet annotation
+doublets <- read.table(params$path_of_scrublet_calls, header = F, row.names = 1)
+colnames(doublets) <- c("Doublet_score", "Is_doublet")
+srat <- AddMetaData(srat, doublets)
+head(srat[[]])
+```
+### Violin Plot
+```{r Violin Plot, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+VlnPlot(srat, features = c(paste0("nFeature_", default_assay), paste0("nCount_", default_assay),"percent.mt","percent.rb"),ncol = 4,pt.size = 0.1) & 
+  theme(plot.title = element_text(size=10))
+```
+### Metadata features against each other
+```{r Metadata features, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+FeatureScatter(srat, feature1 = paste0("nCount_", default_assay), feature2 = "percent.mt")
+FeatureScatter(srat, feature1 = paste0("nCount_", default_assay), feature2 = paste0("nFeature_", default_assay))
+FeatureScatter(srat, feature1 = paste0("nCount_", default_assay), feature2 = "percent.rb")
+FeatureScatter(srat, feature1 = "percent.rb", feature2 = "percent.mt")
+FeatureScatter(srat, feature1 = paste0("nFeature_", default_assay), feature2 = "Doublet_score")
+```
+### Identifying filtering cutoff
+```{r Identifying filtering cutoff, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+srat[['QC']] <- ifelse(srat@meta.data$Is_doublet == 'True','Doublet','Pass')
+srat[['QC']] <- ifelse(srat@meta.data[paste0("nFeature_", default_assay)] < 500 & srat@meta.data$QC == 'Pass','Low_nFeature',srat@meta.data$QC)
+srat[['QC']] <- ifelse(srat@meta.data[paste0("nFeature_", default_assay)] < 500 & srat@meta.data$QC != 'Pass' & srat@meta.data$QC != 'Low_nFeature',paste('Low_nFeature',srat@meta.data$QC,sep = ','),srat@meta.data$QC)
+srat[['QC']] <- ifelse(srat@meta.data$percent.mt > 15 & srat@meta.data$QC == 'Pass','High_MT',srat@meta.data$QC)
+srat[['QC']] <- ifelse(srat@meta.data[paste0("nFeature_", default_assay)] < 500 & srat@meta.data$QC != 'Pass' & srat@meta.data$QC != 'High_MT',paste('High_MT',srat@meta.data$QC,sep = ','),srat@meta.data$QC)
+table(srat[['QC']])
+VlnPlot(subset(srat, subset = QC == 'Pass'), 
+        features = c(paste0("nFeature_", default_assay), paste0("nCount_", default_assay), "percent.mt","percent.rb"), ncol = 4, pt.size = 0.1) & 
+  theme(plot.title = element_text(size=10))
+```
+
+## Save Seurat object
+```{r Save Seurat object, include = TRUE, echo = params$show_code, warning=params$show_warning, message=params$show_message}
+SaveH5Seurat(srat, filename = params$output, overwrite = TRUE, verbose = FALSE)
+print("Seurat object is saved successfully.")
+srat <- NULL
+```
+
+## Session Info
+```{r Session Info, include = TRUE, echo = params$show_code, warning=params$show_warning, message=params$show_message}
+sessionInfo()
+```

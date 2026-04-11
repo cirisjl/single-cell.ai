@@ -1,0 +1,210 @@
+{
+  "type": "object",
+  "properties": {
+    "parameters": {
+      "type": "object",
+      "title": "Parameters for Integration Workflow",
+      "properties": {
+        "species": {
+          "type": ["string", "null"],
+          "title": "Species Type"
+        },
+        "organ_part": {
+          "type": ["string", "null"],
+          "title": "Organ Part"
+        },
+        "qc_params": {
+          "type": "object",
+          "title": "Quality Control Parameters",
+          "required": [
+            "methods"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "title": "Method",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Bioconductor",
+                  "Seurat",
+                  "Scanpy",
+                  "Dropkick"
+                ]
+              },
+              "default": [
+                "Scanpy"
+              ],
+              "uniqueItems": true
+            },
+            "assay": {
+              "type": ["string", "null"],
+              "title": "Default Assay (If applicable)",
+              "default": "RNA"
+            },
+            "min_genes": {
+              "type": "integer",
+              "title": "Min Genes",
+              "default": 200
+            },
+            "max_genes": {
+              "type": "integer",
+              "title": "Max Genes",
+              "default": 50000
+            },
+            "min_cells": {
+              "type": "integer",
+              "title": "Min Cells",
+              "default": 2
+            },
+            "pct_counts_mt": {
+              "type": "integer",
+              "title": "Percentage of Counts in Mitochondrial Genes",
+              "default": 3
+            },
+            "target_sum": {
+              "type": "integer",
+              "title": "Target Sum:",
+              "default": 10000
+            },
+            "n_top_genes": {
+              "type": "integer",
+              "title": "Highly Variable Genes (n_top_genes):",
+              "default": 2000
+            },
+            "doublet_rate": {
+              "type": "number",
+              "title": "Expected Doublet Rate: ",
+              "default": 0.08
+            },
+            "regress_cell_cycle": {
+              "type": "boolean",
+              "title": "Regress Cell Cycle",
+              "default": false,
+              "format": "switch"
+            }
+          }
+        },
+        "integration_params": {
+          "type": "object",
+          "title": "Integration Parameters",
+          "required": [
+            "methods",
+            "batch_key"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "title": "Method",
+              "items": {
+                "type": ["string", "null"],
+                "enum": [
+                  "Liger",
+                  "Harmony",
+                  "Seurat",
+                  "scVI"
+                ]
+              },
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "batch_key": {
+              "type": "string",
+              "title": "Batch Key",
+              "description": "Please specify the Batch Key."
+            },
+            "pseudo_replicates": {
+              "type": "integer",
+              "title": "Pseudo Replicates",
+              "description": "Please specify the number of samples for each batch if you use pooled samples for sc-RNA sequencing.",
+              "default": 0
+            }
+          }
+        },
+        "annotation_params": {
+          "type": "object",
+          "title": "Annotation Parameters",
+          "required": [
+            "methods"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "title": "Method",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "CellTypist",
+                  "scANVI",
+                  "SingleR"
+                ]
+              },
+              "default": [
+                "CellTypist"
+              ],
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "celltypist_model": {
+              "type": ["string", "null"],
+              "title": "CellTypist Model",
+              "description": "Choose the CellTypist model for annotation."
+            },
+            "SingleR_ref": {
+              "type": "array",
+              "title": "SingleR Reference",
+              "description": "Choose the SingleR Reference(s) for annotation.",
+              "items": {
+                "type": ["string", "null"],
+                "enum": [
+                  "dice",
+                  "blueprint_encode",
+                  "immgen",
+                  "mouse_rnaseq",
+                  "hpca",
+                  "novershtern_hematopoietic",
+                  "monaco_immune"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "user_label": {
+              "type": ["string", "null"],
+              "title": "User's Reference Labels",
+              "description": "Specify the labels"
+            }
+          }
+        },
+        "reduction_params": {
+          "type": "object",
+          "title": "Visualization Parameters",
+          "properties": {
+            "n_neighbors": {
+              "type": "integer",
+              "default": 30
+            },
+            "n_pcs": {
+              "type": "integer",
+              "default": 30
+            },
+            "resolution": {
+              "type": "number",
+              "title": "Resolution:",
+              "default": 0.5
+            },
+            "n_hvg": {
+              "type": "integer",
+              "title": "Number of Highly Variable Genes for Heatmap",
+              "default": 50
+            },
+            "cluster_colname": {
+              "type": ["string", "null"],
+              "title": "Cluster Column Name",
+              "description": "Choose the cluster column for cell type annotation. If not specified, the default Leiden clustering will be used."
+            }
+          }
+        }
+      }
+    }
+  }
+}

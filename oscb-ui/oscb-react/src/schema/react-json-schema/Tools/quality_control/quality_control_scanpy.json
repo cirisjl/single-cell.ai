@@ -1,0 +1,135 @@
+{
+  "type": "object",
+  "properties": {
+    "parameters": {
+      "type":"object",
+      "title": "Parameters for Quality Control Process",  
+      "properties": {
+        "species": { 
+          "type": ["string", "null"],
+          "title": "Species Type"
+         },
+        "organ_part": {
+          "type": ["string", "null"],
+          "title": "Organ Part"
+        },
+        "idtype": {
+           "type": ["string", "null"],
+           "title": "ID Type",
+           "description": "Choose the ID Type to specify the gene identifier format for your analysis"
+         },
+         "cluster_label": {
+          "type": ["string", "null"],
+          "title": "Cluster Label",
+          "description": "Enter the Cluster Label to identify or categorize your data points within the AnnData object."
+        },
+        "n_hvg": {
+          "type": "integer",
+          "title": "Number of Highly Variable Genes for Heatmap",
+          "default": 50
+        },
+        "cluster_colname": {
+          "type": ["string", "null"],
+          "title": "Cluster Column Name",
+          "description": "Choose the cluster column for cell type annotation. If not specified, the default Leiden clustering will be used."
+        },
+        "do_umap": {
+          "type": "boolean",
+          "title": "Do you want to perform UMAP after processing?",
+          "default": true,
+          "format": "switch",
+          "description": "Toggle this switch to decide whether to perform UMAP (Uniform Manifold Approximation and Projection) analysis after processing your data."
+        },
+        "do_cluster": {
+          "type": "boolean",
+          "title": "Do you want to perform Cluster after processing?",
+          "default": true,
+          "format": "switch",
+          "description": "Toggle this switch to decide whether to perform Cluster analysis after processing your data."
+        },
+        "qc_params": {
+          "type": "object",
+          "title": "Quality Control Parameters",
+          "required": ["methods"],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "title": "Method",
+              "items": {
+                "type": "string",
+                "enum": ["Scanpy"]
+              },
+              "default": ["Scanpy"],
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "assay": {
+              "type": ["string", "null"],
+              "title": "Default Assay (If applicable)",
+              "default": "RNA"
+            },
+            "min_genes": {
+              "type": "integer",
+              "title": "Min Genes",
+              "default": 200
+            },
+            "max_genes": {
+              "type": "integer",
+              "title": "Max Genes",
+              "default": 50000
+            },
+            "min_cells": {
+              "type": "integer",
+              "title": "Min Cells",
+              "default": 2
+            },
+            "pct_counts_mt": {
+              "type": "integer",
+              "title": "Percentage of Counts in Mitochondrial Genes",
+              "default": 3
+            },
+            "target_sum": {
+              "type": "integer",
+              "title": "Target Sum:",
+              "default": 10000
+            },
+            "n_top_genes": {
+              "type": "integer",
+              "title": "Highly Variable Genes (n_top_genes):",
+              "default": 3000
+            },
+            "n_neighbors": {
+              "type": "integer",
+              "default": 15
+            },
+            "n_pcs": {
+              "type": "integer",
+              "default": 20
+            },
+            "resolution": {
+              "type": "number",
+              "title": "Resolution:",
+              "default": 0.5
+            },
+            "doublet_rate": {
+              "type": "number",
+              "title": "Expected Doublet Rate: ",
+              "default": 0.08
+            },
+            "regress_cell_cycle": {
+              "type": "boolean",
+              "title": "Regress Cell Cycle",
+              "default": false
+            },
+            "use_default": {
+              "type": "boolean",
+              "title": "Use Default",
+              "default": true,
+              "format": "switch"
+            }
+          }
+        }
+      }
+    }
+  }
+}

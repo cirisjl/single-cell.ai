@@ -1,0 +1,109 @@
+{
+    "type": "object",
+    "properties": {
+      "parameters": {
+        "type":"object",
+        "title": "Parameters for Dimension Reduction Process",  
+        "properties": {
+          "species": {
+            "type": ["string", "null"],
+            "title": "Species Type"
+          },
+          "organ_part": {
+            "type": ["string", "null"],
+            "title": "Organ Part"
+          },
+           "cluster_label": {
+            "type": ["string", "null"],
+            "title": "Cluster Label",
+            "description": "Enter the Cluster Label to identify or categorize your data points within the AnnData object."
+          },
+          "n_hvg": {
+            "type": "integer",
+            "title": "Number of Highly Variable Genes for Heatmap",
+            "default": 50
+          },
+          "cluster_colname": {
+            "type": ["string", "null"],
+            "title": "Cluster Column Name",
+            "description": "Choose the cluster column for cell type annotation. If not specified, the default Leiden clustering will be used."
+          },
+          "do_umap": {
+            "type": "boolean",
+            "title": "Do you want to perform UMAP after processing?",
+            "default": true,
+            "format": "switch",
+            "description": "Toggle this switch to decide whether to perform UMAP (Uniform Manifold Approximation and Projection) analysis after processing your data."
+          },
+          "do_cluster": {
+            "type": "boolean",
+            "title": "Do you want to perform Cluster after processing?",
+            "default": true,
+            "format": "switch",
+            "description": "Toggle this switch to decide whether to perform Cluster analysis after processing your data."
+          },
+          "reduction_params": {
+            "type": "object",
+            "title": "Dimension Reduction Parameters",
+            "required": [
+              "methods"
+            ],
+            "properties": {
+              "methods": {
+                "type": "array",
+                "title": "Method",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "UMAP",
+                    "t-SNE"
+                  ]
+                },
+                "default": [
+                  "UMAP"
+                ],
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "assay": {
+                "type": ["string", "null"],
+                "title": "Default Assay (If applicable)",
+                "default": "RNA"
+              },
+              "use_rep": {
+                "type": ["string", "null"],
+                "title": "Use Representation",
+                "description": "Use the indicated representation",
+                "default": ""
+              },
+              "layer": { 
+                "type": "string" ,
+                "title": "Layer",
+                "description": "Specify the layer",
+                "default": ""
+              },
+              "n_neighbors": {
+                "type": "integer",
+                "default": 15
+              },
+              "n_pcs": {
+                "type": "integer",
+                "default": 20
+              },
+              "resolution": {
+                "type": "number",
+                "title": "Resolution:",
+                "default": 0.5
+              },
+              "use_default": {
+                "type": "boolean",
+                "title": "Use Default",
+                "default": true,
+                "format": "switch"
+              }
+            }
+          }
+        }
+      }
+    }
+  }

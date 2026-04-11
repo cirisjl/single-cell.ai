@@ -1,0 +1,14 @@
+FROM u15ec104/oscb:celery-backend-base
+
+# Update SeuratObject
+RUN R --no-echo --no-restore --no-save -e 'remotes::install_version("SeuratObject", "4.1.4", repos = c("https://satijalab.r-universe.dev", getOption("repos")))'
+RUN R --no-echo --no-restore --no-save -e 'remotes::install_version("Seurat", "4.4.0", repos = c("https://satijalab.r-universe.dev", getOption("repos")))'
+# RUN R --no-echo --no-restore --no-save -e "install.packages('SeuratObject')"
+
+RUN mkdir /app
+WORKDIR /app
+COPY . .
+
+# CMD ["bash"]
+EXPOSE 5005
+EXPOSE 5555

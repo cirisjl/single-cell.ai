@@ -1,0 +1,170 @@
+FROM rocker/r-ver:4.2.1
+
+# versions of software
+ARG r_cran_version="cran40"
+ARG rstudio_version="2023.03.0-386"
+
+# Set global R options
+RUN echo "options(repos = 'https://cloud.r-project.org')" > $(R --no-echo --no-save -e "cat(Sys.getenv('R_HOME'))")/etc/Rprofile.site
+ENV RETICULATE_MINICONDA_ENABLED=FALSE
+
+# Install OS packages
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+    # Basic packages 
+    htop vim unzip git wget nano rsync apt-utils sudo \
+    parallel sshpass lsb-release libhdf5-dev hdf5-tools \
+    # R dependecies
+    libgsl0-dev libxml2-dev libboost-all-dev libssl-dev libhdf5-dev curl libsodium-dev \
+    libudunits2-dev libgdal-dev libgeos-dev libproj-dev build-essential xorg-dev \
+    libreadline-dev libc6-dev zlib1g-dev libbz2-dev liblzma-dev \
+    libcurl4-openssl-dev libcairo2-dev libpango1.0-dev tcl-dev tk-dev openjdk-8-jdk \
+    gfortran libncurses5-dev libncursesw5-dev procps texlive libv8-dev libgit2-dev \
+    default-libmysqlclient-dev libpq-dev libsasl2-dev libsqlite3-dev libssh2-1-dev \
+    unixodbc-dev libpng-dev libfftw3-dev libgsl-dev libhiredis-dev libglpk-dev \
+    # RStudio dependencies - https://github.com/rstudio/rstudio/tree/master/dependencies/linux
+    gdebi-core ant clang cmake debsigs dpkg-sig expect fakeroot gnupg1 libacl1-dev \
+    libattr1-dev libcap-dev libclang-6.0-dev libclang-dev libunwind8-dev \
+    libegl1-mesa libfuse2 libgl1-mesa-dev libgtk-3-0 libpam-dev \
+    libuser1-dev libxslt1-dev lsof ninja-build patchelf pkg-config \
+    psmisc rrdtool software-properties-common uuid-dev libmagick++-dev \
+    # libigraph0-dev libclang-8-dev libclang-6.0-dev llvm-10 \
+    # Python packages
+    python3-dev python3-pip python3-tk python3-distutils && \	
+    # clean up
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# WORKDIR /tmp
+
+# Install RStudio
+RUN RSTUDIO_PKG=rstudio-server-${rstudio_version}-amd64.deb && \
+    cd /tmp && \
+    wget -q https://download2.rstudio.org/server/bionic/amd64/${RSTUDIO_PKG} && \
+    gdebi -n /tmp/${RSTUDIO_PKG} && \
+    rm /tmp/${RSTUDIO_PKG}
+ENV PATH="${PATH}:/usr/lib/rstudio-server/bin"
+ENV LD_LIBRARY_PATH="/usr/lib/R/lib:/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server"
+RUN pip3 install radian
+
+# Install UMAP
+RUN LLVM_CONFIG=/usr/lib/llvm-10/bin/llvm-config pip3 install llvmlite
+RUN pip3 install numpy==1.22.4
+RUN pip3 install umap-learn
+
+# Install FIt-SNE
+RUN git clone --branch v1.2.1 https://github.com/KlugerLab/FIt-SNE.git
+RUN g++ -std=c++11 -O3 FIt-SNE/src/sptree.cpp FIt-SNE/src/tsne.cpp FIt-SNE/src/nbodyfft.cpp  -o bin/fast_tsne -pthread -lfftw3 -lm
+
+# Install hdf5r
+RUN R --no-echo --no-restore --no-save -e "install.packages('hdf5r')"
+
+RUN R --no-echo --no-restore --no-save -e 'remotes::install_version("matrixStats", version="1.1.0")'
+
+# Install base R packages
+RUN Rscript -e 'install.packages(c("languageserver", "devtools", "Rmagic", "BiocManager"))' && \
+    Rscript -e 'BiocManager::install()'
+
+# Install other CRAN
+RUN Rscript -e 'install.packages(c( \
+    "remotes", "RCurl", "Seurat", "rJava", "umap", "bookdown", "cluster", "KernSmooth", \
+    "rmarkdown", "ROCR", "googleVis", "ggbeeswarm", "SLICER", "ggfortify", "VGAM", "feather", \
+    "tidyverse", "pheatmap", "plyr", "dplyr", "readr", "reshape", "Rcpp", "Matrix", \
+    "reshape2", "reticulate", "viridis", "ggseqlogo", "ggplot2", "ggthemes", "cowplot", \
+    "ggforce", "ggridges", "ggrepel", "gplots", "igraph", "car", "Rfast2", "RcppAnnoy", \
+    "ggpubr", "httpuv", "xtable", "sourcetools", "modeltools", "R.oo", "pracma", "knitr", \
+    "R.methodsS3", "shiny", "later", "checkmate", "bibtex", "lsei", "ape", "RSpectra", \
+    "bit", "segmented", "mclust", "flexmix", "prabclus", "diptest", "mvtnorm", \
+    "robustbase", "kernlab", "trimcluster", "proxy", "R.utils", "htmlwidgets", \
+    "hexbin", "crosstalk", "promises", "acepack", "zoo", "npsurv", "iterators", \
+    "snow", "bit64", "permute", "mixtools", "lars", "ica", "fpc", "enrichR", "SDMTools", \
+    "pbapply", "irlba", "dtw", "plotly", "metap", "lmtest", "fitdistrplus", "Hmisc", "png", \
+    "foreach", "vegan", "tidyr", "withr", "magrittr", "rmpi", "knitr", "future", "kableExtra", \
+    "statmod", "mvoutlier", "penalized", "mgcv", "corrplot", "scales", "rliger", "pandoc", \
+    "rlang", "R6", "cli", "crayon", "SeuratObject", "stringi", "anndata", "loomR", "redux", \
+    "tinytex", "lsa", "uwot", "optparse", "DrImpute", "alluvial", "dplyr", "RColorBrewer", "Signac"))'
+# RUN Rscript -e 'tinytex::install_tinytex()'
+
+# Install Bioconductor packages
+RUN Rscript -e 'BiocManager::install(c( \
+    "multtest", "S4Vectors","graph", "RBGL", "gtools", "xtable", "pcaMethods", "limma", "SingleCellExperiment", "Dict", \
+    "Rhdf5lib", "GenomicRanges", "scater", "IRanges", "scran", "RUVSeq", "sva", "SC3", "TSCAN", "monocle", "destiny", \
+    "rtracklayer", "BiocGenerics", "DESeq2", "edgeR", "sctransform", "MAST", "scmap", "biomaRt", "MultiAssayExperiment", "SummarizedExperiment", \
+    "Biobase","monocle", "beachmat", "DropletUtils", "EnsDb.Hsapiens.v86", "EnsDb.Mmusculus.v79", "batchelor", "SingleR", "celldex", "singleCellTK", \
+    "convert", "glmGamPoi", "AnnotationDbi", "org.Hs.eg.db", "org.Mm.eg.db", "singleCellTK"))'
+
+# Install github packages
+RUN Rscript -e 'devtools::install_github(c( \
+    "immunogenomics/harmony", "tallulandrews/M3Drop", "hemberg-lab/scRNA.seq.funcs", \
+    "Vivianstats/scImpute", "theislab/kBET", "kieranrcampbell/ouija", "hemberg-lab/scfind", \
+    "cole-trapnell-lab/monocle3", "mojaveazure/seurat-disk", "satijalab/seurat-wrappers", \
+    "satijalab/seurat-data", "stuart-lab/signac"))'
+
+# Install python packages
+RUN pip install --upgrade --no-cache \
+    PyYAML==3.13 protobuf==3.19.4 rich==11.1 cutadapt magic-impute awscli==1.16.14 handout scrublet \
+    scipy==1.9.1 biopython h5py matplotlib matplotlib_venn tqdm python-igraph scprep python-resources \
+    torch networkx pandas==1.3.5 seaborn munkres feather-format detect_delimiter hdf5plugin plotly \
+    rpy2 anndata2ri bioinfokit fastapi uvicorn[standard] starlette httpx pymongo celery celery_once flower redis \
+    zmail gevent requests leidenalg mysql-connector-python similarity-index-of-label-graph loompy louvain \
+    rarfile loguru wsproto attrdict boltons
+RUN pip install --upgrade --no-cache \
+    dash~=2.9.1 dash-bootstrap-components dash_bootstrap_templates python-multipart 
+
+# Install Jupyter
+RUN pip install --upgrade --no-cache \
+    jupyter jupyter-server-proxy \
+    jupyter-rsession-proxy
+RUN Rscript -e 'install.packages("IRkernel")' && \
+    Rscript -e 'IRkernel::installspec()' 
+	
+# Install SAVER
+RUN Rscript -e 'devtools::install_github("mohuangx/SAVER")'
+
+# Install scGNN
+RUN Rscript -e 'devtools::install_github("BMEngineeR/scGNNLTMG")'
+
+# Install SIMLR
+RUN Rscript -e 'devtools::install_github("BatzoglouLabSU/SIMLR", ref = "master")'
+
+RUN R --no-echo --no-restore --no-save -e "install.packages('magick')"
+
+# Install DoubletFinder
+RUN R --no-echo --no-restore --no-save -e "remotes::install_github('chris-mcginnis-ucsf/DoubletFinder')"
+
+# Install scanpy&&dropkick&&scvi-tools
+RUN pip install --upgrade --no-cache numpyro==0.12.1 'scanpy[leiden]' \
+    anndata muon dropkick scvi-tools pymde
+
+# Install snakemake
+# RUN pip3 install git+https://github.com/snakemake/snakemake
+
+# Install pandoc for R markdown
+RUN PANDOC_PKG=pandoc-3.1.1-1-amd64.deb && \
+    cd /tmp && \
+    wget https://github.com/jgm/pandoc/releases/download/3.1.1/${PANDOC_PKG} && \
+    dpkg -i ${PANDOC_PKG} && \
+    rm /tmp/${PANDOC_PKG}
+
+# CPU, GPU utilities 
+RUN pip install --upgrade --no-cache psutil nvidia-ml-py 
+# gputil
+
+# Install hdf5
+# RUN cd /tmp && \
+#     wget -q https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.0/src/hdf5-1.14.0.tar.gz && \
+#     tar -xvf hdf5-1.14.0.tar.gz && \
+#     cd hdf5-1.14.0 && \
+#     ./configure --prefix=/usr/local/hdf5 && \
+#     make -j 8 && \
+#     make install && \
+#     rm /tmp/hdf5-1.14.0
+
+RUN pip install --upgrade --no-cache doubletdetection matplotlib-venn harmonypy celltypist
+
+RUN mkdir /app
+WORKDIR /app
+COPY . .
+
+# CMD ["bash"]
+EXPOSE 5005
+EXPOSE 5555

@@ -1,0 +1,33 @@
+,from,to
+0,neoblast 1,epidermal neoblasts
+1,epidermal neoblasts,early epidermal progenitors
+2,neoblast 1,gut progenitors
+3,gut progenitors,goblet cells
+4,goblet cells,phagocytes
+5,goblet cells,protonephridia
+6,protonephridia,epidermis
+7,epidermis,late epidermal progenitors 1
+8,late epidermal progenitors 1,late epidermal progenitors 2
+9,neoblast 1,otf+ cells 1
+10,protonephridia,pharynx cell type
+11,pharynx cell type,pharynx cell type progenitors
+12,neoblast 1,secretory 4
+13,secretory 4,secretory 1
+14,neoblast 1,secretory 2
+15,neoblast 1,secretory 3
+16,neoblast 1,parenchymal progenitors
+17,parenchymal progenitors,aqp+ parenchymal cells
+18,parenchymal progenitors,ldlrr-1+ parenchymal cells
+19,neural progenitors,spp-11+ neurons
+20,neoblast 1,muscle progenitors
+21,muscle progenitors,muscle pharynx
+22,muscle pharynx,muscle body
+23,parenchymal progenitors,pigment
+24,parenchymal progenitors,psap+ parenchymal cells
+25,neoblast 1,neural progenitors
+26,neural progenitors,ChAT neurons 1
+27,neural progenitors,ChAT neurons 2
+28,ChAT neurons 2,GABA neurons
+29,neural progenitors,cav-1+ neurons
+30,neoblast 1,otf+ cells 2
+31,ChAT neurons 1,npp-18+ neurons

@@ -1,0 +1,66 @@
+/* styles.css */
+
+.upload-component {
+    border: 2px dashed #ccc;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .upload-component a{
+    color: blue; /* Change the text color to blue */
+    text-decoration: none; /* Remove underline */
+  }
+  
+  .upload-component a:hover {
+    color: red; /* Change the text color to red when hovering */
+    text-decoration: underline; /* Add underline when hovering */
+  }
+  
+  .drag-text {
+    font-weight: bold;
+  }
+  
+  .select-text {
+    margin: 5px;
+  }
+  
+  .update-button, .edit-button, .default-assay, .continue-button {
+    margin-top: 2rem;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .dashboard-title {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      text-align: center;
+  }
+  
+  .data-input {
+      margin-top: 20px;
+  }
+  
+  .update-status {
+      margin-top: 10px;
+  }
+  
+  .main-container {
+  margin: 2% 1% 0% 4%;
+  }
+
+  .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    color: rgb(0, 0, 0);
+  }
+
+  h3 {
+    margin-top: 2rem;
+}

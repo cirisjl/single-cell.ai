@@ -1,0 +1,126 @@
+{
+  "type": "object",
+  "properties": {
+    "parameters": {
+      "type": "object",
+      "title": "Parameters for Annotation Process",
+      "properties": {
+        "species": {
+          "type": ["string", "null"],
+          "title": "Species Type"
+        },
+        "organ_part": {
+          "type": ["string", "null"],
+          "title": "Organ Part"
+        },
+        "idtype": {
+          "type": ["string", "null"],
+          "title": "ID Type",
+          "description": "Choose the ID Type to specify the gene identifier format for your analysis."
+        },
+        "cluster_label": {
+          "type": ["string", "null"],
+          "title": "Cluster Label",
+          "description": "Enter the Cluster Label to identify or categorize your data points within the AnnData object."
+        },
+        "n_hvg": {
+          "type": "integer",
+          "title": "Number of Highly Variable Genes for Heatmap",
+          "default": 50
+        },
+        "cluster_colname": {
+          "type": ["string", "null"],
+          "title": "Cluster Column Name",
+          "description": "Choose the cluster column for cell type annotation. If not specified, the default Leiden clustering will be used."
+        },
+        "do_umap": {
+          "type": "boolean",
+          "title": "Do you want to perform UMAP after processing?",
+          "default": false,
+          "format": "switch",
+          "description": "Toggle this switch to decide whether to perform UMAP (Uniform Manifold Approximation and Projection) analysis after processing your data."
+        },
+        "do_cluster": {
+          "type": "boolean",
+          "title": "Do you want to perform Cluster after processing?",
+          "default": false,
+          "format": "switch",
+          "description": "Toggle this switch to decide whether to perform Cluster analysis after processing your data."
+        },
+        "annotation_params": {
+          "type": "object",
+          "title": "Annotation Parameters",
+          "required": [
+            "methods",
+            "SingleR_ref"
+          ],
+          "properties": {
+            "methods": {
+              "type": "array",
+              "title": "Method",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "CellTypist",
+                  "scANVI",
+                  "SingleR"
+                ]
+              },
+              "default": [
+                "SingleR"
+              ],
+              "uniqueItems": true,
+              "minItems": 1
+            },
+            "assay": {
+              "type": ["string", "null"],
+              "title": "Default Assay (If applicable)",
+              "default": "RNA"
+            },
+            "celltypist_model": {
+              "type": ["string", "null"],
+              "title": "CellTypist Model",
+              "description": "Choose the CellTypist model for annotation."
+            },
+            "SingleR_ref": {
+              "type": "array",
+              "title": "SingleR Reference",
+              "description": "Choose the SingleR Reference(s) for annotation.",
+              "items": {
+                "type": ["string", "null"],
+                "enum": [
+                  "dice",
+                  "blueprint_encode",
+                  "immgen",
+                  "mouse_rnaseq",
+                  "hpca",
+                  "novershtern_hematopoietic",
+                  "monaco_immune"
+                ]
+              },
+              "uniqueItems": true
+            },
+            "user_label": {
+              "type": ["string", "null"],
+              "title": "User's Reference Labels",
+              "description": "Specify the labels"
+            },
+            "n_neighbors": {
+              "type": "integer",
+              "default": 20
+            },
+            "n_pcs": {
+              "type": "integer",
+              "default": 20
+            },
+            "resolution": {
+              "type": "number",
+              "title": "Resolution:",
+              "default": 0.3
+            }
+          }
+        }
+      }
+    }
+  }
+}

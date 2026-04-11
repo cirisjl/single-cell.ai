@@ -1,0 +1,1 @@
+USER_STORAGE = "/usr/src/app/storage/"

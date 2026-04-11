@@ -1,0 +1,257 @@
+---
+title: "Evaluation for `r params$dataset`"
+author: "Lei Jiang"
+date: "`r Sys.Date()`"
+params:
+  dataset: NA # String  of the dataset name
+  input: NA # String  of input file path to scRNA data.
+  output_folder: NA # Output folder path.
+  output_format: NULL  # Seurat or AnnData
+  default_assay: RNA # Default assay for each integration method
+  methods: NULL # Evaluation methods: "Seurat", "CIDR"
+  genes: NULL 
+  show_code: TRUE
+  show_warning: TRUE
+  show_message: TRUE
+  show_error: TRUE
+output: html_document
+---
+
+
+```{r setup, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+knitr::opts_chunk$set(echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message)
+```
+# Evaluation
+
+```{r Load data, include=TRUE, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+if(is.null(params$input)) stop("Inupt_path can not be NULL.")
+if(is.null(params$methods)) stop("No Evaluation method is selected.")
+
+source("evaluation.R")
+
+library(DuoClustering2018)
+# library(cidr)
+library(Seurat)
+library(SingleCellExperiment)
+library(optparse)
+library(dplyr)
+
+methods <- strsplit(params$methods, ",")[[1]]
+methods = toupper(methods)
+
+scename <- params$dataset
+
+sce_data <- NULL
+sce_data <- tryCatch(
+readRDS(params$input),
+    error = function(e) {
+        stop("The file format is not supported.")
+        if(params$show_error) print(e)
+    }
+)
+
+if(is.null(sce_data)) stop("The file format is not supported.")
+                                                      
+n_rep <- 2
+set.seed(1234)
+
+```
+
+
+## Seurat
+About Seurat evaluation
+```{r Seurat, error=TRUE, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+
+if("SEURAT" %in% methods){
+    method_params <- duo_clustering_all_parameter_settings_v2()[[paste0("sce_filteredExpr10_Koh_", 
+                                                             "Seurat")]]    
+    L <- lapply(seq_len(n_rep), function(i) {  ## For each run
+    cat(paste0("run = ", i, "\n"))
+        tmp <- lapply(method_params$range_resolutions, function(resolution) {  
+            ## For each resolution
+            cat(paste0("resolution = ", resolution, "\n"))
+            ## Run clustering
+            res <- get(paste0("apply_", "Seurat"))(sce = sce_data, params = method_params, 
+                                                resolution = resolution)
+            
+            ## Put output in data frame
+            df <- data.frame(dataset = scename, 
+                            method = "Seurat", 
+                            cell = names(res$cluster),
+                            run = i,
+                            k = length(unique(res$cluster)),
+                            resolution = resolution,
+                            cluster = res$cluster,
+                            stringsAsFactors = FALSE, row.names = NULL)
+            tm <- data.frame(dataset = scename, 
+                            method = "Seurat",
+                            run = i, 
+                            k = length(unique(res$cluster)),
+                            resolution = resolution,
+                            user.self = res$st[["user.self"]],
+                            sys.self = res$st[["sys.self"]],
+                            user.child = res$st[["user.child"]],
+                            sys.child = res$st[["sys.child"]],
+                            elapsed = res$st[["elapsed"]],
+                            stringsAsFactors = FALSE, row.names = NULL)
+            kest <- data.frame(dataset = scename, 
+                                method = "Seurat",
+                                run = i, 
+                                k = length(unique(res$cluster)),
+                                resolution = resolution,
+                                est_k = res$est_k,
+                                stringsAsFactors = FALSE, row.names = NULL)
+            list(clusters = df, timing = tm, kest = kest)
+        })  ## End for each resolution
+
+      ## Summarize across different values of k
+      assignments <- do.call(rbind, lapply(tmp, function(w) w$clusters))
+      timings <- do.call(rbind, lapply(tmp, function(w) w$timing))
+      k_estimates <- do.call(rbind, lapply(tmp, function(w) w$kest))
+      list(assignments = assignments, timings = timings, k_estimates = k_estimates)
+    })
+} else {
+  print("Not selected by user, skipped.")
+}
+```
+
+
+## CIDR
+About CIDR Evaluation
+```{r CIDR, error=TRUE, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+
+if("CIDR" %in% methods){
+    L <- lapply(seq_len(n_rep), function(i) {  ## For each run
+    cat(paste0("run = ", i, "\n"))
+        tmp <- lapply(method_params$range_clusters, function(k) {  ## For each k
+            cat(paste0("k = ", k, "\n"))
+            ## Run clustering
+            res <- get(paste0("apply_", "CIDR"))(sce = sce_data, params = method_params, k = k)
+            
+            ## Put output in data frame
+            df <- data.frame(dataset = scename, 
+                            method = "CIDR", 
+                            cell = names(res$cluster),
+                            run = i,
+                            k = k,
+                            resolution = NA,
+                            cluster = res$cluster,
+                            stringsAsFactors = FALSE, row.names = NULL)
+            tm <- data.frame(dataset = scename, 
+                            method = "CIDR",
+                            run = i, 
+                            k = k,
+                            resolution = NA,
+                            user.self = res$st[["user.self"]],
+                            sys.self = res$st[["sys.self"]],
+                            user.child = res$st[["user.child"]],
+                            sys.child = res$st[["sys.child"]],
+                            elapsed = res$st[["elapsed"]],
+                            stringsAsFactors = FALSE, row.names = NULL)
+            kest <- data.frame(dataset = scename, 
+                                method = "CIDR",
+                                run = i, 
+                                k = k,
+                                resolution = NA,
+                                est_k = res$est_k,
+                                stringsAsFactors = FALSE, row.names = NULL)
+            list(clusters = df, timing = tm, kest = kest)
+        })  ## End for each k
+
+      ## Summarize across different values of k
+      assignments <- do.call(rbind, lapply(tmp, function(w) w$clusters))
+      timings <- do.call(rbind, lapply(tmp, function(w) w$timing))
+      k_estimates <- do.call(rbind, lapply(tmp, function(w) w$kest))
+      list(assignments = assignments, timings = timings, k_estimates = k_estimates)
+    })
+
+} else {
+  print("Not selected by user, skipped.")
+}
+```
+
+
+## Results
+Results
+```{r Results, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+assignments <- do.call(rbind, lapply(L, function(w) w$assignments))
+timings <- do.call(rbind, lapply(L, function(w) w$timings))
+k_estimates <- do.call(rbind, lapply(L, function(w) w$k_estimates))
+
+assignments$trueclass <- sce_data$Tru_lab$majorType[match(assignments$cell, sce_data$Tru_lab$X)]
+
+res <- list(assignments = assignments, timings = timings,
+            k_estimates = k_estimates)
+print(res$assignments)
+print(sce_data)
+print(sce_data$Tru_lab)
+print(sce_data$X)
+print(assignments$trueclass)
+print(sce_data$Tru_lab$majorType[match(assignments$cell, sce_data$Tru_lab$X)])
+print(sce_data$Tru_lab$majorType)
+print(sce_data$Tru_lab$X)
+print(colData(sce_data)$phenoid)
+print(colData(sce_data))
+
+
+df <- dplyr::full_join(res$assignments %>%
+                         dplyr::select(dataset, method, cell, run, k, 
+                                       resolution, cluster, trueclass),
+                       res$k_estimates %>%
+                         dplyr::select(dataset, method, run, k, 
+                                       resolution, est_k)
+) %>% dplyr::full_join(res$timings %>% dplyr::select(dataset, method, run, k,
+                                                     resolution, elapsed))
+
+# setwd(opt$workspace)
+
+ind=unique(df$method)
+
+method_colors <- c(CIDR = "#332288", FlowSOM = "#6699CC", PCAHC = "#88CCEE", 
+                   PCAKmeans = "#44AA99", pcaReduce = "#117733",
+                   RtsneKmeans = "#999933", Seurat = "#DDCC77", SC3svm = "#661100", 
+                   SC3 = "#CC6677", TSCAN = "grey34", ascend = "orange", SAFE = "black",
+                   monocle = "red", RaceID2 = "blue",my_seurat="yellow")
+
+include_colors=method_colors[ind]
+
+perf <- plot_performance(df, method_colors = include_colors)
+names(perf)
+png("median_ari_vs_k.png")
+perf$median_ari_vs_k
+dev.off()
+
+#perf$median_ari_heatmap_truek
+
+stab <- plot_stability(df, method_colors = include_colors)
+names(stab)
+png("stability_vs_k.png")
+stab$stability_vs_k
+dev.off()
+
+entr <- plot_entropy(df, method_colors = include_colors)
+names(entr)
+png("entropy_vs_k.png")
+entr$entropy_vs_k
+dev.off()
+
+timing <- plot_timing(df, method_colors = include_colors, 
+                      scaleMethod = "RtsneKmeans")
+names(timing)
+png("time_boxplot.png")
+timing$time_boxplot
+dev.off()
+
+result=df
+directory <- dirname(params$output_folder)
+
+rm(df)
+if(file.exists("df.RData")){
+  load("df.RData")
+  df=rbind(df,result)
+}else{
+  df=result
+}
+save(df,file=paste0(directory, "/df.RData"))
+print("Done")
+```

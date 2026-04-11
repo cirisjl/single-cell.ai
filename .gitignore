@@ -1,0 +1,50 @@
+# -----------------------------
+# Docker Secrets & Credentials
+# -----------------------------
+# Strictly ignore the secrets directory to prevent password leaks
+secrets/
+secrets/*.txt
+
+# Ignore all environment variable files
+.env
+rabbitmq.env
+oscb-ui/.env
+oscb-ui/oscb-node/.env
+*.env
+
+# -----------------------------
+# Docker Volumes & Local Data
+# -----------------------------
+# Prevent committing large database files and logs
+/db/mongodb/
+/db/rabbitmq/data/
+/db/rabbitmq/log/
+/mysql_db/
+
+# Ignore dynamically generated user files and system outputs
+/results/
+/uploads/
+/logs/
+/user_storage/
+/Directus_uploads/
+./oscb-cli/oscb/Downloads/cli/*
+./oscb-cli/oscb/Downloads/venv/*
+
+# -----------------------------
+# Application Dependencies
+# -----------------------------
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Python / Jupyter / Celery
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+celerybeat-schedule
+
+# OS System Files
+.DS_Store
+Thumbs.db

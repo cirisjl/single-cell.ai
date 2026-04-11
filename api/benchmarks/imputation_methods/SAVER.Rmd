@@ -1,0 +1,91 @@
+---
+title: "Saver imputation for `r params$dataset`"
+author: "Lei Jiang"
+date: "`r Sys.Date()`"
+params:
+  dataset: NA
+  input: NA # Input file path to scRNA data.
+  output: NA # Output file path of the AnnData object.
+  output_format: AnnData # Seurat or AnnData
+  layer: NULL # Layer of Anndata object for imputation method
+  genes: NULL # Genes for SAVER imputation
+  ncores: 5 # Number of workers for SAVER imputation
+  show_code: FALSE
+  show_warning: TRUE
+  show_message: TRUE
+  show_error: TRUE
+output: html_document
+---
+```{r setup, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+knitr::opts_chunk$set(echo=params$show_code, include=TRUE, warning=params$show_warning, message=params$show_message)
+```
+## SAVER imputation
+```{r SAVER imputation, error=TRUE, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+library(SAVER)
+packageVersion("SAVER")
+
+source("../../tools/formating/formating.R")
+adata <- NULL
+# Check if output file already exists
+if(file.exists(params$output)){
+  adata <- tryCatch(
+    LoadAnndata(params$output),
+    error = function(e) {
+        stop("The file format is not supported.")
+        if(params$show_error) print(e)
+    }
+  )
+}else{
+  adata <- tryCatch(
+    LoadAnndata(params$input),
+    error = function(e) {
+        stop("The file format is not supported.")
+        if(params$show_error) print(e)
+    }
+  )
+}
+
+if(is.null(adata)) stop("The file format is not supported.")
+
+expression_matrix <- NULL
+
+if(is.null(params$layer)) {
+    expression_matrix <- t(as.matrix(adata$X))
+} else if(params$layer %in% names(adata$layers)) {
+    # expression_matrix <- t(as(adata$layers[layer], "sparseMatrix"))
+    expression_matrix <- t(adata$layers[layer])
+} else {
+    stop(paste(params$layer, "does not exist in AnnData object."))
+}
+
+if(!'SAVER' %in% names(adata$layers)){
+    tryCatch(
+        {
+            counts.saver <- NULL
+            if(is.null(params$genes)){
+                counts.saver <- saver(expression_matrix, ncores = params$ncores, estimates.only = TRUE)
+            } else {
+                counts.saver <- saver(expression_matrix, ncores = params$ncores, pred.genes = params$genes, estimates.only = TRUE)
+            }
+            
+            adata$layers["SAVER"] <- t(counts.saver)
+            head(adata$layers["SAVER"])
+            write_h5ad(adata, params$output, compression = "gzip")
+            print("AnnData object for SAVER imputation is saved successfully.")
+        },
+        error = function(e) {
+            message("Failed to process SAVER imputation.")
+            if(params$show_error) print(e)
+        }
+    )
+} else {
+    head(adata$layers["SAVER"])
+    print("'SAVER' layer already exists.")
+}
+
+```
+
+## Session Info
+```{r Session Info, include = TRUE, echo = params$show_code, warning=params$show_warning, message=params$show_message}
+sessionInfo()
+```

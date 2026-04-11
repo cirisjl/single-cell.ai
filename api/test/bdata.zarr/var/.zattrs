@@ -1,0 +1,12 @@
+{
+    "_index": "_index",
+    "column-order": [
+        "vst.mean",
+        "vst.variance",
+        "vst.variance.expected",
+        "vst.variance.standardized",
+        "highly_variable"
+    ],
+    "encoding-type": "dataframe",
+    "encoding-version": "0.2.0"
+}

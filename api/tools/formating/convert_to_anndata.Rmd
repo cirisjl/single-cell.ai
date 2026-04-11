@@ -1,0 +1,21 @@
+---
+title: "Convert Seurat/Single-cell Experiment object to AnnData object"
+author: "Lei Jiang"
+date: "`r Sys.Date()`"
+params:
+  path: NULL # Input file path to scRNA data.
+  show_warning: TRUE
+  show_message: TRUE
+  show_error: TRUE
+  output: html_document
+---
+```{r setup, echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message}
+knitr::opts_chunk$set(echo=params$show_code, include=FALSE, warning=params$show_warning, message=params$show_message)
+```
+# Convert Seurat/Single-cell Experiment object to AnnData object
+```{r Load data, include=TRUE, echo=params$show_code, warning=params$show_warning, message=params$show_message}
+source("./formating.R")
+if(is.null(params$path)) stop("Path is required.")
+adata_path <- ConvertToAnndata(params$path)
+print(adata_path)
+```
