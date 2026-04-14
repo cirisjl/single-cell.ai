@@ -1686,7 +1686,7 @@ def add_majority_vote(
     pd.DataFrame
         Copy of input dataframe with majority_vote column added.
     """
-    out = df.copy()
+    out = df.copy().astype(str)
     obj = out.astype(object)
 
     stacked = obj.stack(dropna=True).reset_index()
