@@ -30,7 +30,7 @@ const options = {
     },
     server: {
         host: 'localhost:3020',
-        protocol: 'http',
+        protocol: 'https',
         // This MUST match the path you specify in `app.use()` below:
         path: '/companion',
     },

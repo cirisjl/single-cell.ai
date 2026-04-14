@@ -132,13 +132,13 @@ services:
     env_file:
       - .env 
     deploy:
-      replicas: 2
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+      replicas: 3
+      # resources:
+        # reservations:
+          # devices:
+          #   - driver: nvidia
+          #     count: all
+          #     capabilities: [gpu]
         # limits:
         #   cpus: 6
     volumes:

@@ -33,6 +33,7 @@ import json_numpy
 import json
 import re
 from tools.formating.zarr_utils import optimize_adata
+import importlib.metadata
 
 
 # Ensure that pandas2ri is activated for automatic conversion
