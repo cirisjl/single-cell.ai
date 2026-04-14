@@ -863,53 +863,55 @@ function TaskDetailsComponent() {
                     </>
                   )}
 
-                  {/* Tool Panels */}
-                  {process === "Quality Control" && result?.outlier_panel && (
-                    <Grid item xs={12} sx={{ mt: 4 }}>
-                      <Card raised sx={commonCardStyle}>
-                        <CardHeader title="Outlier Correction" />
-                        <CardContent sx={commonContentStyle}>
-                          <OutlierTable
-                            key={result.job_id || `outlier-${index}`}
-                            data={result.outlier_panel.table || []}
-                            onSubmit={(data) => handleToolSubmit(data, 'outliercorrection')}
-                          />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  )}
+                  <Grid container spacing={3}> 
+                    {/* Tool Panels */}
+                    {process === "Quality Control" && result?.outlier_panel && (
+                      <Grid item xs={12} sx={{ mt: 4 }}>
+                        <Card raised sx={commonCardStyle}>
+                          <CardHeader title="Outlier Correction" />
+                          <CardContent sx={commonContentStyle}>
+                            <OutlierTable
+                              key={result.job_id || `outlier-${index}`}
+                              data={result.outlier_panel.table || []}
+                              onSubmit={(data) => handleToolSubmit(data, 'outliercorrection')}
+                            />
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    )}
 
-                  {process !== "Quality Control" && result?.annotation_panel && (
-                    <Grid item xs={12} sx={{ mt: 4 }}>
-                      <Card raised sx={commonCardStyle}>
-                        <CardHeader title="Manual Annotation" />
-                        <CardContent sx={commonContentStyle}>
-                          <AnnotationTable
-                            key={result.job_id || `annotation-${index}`}
-                            data={result.annotation_panel.table || []}
-                            cellTypeOptions={result.annotation_panel.unique_labels || []}
-                            onSubmit={(data) => handleToolSubmit(data, 'manualannotattion')}
-                          />
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  )}
+                    {process !== "Quality Control" && result?.annotation_panel && (
+                      <Grid item xs={12} sx={{ mt: 4 }}>
+                        <Card raised sx={commonCardStyle}>
+                          <CardHeader title="Manual Annotation" />
+                          <CardContent sx={commonContentStyle}>
+                            <AnnotationTable
+                              key={result.job_id || `annotation-${index}`}
+                              data={result.annotation_panel.table || []}
+                              cellTypeOptions={result.annotation_panel.unique_labels || []}
+                              onSubmit={(data) => handleToolSubmit(data, 'manualannotattion')}
+                            />
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    )}
 
-                  {/* Tools */}
-                  {String(taskStatus || '').toLowerCase() === "success" && result?.tools && (
-                    <Grid item xs={12}>
-                      <Card raised sx={commonCardStyle}>
-                        <CardHeader title="Tools" />
-                        <CardContent sx={commonContentStyle}>
-                          <div style={panelStyle}>
-                            <pre>
-                              {JSON.stringify(result?.tools, null, 2)}
-                            </pre>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  )}
+                    {/* Tools */}
+                    {String(taskStatus || '').toLowerCase() === "success" && result?.tools && (
+                      <Grid item xs={12}>
+                        <Card raised sx={commonCardStyle}>
+                          <CardHeader title="Tools" />
+                          <CardContent sx={commonContentStyle}>
+                            <div style={panelStyle}>
+                              <pre>
+                                {JSON.stringify(result?.tools, null, 2)}
+                              </pre>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    )}
+                  </Grid>
                 </React.Fragment>
               ))}
             </div>
