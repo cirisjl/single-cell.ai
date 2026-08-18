@@ -17,6 +17,8 @@ def run_reduction(job_id, ds:dict, show_error=True, random_state=0):
     input = ds['input']
     userID = ds['userID']
     # output = ds['output']
+    do_umap = ds['do_umap']
+    do_cluster = ds['do_cluster']
     datasetId = ds['datasetId']
     parameters = ds['reduction_params']
     n_hvg = ds['n_hvg']
@@ -30,6 +32,10 @@ def run_reduction(job_id, ds:dict, show_error=True, random_state=0):
     n_pcs = parameters['n_pcs']
     resolution = parameters['resolution']
     method = 'UMAP&t-SNE'
+    obs_cols = None
+    cluster_colname = ds['cluster_colname']
+    if cluster_colname is not None and cluster_colname.strip() != "":
+        obs_cols = [cluster_colname]
 
     upsert_jobs(
         {
@@ -55,22 +61,25 @@ def run_reduction(job_id, ds:dict, show_error=True, random_state=0):
         redislogger.info(job_id, "Found existing pre-process results in database, skip dimension reduction.")
     else:
         try:
-            redislogger.info(job_id, "Computing PCA, neighborhood graph, tSNE, UMAP, and 3D UMAP")
-            adata, msg = run_dimension_reduction(adata, layer=layer, n_neighbors=n_neighbors, n_pcs=n_pcs, random_state=random_state)
-            if msg is not None: redislogger.warning(job_id, msg)
-
-            redislogger.info(job_id, "Clustering the neighborhood graph.")
-            adata = run_clustering(adata, layer=layer, resolution=resolution, random_state=random_state)
+            if do_umap:
+                redislogger.info(job_id, "Computing PCA, neighborhood graph, tSNE, UMAP, and 3D UMAP")
+                adata, msg = run_dimension_reduction(adata, layer=layer, n_neighbors=n_neighbors, n_pcs=n_pcs, random_state=random_state)
+                if msg is not None: redislogger.warning(job_id, msg)
+            if do_cluster:
+                redislogger.info(job_id, "Clustering the neighborhood graph.")
+                adata = run_clustering(adata, layer=layer, resolution=resolution, random_state=random_state)
 
             # adata.write_h5ad(output, compression='gzip')
-            output, zarr_output = save_anndata(adata, output, zarr=True, n_hvg=n_hvg, layer=layer)
+            output, zarr_output = save_anndata(adata, output, zarr=True, n_hvg=n_hvg, layer=layer, obs_cols=obs_cols)
 
             redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
-            reduction_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, method, parameters, md5, adata_path=output, zarr_path=zarr_output)
+            reduction_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, method, parameters, md5, adata_path=output, cluster_colname=cluster_colname, zarr_path=zarr_output)
             
             # Add preset questions for tissue and species
             if organ_part is not None and organ_part != "" and species is not None and species != "":
-                preset_questions = create_annotation_prompt(adata, tissue=organ_part, species=species, layer=layer, method="t-test", groupby=f"{method}_leiden", top=n_hvg, task="Dimension Reduction")
+                if cluster_colname is None or cluster_colname.strip() == "":
+                    cluster_colname = f"leiden"
+                preset_questions = create_annotation_prompt(adata, tissue=organ_part, species=species, layer=layer, method="t-test", groupby=cluster_colname, top=n_hvg, task="Dimension Reduction")
                 reduction_results['preset_questions'] = preset_questions
 
             adata = None

@@ -124,6 +124,7 @@ class Dataset(BaseModel):
     organ_part: Optional[str] = None # organ part or tissue for annotation, e.g., "lung", "brain"
     idtype: Optional[str] = 'SYMBOL' # idtype should be one of "SYMBOL", "ENSEMBL", "ENTREZID" or "REFSEQ".
     cluster_label: Optional[str] = None
+    cluster_colname: Optional[str] = None
     qc_params: QCParameters = Field(default_factory=QCParameters)
     imputation_params: imputationParameters = Field(default_factory=imputationParameters)
     integration_params: integrationParameters = Field(default_factory=integrationParameters)
@@ -154,6 +155,7 @@ class Datasets(BaseModel):
     organ_part: Optional[str] = None # organ part or tissue for annotation, e.g., "lung", "brain"
     idtype: Optional[str] = 'SYMBOL' # idtype should be one of "SYMBOL", "ENSEMBL", "ENTREZID" or "REFSEQ".
     cluster_label: Optional[str] = None
+    cluster_colname: Optional[str] = None
     process: Optional[str] = None
     description: Optional[str] = None
     n_hvg: Optional[int] = 50 # Number of highly variable genes to use for Heatmap of Vitessce

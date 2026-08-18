@@ -191,6 +191,8 @@ const TaskTable = () => {
     };
 
     useEffect(() => {
+        if (!jwtToken)
+            navigate('/routing');
         fetchJobs(pagination.current, globalSearchTerm);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -487,14 +489,6 @@ const TaskTable = () => {
         return [...baseColumns, actionColumn];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [jobs, pagination]);
-
-    useEffect(() => {
-        if (!jwtToken)
-            navigate('/routing');
-        fetchJobs(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [changesFound]);
-
 
     // const updateTaskStatus = async (jobIds, status) => {
     //     try {

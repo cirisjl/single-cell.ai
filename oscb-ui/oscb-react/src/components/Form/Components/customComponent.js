@@ -271,7 +271,8 @@ class MyForm extends Component {
 
 
       } else { // User Dataset
-        const constructedID = `U-${species}-${tissue}-${first_author}-${year}@${this.state.username}`; // U indicates user datasets
+        const cellCount = taskData.upload.final_files.nCells || 0;
+        const constructedID = `U-${species}-${tissue}-${first_author}-${year}-${cellCount}@${this.state.username}`; // U indicates user datasets
         formData.Id = constructedID;
         formData.fileDetails = taskData.upload.final_files;
         formData.files = taskData.upload.files;

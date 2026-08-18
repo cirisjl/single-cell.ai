@@ -313,6 +313,7 @@ export default function WorkflowTaskDetailsComponent() {
   const [taskOutput, setTaskOutput] = useState(null);
   const [liveLogs, setLiveLogs] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingPPresults, setLoadingPPresults] = useState(true);
   const [toolResultsFromMongo, setToolResultsFromMongo] = useState([]);
 
   const [uName, setUName] = useState(null);
@@ -343,6 +344,7 @@ export default function WorkflowTaskDetailsComponent() {
     if (!processIds.length) return;
     try {
       const response = await axios.post(`${CELERY_BACKEND_API}/getPreProcessResultsMain`, { process_ids: processIds, record_type });
+      setLoadingPPresults(true);
       setToolResultsFromMongo(response.data);
     } catch (error) {
       console.error('API Error:', error);
@@ -351,6 +353,7 @@ export default function WorkflowTaskDetailsComponent() {
       setIsError(true);
     } finally {
       setLoading(false);
+      setLoadingPPresults(false);
     }
   };
 
@@ -657,7 +660,9 @@ export default function WorkflowTaskDetailsComponent() {
               <div className='section-content' style={{ display: sectionsVisibility.preprocessResults ? 'block' : 'none' }}>
                 <Card className="workflow-results">
                   <CardContent>
-                    {toolResultsFromMongo.length > 0 ? (
+                    {loadingPPresults ? (
+                      <Typography>Loading...</Typography>
+                    ) : toolResultsFromMongo.length > 0 ? (
                       toolResultsFromMongo.map((preProcessResult, index) => (
                         <Accordion
                           key={preProcessResult.process_id}

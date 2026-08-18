@@ -1,4 +1,3 @@
-import scanpy as sc
 import os
 import math
 import hashlib
@@ -15,8 +14,6 @@ import csv
 import gzip
 import logging
 import h5py
-import jax
-import jax.numpy as jnp
 from collections import OrderedDict
 from anndata import AnnData
 from tools.visualization.plot import highest_expr_genes
@@ -33,6 +30,7 @@ import json_numpy
 import json
 import re
 from tools.formating.zarr_utils import optimize_adata
+import importlib.metadata
 
 
 # Ensure that pandas2ri is activated for automatic conversion
@@ -48,6 +46,47 @@ except ImportError:
     from anndata._core.sparse_dataset import (
         BaseCompressedSparseDataset as SparseDataset,
     )
+
+
+def setup_jax_backend():
+    """
+    Configure JAX backend before importing JAX.
+
+    If an NVIDIA GPU/driver is available, allow JAX to select
+    its normal backend. Otherwise, force CPU.
+    """
+    try:
+        result = subprocess.run(
+            ["nvidia-smi"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+            check=False,
+        )
+
+        if result.returncode == 0:
+            print("NVIDIA GPU detected. Allowing JAX to use GPU if CUDA support is available.")
+            return
+
+    except (
+        FileNotFoundError,
+        OSError,
+        subprocess.TimeoutExpired,
+    ):
+        pass
+
+    print("No functional NVIDIA GPU detected. Forcing JAX to CPU.")
+    os.environ["JAX_PLATFORMS"] = "cpu"
+
+# Run the setup before JAX initializes
+setup_jax_backend()
+
+import jax
+import jax.numpy as jnp
+import scanpy as sc
+
+print("JAX backend:", jax.default_backend())
+print("JAX devices:", jax.devices())
 
 
 def load_anndata(path, annotation_path=None, dataset=None, assay='RNA', show_error=True, replace_invalid=False, isDashboard=False, raw=False): # assay is optional and only for Seurat object
@@ -345,6 +384,8 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
     if obsSets is None:
         obsSets = []
 
+    if cluster_colname is not None and cluster_colname.strip() != "":
+        obsSets.append({"name":cluster_colname, "path":f"obs/{cluster_colname}"})
     if adata_path is not None and os.path.exists(adata_path):
         adata_size = file_size(adata_path)
     if seurat_path is not None and os.path.exists(seurat_path):
@@ -354,7 +395,8 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
 
     if adata is not None and isinstance(adata, AnnData):
         if use_rep is not None and f'{use_rep}_leiden' in adata.obs.keys():
-            cluster_colname = f'{use_rep}_leiden'
+            if cluster_colname is None or cluster_colname.strip() == "":
+                cluster_colname = f'{use_rep}_leiden'
             if f'{use_rep}_leiden' in adata.obs.keys() and f'{use_rep}_umap' in adata.obsm.keys():
                 labels_pred_leiden = adata.obs[f'{use_rep}_leiden']
             if f'{use_rep}_louvain' in adata.obs.keys() and f'{use_rep}_umap' in adata.obsm.keys():
@@ -375,7 +417,8 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
             if 'X_umap' in adata.obsm.keys():
                 obsEmbedding = 'obsm/X_umap'
         else:
-            cluster_colname = f'{layer}_leiden'
+            if cluster_colname is None or cluster_colname.strip() == "":
+                cluster_colname = f'{layer}_leiden'
             if f'{layer}_leiden' in adata.obs.keys():
                 obsSets.append({"name":"Cluster", "path":f"obs/{layer}_leiden"})
             if cluster_label is not None and cluster_label in adata.obs.keys():
@@ -476,14 +519,14 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
                 # umap_plot = plot_UMAP(adata, layer=layer, clustering_plot_type=cluster_colname)
             elif f'{layer}_umap' in adata.obsm.keys():
                 umap = json_numpy.dumps(adata.obsm[f'{layer}_umap'])
-                # umap_plot = plot_UMAP(adata, layer=layer)
+                # umap_plot = plot_UMAP(adata, layer=layer, clustering_plot_type=cluster_colname)
             
             if f'{layer}_umap_3D' in adata.obsm.keys() and cluster_colname in adata.obs.keys():
                 umap_3d = json_numpy.dumps(adata.obsm[f'{layer}_umap_3D'])
                 # umap_plot_3d = plot_UMAP(adata, layer=layer, clustering_plot_type=cluster_colname, n_dim=3)
             elif f'{layer}_umap_3D' in adata.obsm.keys():
                 umap_3d = json_numpy.dumps(adata.obsm[f'{layer}_umap_3D'])
-                # umap_plot_3d = plot_UMAP(adata, layer=layer, n_dim=3)
+                # umap_plot_3d = plot_UMAP(adata, layer=layer, clustering_plot_type=cluster_colname, n_dim=3)
 
             if f'{layer}_tsne' in adata.obsm.keys():
                 tsne = json_numpy.dumps(adata.obsm[f'{layer}_tsne'])
@@ -499,6 +542,7 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
             if nCells < 12000: # If the dataset is too large, then skip the highest expressed genes plot
                 counts_top_genes, columns = highest_expr_genes(adata)
                 top_genes = {"counts_top_genes": json_numpy.dumps(counts_top_genes), "columns": columns}
+
             try:
                 outlier_panel = create_outlier_panel(adata.obs, cluster_id=cluster_colname)
             except Exception as e:
@@ -1685,7 +1729,7 @@ def add_majority_vote(
     pd.DataFrame
         Copy of input dataframe with majority_vote column added.
     """
-    out = df.copy()
+    out = df.copy().astype(str)
     obj = out.astype(object)
 
     stacked = obj.stack(dropna=True).reset_index()

@@ -34,18 +34,22 @@ export default function InputRefDataComponent(props) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
 
-    let selectedDatasets = props.selectedDatasets;
-
+    let selectedDatasets = props.selectedDatasets || {};
     let onDeleteDataset = props.onDeleteDataset;
-
     const filterCategory = props.filterCategory;
 
     const handleOpenDialog = (mode) => {
         setIsDialogOpen(true);
     };
+
     const handleCloseDialog = () => {
         setIsDialogOpen(false);
     };
+
+    const formError =
+        typeof props.formErrors === 'string'
+            ? props.formErrors
+            : props.formErrors?.inputDataset;
 
     return (
         <div className='inputData-management'>
@@ -69,7 +73,7 @@ export default function InputRefDataComponent(props) {
                                     onSelect={props.onSelectDataset}
                                     multiple={filterCategory === "annotation"}
                                     onClose={handleCloseDialog}
-                                    isVisible={isDialogOpen !== false}
+                                    isVisible={isDialogOpen}
                                     selectedDatasets={props.selectedDatasets}
                                     fromToolsPage={true}
                                     onSelectSubItem={props.onSelectSubItem}
@@ -80,24 +84,36 @@ export default function InputRefDataComponent(props) {
                     </div>
                 </div>
 
-                {Object.keys(selectedDatasets).length > 0 &&
-                    <div className='datasets-input-select'>
+                {Object.keys(selectedDatasets).length > 0 && (
+                    <div className="datasets-input-select">
                         <ScrollableListContainer>
                             <List dense>
                                 {Object.values(selectedDatasets).map((dataset) => (
                                     <CustomListItem key={dataset.Id}>
-                                        <IconButton edge="start" aria-label="delete" onClick={() => onDeleteDataset(dataset.Id)}>
+                                        <IconButton
+                                            edge="start"
+                                            aria-label="delete"
+                                            onClick={() => onDeleteDataset(dataset.Id)}
+                                        >
                                             <DeleteIcon />
                                         </IconButton>
-                                        <ListItemText primary={dataset.Title} />
+
+                                        <ListItemText
+                                            primary={dataset.Title}
+                                        />
                                     </CustomListItem>
                                 ))}
                             </List>
                         </ScrollableListContainer>
-
-                        {props.formErrors && <FormHelperText>{props.formErrors}</FormHelperText>}
                     </div>
-                }
+                )}
+
+                {formError && (
+                    <FormHelperText error>
+                        {formError}
+                    </FormHelperText>
+                )}
+
             </div>
         </div>
     )

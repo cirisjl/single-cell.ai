@@ -52,7 +52,7 @@ services:
       - redis_password
 
   oscb_rabbitmq:
-    image: "rabbitmq:management"
+    image: "rabbitmq:4.2.8-management"
     container_name: oscb_rabbitmq 
     restart: always
     ports:
