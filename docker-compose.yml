@@ -100,10 +100,17 @@ services:
       - /data/oscb/uploads:/data/upload
       - /data/oscb/logs:/data/logs
       - /data/oscb/user_storage:/usr/src/app/storage/
+      # Tool JSON schemas live in the React source tree; the agent reads them for
+      # the parameter catalog. Mount them read-only into the API container.
+      - ./oscb-ui/oscb-react/src/schema/react-json-schema/Tools:/usr/src/app/tool_schemas:ro
+    environment:
+      # Source of truth for the agent's tool/parameter catalog (see mount above).
+      - TOOL_SCHEMA_DIR=/usr/src/app/tool_schemas
+      # OPENAI_API_KEY is loaded from .env (env_file below)
     networks:
       - oscb-network
     env_file:
-      - .env 
+      - .env
     depends_on:
       mongodb:
         condition: service_healthy
@@ -114,6 +121,9 @@ services:
     secrets:
       - rabbitmq_password
       - redis_password
+      # Reused by the parameter-recommendation agent (GPT-5.6 Luna). Mounted at
+      # /run/secrets/openai_api_key; engine also accepts OPENAI_API_KEY from .env.
+      - openai_api_key
 
   worker:
     build:

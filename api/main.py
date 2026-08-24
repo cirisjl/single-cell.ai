@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
 
 from config.celery_utils import create_celery, get_task_info
-from routers import tools, benchmarks, workflows, pypi, web
+from routers import tools, benchmarks, workflows, pypi, web, agent
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.wsgi import WSGIMiddleware
 # from dash_app.dashboard import app as dashboard
@@ -33,6 +33,7 @@ def create_app() -> FastAPI:
     current_app.include_router(workflows.router)
     current_app.include_router(pypi.router)
     current_app.include_router(web.router)
+    current_app.include_router(agent.router)
 
     return current_app
 

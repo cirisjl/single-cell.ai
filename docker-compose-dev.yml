@@ -52,7 +52,7 @@ services:
       - redis_password
 
   oscb_rabbitmq:
-    image: "rabbitmq:management"
+    image: "rabbitmq:3.13-management"
     container_name: oscb_rabbitmq 
     restart: always
     ports:
@@ -100,10 +100,15 @@ services:
       - /ps/code/oscb/uploads:/data/upload
       - /ps/code/oscb/logs:/data/logs
       - /ps/code/oscb/user_storage:/usr/src/app/storage/
+      # Tool JSON schemas (agent parameter catalog), mounted read-only from the React source.
+      - ./oscb-ui/oscb-react/src/schema/react-json-schema/Tools:/usr/src/app/tool_schemas:ro
+    environment:
+      - TOOL_SCHEMA_DIR=/usr/src/app/tool_schemas
+      # OPENAI_API_KEY comes from .env (env_file); without it the agent uses heuristics.
     networks:
       - oscb-network
     env_file:
-      - .env 
+      - .env
     depends_on:
       mongodb:
         condition: service_healthy
@@ -114,6 +119,7 @@ services:
     secrets:
       - rabbitmq_password
       - redis_password
+      - openai_api_key
 
   worker:
     build:
@@ -265,7 +271,15 @@ services:
       oscb_node:
         condition: service_started
     env_file:
-      - .env 
+      - .env
+    environment:
+      # .env sets PORT=3001 (for Node); CRA would inherit it and bind to 3001,
+      # but Compose publishes container port 3000 — pin CRA back to 3000.
+      - PORT=3000
+      # CRA dev server OOMs on this large bundle; disable source maps (big memory
+      # saver) and raise Node's heap so webpack can compile.
+      - GENERATE_SOURCEMAP=false
+      - NODE_OPTIONS=--max-old-space-size=4096
     networks:
       - oscb-network
     secrets:

@@ -74,6 +74,51 @@ export default function ToolsDetailsComponent(props) {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [formErrors, setFormErrors] = useState({});
+  // Drives the chatbot's parameter-recommendation flow (bumped by the button below).
+  const [assistantRequest, setAssistantRequest] = useState(null);
+
+  // Deep-ish merge: incoming top-level keys overwrite, but nested param groups
+  // (e.g. qc_params) are merged field-by-field so we only change what was recommended.
+  const mergeParams = (base, incoming) => {
+    const out = { ...(base || {}) };
+    Object.keys(incoming || {}).forEach((k) => {
+      const val = incoming[k];
+      if (val && typeof val === 'object' && !Array.isArray(val)) {
+        out[k] = { ...(out[k] || {}), ...val };
+      } else {
+        out[k] = val;
+      }
+    });
+    return out;
+  };
+
+  // Called by the chatbot when the user clicks "Apply recommended parameters".
+  const onApplyParameters = (action) => {
+    if (!action || !action.parameters) return;
+    setFormData((prev) => ({
+      ...prev,
+      parameters: mergeParams(prev?.parameters, action.parameters),
+    }));
+    setSuccessMessage('Assistant parameters applied to the form. Review and submit.');
+    setErrorMessage('');
+    setTimeout(() => setSuccessMessage(''), 4000);
+  };
+
+  // The "Recommend parameters" button: hands the current tool + dataset context to the chatbot.
+  const recommendParameters = () => {
+    const firstDataset = Object.values(selectedDatasets)[0];
+    const datasetId = firstDataset?.Id || null;
+    setAssistantRequest({
+      nonce: Date.now(),
+      prompt: `Recommend parameter values for the ${filterStaticCategoryMap[filterCategory]} tool (${filterName}) for my selected dataset, and explain briefly why.`,
+      context: {
+        category: filterCategory,
+        method: filterName,
+        datasetId,
+        formData: (formData && formData.parameters) || {},
+      },
+    });
+  };
 
   useEffect(() => {
     setPresetQuestions([
@@ -809,6 +854,34 @@ export default function ToolsDetailsComponent(props) {
         </div>
       )}
 
+      {filterSchema && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', margin: '10px 0' }}>
+          <button
+            type="button"
+            onClick={recommendParameters}
+            disabled={Object.keys(selectedDatasets).length === 0}
+            title={Object.keys(selectedDatasets).length === 0
+              ? 'Select a dataset first'
+              : 'Ask the AI assistant to recommend parameters for this tool'}
+            style={{
+              background: Object.keys(selectedDatasets).length === 0 ? '#e2e8f0' : '#0f766e',
+              color: Object.keys(selectedDatasets).length === 0 ? '#94a3b8' : 'white',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '10px 16px',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: Object.keys(selectedDatasets).length === 0 ? 'not-allowed' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+             Recommend parameters
+          </button>
+        </div>
+      )}
+
       {filterSchema && UIfilterSchema ? (
         <div className="form-component">
           <Form
@@ -824,7 +897,11 @@ export default function ToolsDetailsComponent(props) {
       ) : (
         <div>No Schema for this tool.</div>
       )}
-      <Chatbot presetQuestions={presetQuestions} />
+      <Chatbot
+        presetQuestions={presetQuestions}
+        onApplyParameters={onApplyParameters}
+        assistantRequest={assistantRequest}
+      />
     </div>
   )
 };

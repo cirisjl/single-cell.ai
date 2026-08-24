@@ -36,7 +36,7 @@ console.log('HOSTURL: ' + process.env.HOST_URL);
 const app = express();
 app.use(cors({
     // origin: [`http://${process.env.HOST_URL}:3000`, `http://${hostIp}:3000`],
-    origin: [`https://${process.env.HOST_URL}`, `https://${process.env.HOST_URL}:3000`, `https://${hostIp}:3000`, `https://${process.env.HOST_URL}:3001`, `http://${hostIp}:3001`, `https://${process.env.HOST_URL}/node/`, `https://${hostIp}/node/`],
+    origin: [`http://${process.env.HOST_URL}:3000`, `http://localhost:3000`, `http://127.0.0.1:3000`, `https://${process.env.HOST_URL}`, `https://${process.env.HOST_URL}:3000`, `https://${hostIp}:3000`, `https://${process.env.HOST_URL}:3001`, `http://${hostIp}:3001`, `https://${process.env.HOST_URL}/node/`, `https://${hostIp}/node/`],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS'],
     allowedHeaders: ['Range', 'Content-Type', 'Authorization'],
     credentials: true
@@ -1343,27 +1343,34 @@ app.get('/node/getStorageDetails', async (req, res) => {
 
         let username = getUserFromToken(authToken);
         if (username === "Unauthorized") {
-            return res.status(403).jsonp(uid);
+            return res.status(403).jsonp(username);
         }
 
         const cmd = `du -sh ${storageDir}/${username}`;
         exec(cmd, (err, stdout, stderr) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Internal server error' });
+            // NOTE: this callback runs asynchronously, OUTSIDE the surrounding
+            // try/catch. Any throw here would crash the whole Node process, so it
+            // is fully guarded and always sends a response.
+            try {
+                if (err || stderr) {
+                    // Folder likely doesn't exist yet (new user) — report 0 usage
+                    // instead of erroring so the UI stays functional.
+                    return res.json({ used: "0.00", allowed: storageAllowance });
+                }
+                const [size, folder] = (stdout || '').split('\t');
+                const match = (size || '').trim().match(sizeRegex);
+                let gigabytes = 0;
+                if (match) {
+                    const [, value, , unit] = match;
+                    const divisor = { K: 1024 * 1024, M: 1024, G: 1 }[unit.toUpperCase().charAt(0)] || 1;
+                    gigabytes = parseFloat(value) / divisor;
+                }
+                console.log(`disk utilization: ${gigabytes} GB, folder: ${folder}`);
+                return res.json({ used: gigabytes.toFixed(2), allowed: storageAllowance });
+            } catch (e) {
+                console.error('getStorageDetails parse error:', e);
+                return res.json({ used: "0.00", allowed: storageAllowance });
             }
-            if (stderr) {
-                console.error(stderr);
-                return res.status(500).json({ error: 'Internal server error' });
-            }
-            const [size, folder] = stdout.split('\t');
-            const match = size.match(sizeRegex);
-            const [_, value, __, unit] = match;
-            const gigabytes = parseFloat(value) / ({ K: 1024 * 1024, M: 1024, G: 1 }[unit.toUpperCase()]);
-
-            console.log(`disk utilization: ${gigabytes} GB, folder: ${folder}`);
-
-            return res.json({ used: gigabytes.toFixed(2), allowed: storageAllowance });
         });
     } catch (e) {
         console.log('Error in getting Storage usage: ' + e);

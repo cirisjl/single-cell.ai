@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, startTransition } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faTrash, faRobot, faDownload, faRotateRight, faMagic, faMinus, faExpand, faAnchor, faChevronUp, faPaperclip, faTimes, faFile, faFilePdf, faFileImage, faFileAlt } from '@fortawesome/free-solid-svg-icons';
-import { NODE_API_URL } from '../../constants/declarations';
+import { NODE_API_URL, CELERY_BACKEND_API } from '../../constants/declarations';
 
 import styled from 'styled-components';
 import SingleCellLogo from '../../assets/single-cell-logo.png';
@@ -605,7 +605,15 @@ const ImagePreview = styled.img`
 
 // --- Component ---
 
-const Chatbot = (presetQuestions = null) => {
+const Chatbot = (props = null) => {
+  // `presetQuestions` historically was the whole props object; keep that alias so
+  // the existing preset-question resolution below is unchanged.
+  const presetQuestions = props;
+  // New capabilities for the parameter-recommendation flow (only present on tool pages):
+  const onApplyParameters = props?.onApplyParameters || null;   // apply a recommendation onto the form
+  const assistantRequest = props?.assistantRequest || null;     // {nonce, prompt, context} from the "Recommend parameters" button
+  const lastNonceRef = useRef(null);
+
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -853,6 +861,79 @@ const Chatbot = (presetQuestions = null) => {
     setMessages([]);
   };
 
+  // --- Parameter-recommendation flow (tool pages only) -------------------------
+  // Calls the FastAPI agent endpoint, which returns a natural-language reply plus
+  // optional `prefill_form` actions. This is separate from the free-form chat
+  // above (which still uses the Node GPT-4o/Gemini route), so existing behavior
+  // is untouched.
+  const runRecommend = async (userText, contextOverride) => {
+    const text = (userText || '').trim();
+    if (!text) return;
+
+    const userMessage = { role: 'user', content: text };
+    // Snapshot history BEFORE appending, to send as conversation context.
+    const history = messages.map(m => ({
+      role: m.role,
+      content: typeof m.content === 'string' ? m.content : String(m.content),
+    }));
+
+    startTransition(() => {
+      setMessages(prev => [...prev, userMessage]);
+      setInput('');
+    });
+    setIsLoading(true);
+    abortControllerRef.current = new AbortController();
+
+    try {
+      const payload = {
+        messages: [...history, { role: 'user', content: text }],
+        context: contextOverride || null,
+      };
+      const { data } = await axios.post(`${CELERY_BACKEND_API}/agent/recommend`, payload, {
+        headers: { 'Content-Type': 'application/json' },
+        signal: abortControllerRef.current.signal,
+      });
+      const botMessage = {
+        role: 'assistant',
+        content: data?.reply || 'Here is my recommendation.',
+        actions: Array.isArray(data?.actions) ? data.actions : [],
+      };
+      setMessages(prev => [...prev, botMessage]);
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Request canceled by user.' }]);
+      } else {
+        console.error('Recommend error:', error);
+        setMessages(prev => [...prev, {
+          role: 'assistant',
+          content: 'Sorry, I could not generate a recommendation. Please check that the API service is running.',
+        }]);
+      }
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
+  };
+
+  // Apply a recommendation's parameters onto the tool form (via parent callback).
+  const handleApply = (index) => {
+    const msg = messages[index];
+    if (!msg?.actions?.length) return;
+    if (onApplyParameters) onApplyParameters(msg.actions[0]);
+    setMessages(prev => prev.map((m, i) => (i === index ? { ...m, applied: true } : m)));
+  };
+
+  // The "Recommend parameters" button in the tool form bumps `assistantRequest.nonce`.
+  useEffect(() => {
+    const req = assistantRequest;
+    if (req && req.nonce && req.nonce !== lastNonceRef.current) {
+      lastNonceRef.current = req.nonce;
+      setIsMinimized(false);
+      runRecommend(req.prompt || 'Recommend parameters for this tool.', req.context || null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [assistantRequest]);
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -1067,6 +1148,35 @@ const Chatbot = (presetQuestions = null) => {
                     }
                   }}
                 />
+                {msg.role !== 'user' && Array.isArray(msg.actions) && msg.actions.length > 0 && (
+                  <div style={{ marginTop: '10px', borderTop: '1px dashed #e2e8f0', paddingTop: '10px' }}>
+                    <button
+                      onClick={() => handleApply(index)}
+                      disabled={msg.applied}
+                      style={{
+                        background: msg.applied ? '#dcfce7' : '#0f766e',
+                        color: msg.applied ? '#166534' : 'white',
+                        border: 'none',
+                        borderRadius: '8px',
+                        padding: '8px 14px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        cursor: msg.applied ? 'default' : 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faMagic} size="xs" />
+                      {msg.applied ? 'Parameters applied ✓' : 'Apply recommended parameters'}
+                    </button>
+                    {msg.actions[0].rationale && (
+                      <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '6px' }}>
+                        {msg.actions[0].rationale}
+                      </div>
+                    )}
+                  </div>
+                )}
               </Bubble>
             </MessageGroup>
           </MessageRow>

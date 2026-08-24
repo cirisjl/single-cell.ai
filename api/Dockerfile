@@ -46,6 +46,9 @@ FROM stormgod/oscb-cuda126-r45-seurat440:1.2.3
 # RUN pip install vitessce[all]
 
 WORKDIR /app
+
+RUN pip install --no-cache-dir "openai>=1.40.0"
+
 COPY api/ .
 
 # # Copy the entrypoint script into the container
