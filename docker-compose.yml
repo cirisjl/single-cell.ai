@@ -115,11 +115,11 @@ services:
       - rabbitmq_password
       - redis_password
 
-  worker:
+  worker-web:
     build:
       context: .
       dockerfile: api/Dockerfile
-    restart: always
+    restart: unless-stopped
     entrypoint:
       - /bin/sh
       - -c
@@ -128,11 +128,11 @@ services:
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
         export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
         export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
-        exec celery -A main.celery worker --loglevel=info -Q tools,benchmarks,workflows,web --max-tasks-per-child=50 --max-memory-per-child=200000000
+        exec celery -A main.celery worker --loglevel=info -Q web,dataset --max-tasks-per-child=50 --max-memory-per-child=200000000
     env_file:
       - .env 
     deploy:
-      replicas: 2
+      replicas: 1
       resources:
         # reservations:
         #   devices:
@@ -140,7 +140,99 @@ services:
         #       count: all
         #       capabilities: [gpu]
         limits:
-          cpus: 6
+          cpus: "1"
+    volumes:
+      - /data/oscb/results:/data/results
+      - /data/oscb/uploads:/data/upload
+      - /data/oscb/logs:/data/logs
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    networks:
+      - oscb-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      oscb_redis:
+        condition: service_healthy
+      oscb_rabbitmq:
+        condition: service_healthy
+      celery-api:
+        condition: service_started
+    secrets:
+      - rabbitmq_password
+      - redis_password
+
+  worker-cpu:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
+        REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        exec celery -A main.celery worker --loglevel=info -Q cpu,gpu --max-tasks-per-child=50 --max-memory-per-child=200000000
+    env_file:
+      - .env 
+    deploy:
+      replicas: 1
+      resources:
+        # reservations:
+        #   devices:
+        #     - driver: nvidia
+        #       count: all
+        #       capabilities: [gpu]
+        limits:
+          cpus: "6"
+    volumes:
+      - /data/oscb/results:/data/results
+      - /data/oscb/uploads:/data/upload
+      - /data/oscb/logs:/data/logs
+      - /data/oscb/user_storage:/usr/src/app/storage/
+    networks:
+      - oscb-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      oscb_redis:
+        condition: service_healthy
+      oscb_rabbitmq:
+        condition: service_healthy
+      celery-api:
+        condition: service_started
+    secrets:
+      - rabbitmq_password
+      - redis_password
+
+  worker-gpu:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
+        REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        exec celery -A main.celery worker --loglevel=info -Q gpu --pool=solo --concurrency=1 --prefetch-multiplier=1
+    env_file:
+      - .env 
+    deploy:
+      replicas: 1
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+        limits:
+          cpus: "6"
     volumes:
       - /data/oscb/results:/data/results
       - /data/oscb/uploads:/data/upload

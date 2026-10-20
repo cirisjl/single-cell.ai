@@ -404,7 +404,7 @@ async def create_data_split_task_async(data_split_task: DataSplitRequest):
     Create a task for data split
     """
     data_dict = data_split_task.model_dump()  # Convert the Pydantic model to a dict
-    task = create_data_split_task.apply_async(args=[data_dict])
+    task = create_data_split_task.apply_async(args=[data_dict], queue="cpu")
     upsert_jobs(
         {
             "job_id": task.id, 
@@ -427,7 +427,7 @@ async def create_subset_data_task_async(subset_task: SubsetDataRequest):
     Create a task for subsetting data
     """
     data_dict = subset_task.model_dump()  # Convert the Pydantic model to a dict
-    task = create_subset_data_task.apply_async(args=[data_dict])
+    task = create_subset_data_task.apply_async(args=[data_dict], queue="cpu")
     upsert_jobs(
         {
             "job_id": task.id, 

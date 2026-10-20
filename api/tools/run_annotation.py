@@ -89,16 +89,16 @@ def run_annotation(job_id, ds:dict, fig_path=None, description=None, show_error=
     methodMap = ', '.join(methods)
     methodsArr = methods
     methods = [x.upper() for x in methods if isinstance(x, str)]
-    for method in methods:
-        
-        # adata_path = get_output_path(output, process_id, dataset, method=method)
-        annotation_results = pp_result_exists(process_id)
 
-        if annotation_results is not None:
-            redislogger.info(job_id, f"Found existing pre-process results in database, skip {method} annotation.")
-            process_ids.append(process_id)
-            annotation_output = annotation_results["outputs"]
-        else:
+    # adata_path = get_output_path(output, process_id, dataset, method=method)
+    annotation_results = pp_result_exists(process_id)
+
+    if annotation_results is not None:
+        redislogger.info(job_id, f"Found existing pre-process results in database, skip {methods} annotation.")
+        process_ids.append(process_id)
+        annotation_output = annotation_results["outputs"]
+    else:
+        for method in methods:
             if method == "CELLTYPIST":
                 try:
                     redislogger.info(job_id, "Start CellTypist annotation...")
@@ -130,7 +130,13 @@ def run_annotation(job_id, ds:dict, fig_path=None, description=None, show_error=
                         if "leiden" not in adata.obs.columns:
                             adata = run_clustering(adata, resolution=resolution, random_state=0)
                         preset_question = create_annotation_prompt(adata, tissue=organ_part, species=species, method="t-test", groupby="leiden", top=n_hvg, task="Cell Type Annotation")
-                        preset_questions.append(preset_question[0])
+                        if isinstance(preset_question, (list, tuple)) and len(preset_question) > 0:
+                            preset_questions.append(preset_question[0])
+                        else:
+                            redislogger.warning(
+                                job_id, 
+                                "No preset question found. Skipping empty preset question."
+                            )
                         
                     # adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg)
                     # redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
@@ -184,7 +190,13 @@ def run_annotation(job_id, ds:dict, fig_path=None, description=None, show_error=
                         if "X_scVI_leiden" not in adata.obs.columns:
                             adata = run_clustering(adata, resolution=resolution, use_rep="X_scVI", random_state=0)
                         preset_question = create_annotation_prompt(adata, tissue=organ_part, species=species, use_rep="X_scVI", method="t-test", groupby="X_scVI_leiden", top=n_hvg, task="Cell Type Annotation")
-                        preset_questions.append(preset_question[0])
+                        if isinstance(preset_question, (list, tuple)) and len(preset_question) > 0:
+                            preset_questions.append(preset_question[0])
+                        else:
+                            redislogger.warning(
+                                job_id, 
+                                "No preset question found. Skipping empty preset question."
+                            )
                     # adata.write_h5ad(adata_path, compression='gzip')
                     # adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg)
                     # redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
@@ -302,7 +314,13 @@ def run_annotation(job_id, ds:dict, fig_path=None, description=None, show_error=
                         if "leiden" not in adata.obs.columns:
                             adata = run_clustering(adata, resolution=resolution, random_state=0)
                         preset_question = create_annotation_prompt(adata, tissue=organ_part, species=species, method="t-test", groupby="leiden", top=n_hvg, task="Cell Type Annotation")
-                        preset_questions.append(preset_question[0])
+                        if isinstance(preset_question, (list, tuple)) and len(preset_question) > 0:
+                            preset_questions.append(preset_question[0])
+                        else:
+                            redislogger.warning(
+                                job_id, 
+                                "No preset question found. Skipping empty preset question."
+                            )
                     # adata.write_h5ad(adata_path, compression='gzip')
                     # adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg)
                     # redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
@@ -331,32 +349,37 @@ def run_annotation(job_id, ds:dict, fig_path=None, description=None, show_error=
                     if not wf:
                         raise CeleryTaskException(detail)
 
-    if do_umap:
-        redislogger.info(job_id, "Computing PCA, neighborhood graph, tSNE, UMAP, and 3D UMAP")
-        adata, msg = run_dimension_reduction(adata, n_neighbors=n_neighbors, n_pcs=n_pcs, random_state=random_state)
-        if msg is not None: redislogger.warning(job_id, msg)
-    if do_cluster:
-        redislogger.info(job_id, "Clustering the neighborhood graph.")
-        adata = run_clustering(adata, resolution=resolution, random_state=random_state)
+        if do_umap:
+            redislogger.info(job_id, "Computing PCA, neighborhood graph, tSNE, UMAP, and 3D UMAP")
+            adata, msg = run_dimension_reduction(adata, n_neighbors=n_neighbors, n_pcs=n_pcs, random_state=random_state)
+            if msg is not None: redislogger.warning(job_id, msg)
+        if do_cluster:
+            redislogger.info(job_id, "Clustering the neighborhood graph.")
+            adata = run_clustering(adata, resolution=resolution, random_state=random_state)
 
-    adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg, obs_cols=obs_cols)
-    dictKey = description if description else ', '.join(methodsArr) + ' Annotation'
-    annotation_output.append({dictKey: adata_path})
-    seen = set()
-    annotation_output = [x for x in annotation_output if x[dictKey] not in seen and not seen.add(x[dictKey])] # Deduplicate outputs
-    redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
-    annotation_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, methodMap, parameters, md5, description=description, adata_path=adata_path, zarr_path=zarr_output, obsSets=obsSets)
-    # annotation_output = [dict(fs) for fs in set(frozenset(d.items()) for d in annotation_output)]  # De-duplicate outputs
-    annotation_results['preset_questions'] = preset_questions
-    annotation_results["outputs"] = annotation_output
-    redislogger.info(job_id, "AnnData object for Annotation is saved successfully")
-    process_ids.append(process_id)
-    process_ids = list(set(process_ids)) # De-duplicate process_ids
+        adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg, obs_cols=obs_cols)
+        dictKey = description if description else ', '.join(methodsArr) + ' Annotation'
+        annotation_output.append({dictKey: adata_path})
+        seen = set()
+        annotation_output = [
+            x for x in annotation_output
+            if dictKey not in x
+            or (x[dictKey] not in seen and not seen.add(x[dictKey]))
+        ]
+        # annotation_output = [x for x in annotation_output if x[dictKey] not in seen and not seen.add(x[dictKey])] # Deduplicate outputs
+        redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
+        annotation_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, methodMap, parameters, md5, description=description, adata_path=adata_path, zarr_path=zarr_output, obsSets=obsSets)
+        # annotation_output = [dict(fs) for fs in set(frozenset(d.items()) for d in annotation_output)]  # De-duplicate outputs
+        annotation_results['preset_questions'] = preset_questions
+        annotation_results["outputs"] = annotation_output
+        redislogger.info(job_id, "AnnData object for Annotation is saved successfully")
+        process_ids.append(process_id)
+        process_ids = list(set(process_ids)) # De-duplicate process_ids
 
-    annotation_results['datasetId'] = datasetId
-    annotation_results['created_by'] = userID
-    create_pp_results(process_id, annotation_results)  # Insert pre-process results to database
-    pp_results.append(annotation_results)
+        annotation_results['datasetId'] = datasetId
+        annotation_results['created_by'] = userID
+        create_pp_results(process_id, annotation_results)  # Insert pre-process results to database
+        pp_results.append(annotation_results)
     
     results = {
         "output": annotation_output,

@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 export default function RootLayout() {
 
     const navigate = useNavigate();
+    const HOST_URL = process.env.REACT_APP_HOST_URL;
 
     const [isLoginReq, setIsLoginReq] = useState(false);
     const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -186,6 +187,14 @@ export default function RootLayout() {
                                     </NavLink>
                                 </li>
                                 <li data-index="5" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
+                                    <NavLink to="https://github.com/cirisjl/single-cell.ai" target="_blank" className="group flex items-center py-0.5 dark:hover:text-gray-400 hover:text-indigo-700">
+                                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" width="24px" height="24px" viewBox="0 -0.5 24 24" fill="lightgrey" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.2047 0.00001C6.56031 -0.005731 1.74628 4.08615 0.842541 9.6577C-0.061195 15.2293 3.2126 20.6331 8.56941 22.4118C9.14823 22.5177 9.35294 22.1577 9.35294 21.8541C9.35294 21.5506 9.35294 20.8588 9.35294 19.8988C6.14117 20.5977 5.46353 18.3529 5.46353 18.3529C5.25046 17.6572 4.79779 17.0595 4.18588 16.6659C3.14823 15.96 4.27059 15.96 4.27059 15.96C5.00761 16.0641 5.65578 16.5014 6.02823 17.1459C6.34368 17.7179 6.87393 18.1406 7.50179 18.3208C8.12965 18.5009 8.8034 18.4236 9.37411 18.1059C9.41842 17.5252 9.66876 16.9794 10.08 16.5671C7.5247 16.2777 4.84235 15.2894 4.84235 10.92C4.82481 9.7786 5.24688 8.67412 6.02117 7.8353C5.67632 6.84285 5.71662 5.7571 6.13412 4.79295C6.13412 4.79295 7.10117 4.48236 9.29647 5.97177C11.1816 5.45419 13.1713 5.45419 15.0565 5.97177C17.2518 4.48236 18.2118 4.79295 18.2118 4.79295C18.6351 5.74689 18.6854 6.82486 18.3529 7.81412C19.1272 8.65294 19.5493 9.7574 19.5318 10.8988C19.5318 15.3177 16.8424 16.2847 14.28 16.5459C14.8359 17.1047 15.1218 17.8774 15.0635 18.6635C15.0635 20.2024 15.0635 21.4447 15.0635 21.8188C15.0635 22.1929 15.2682 22.4824 15.8541 22.3694C21.1473 20.5447 24.3569 15.1728 23.4554 9.6469C22.5539 4.1211 17.8034 0.04779 12.2047 0.00001z" fill="lightgrey" />
+                                        </svg>
+                                        GitHub
+                                    </NavLink>
+                                </li>
+                                <li data-index="6" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
                                     <NavLink to="doc" className="group flex items-center py-0.5 dark:hover:text-gray-400 hover:text-indigo-700">
                                         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="lightgrey" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M11 4.717c-2.286-.58-4.16-.756-7.045-.71A1.99 1.99 0 0 0 2 6v11c0 1.133.934 2.022 2.044 2.007 2.759-.038 4.5.16 6.956.791V4.717Zm2 15.081c2.456-.631 4.198-.829 6.956-.791A2.013 2.013 0 0 0 22 16.999V6a1.99 1.99 0 0 0-1.955-1.993c-2.885-.046-4.76.13-7.045.71v15.081Z" clip-rule="evenodd" />
@@ -193,7 +202,7 @@ export default function RootLayout() {
                                         Docs
                                     </NavLink>
                                 </li>
-                                <li data-index="6">
+                                <li data-index="7">
                                     <NavLink to="team" className="group flex items-center py-0.5 dark:hover:text-gray-400 hover:text-indigo-700">
                                         <svg className="w-[32px] h-[32px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="lightgrey" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-1.5 8a4 4 0 0 0-4 4 2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-3Zm6.82-3.096a5.51 5.51 0 0 0-2.797-6.293 3.5 3.5 0 1 1 2.796 6.292ZM19.5 18h.5a2 2 0 0 0 2-2 4 4 0 0 0-4-4h-1.1a5.503 5.503 0 0 1-.471.762A5.998 5.998 0 0 1 19.5 18ZM4 7.5a3.5 3.5 0 0 1 5.477-2.889 5.5 5.5 0 0 0-2.796 6.293A3.501 3.501 0 0 1 4 7.5ZM7.1 12H6a4 4 0 0 0-4 4 2 2 0 0 0 2 2h.5a5.998 5.998 0 0 1 3.071-5.238A5.505 5.505 0 0 1 7.1 12Z" clip-rule="evenodd" />
@@ -201,19 +210,40 @@ export default function RootLayout() {
                                         Teams
                                     </NavLink>
                                 </li>
-                                <li data-index="7" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
+                                <li data-index="8" onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>
                                     <NavLink className="group flex items-center py-0.5 dark:hover:text-gray-400 hover:text-indigo-700">
                                         <svg className="w-[24px] h-[24px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="lightgrey" viewBox="0 0 24 24">
                                             <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd" />
                                         </svg>
                                         {isUserLoggedIn ? (<span>Hi, <strong>{username}</strong>!</span>) : (<span>Login/Sign Up</span>)}
                                     </NavLink>
-                                    <div className={hoveredChildIndex === 7 ? "suboptions-container" : "suboptions-container hide"}>
+                                    <div className={hoveredChildIndex === 8 ? "suboptions-container" : "suboptions-container hide"}>
                                         <div className="rounded-xl border-gray-100 border styles-for-dropdown">
                                             <ul className="ul-suboptions">
                                                 {!isUserLoggedIn && (<li><NavLink to="SignUp">Sign Up</NavLink></li>)}
                                                 {!isUserLoggedIn && (<li><NavLink to="forgot-password">Forgot Password</NavLink></li>)}
                                                 {isUserLoggedIn && (<li><NavLink to="reset/:token">Reset Password</NavLink></li>)}
+                                                {isAdmin && (
+                                                    <li>
+                                                        <a href={`http://${HOST_URL}:8081`} target="_blank" rel="noopener noreferrer">
+                                                            MongoDB Management
+                                                        </a>
+                                                    </li>
+                                                )}
+                                                {isAdmin && (
+                                                    <li>
+                                                        <a href={`http://${HOST_URL}:8055`} target="_blank" rel="noopener noreferrer">
+                                                            Content Management
+                                                        </a>
+                                                    </li>
+                                                )}
+                                                {isAdmin && (
+                                                    <li>
+                                                        <a href={`http://${HOST_URL}:5555`} target="_blank" rel="noopener noreferrer">
+                                                            Worker Management
+                                                        </a>
+                                                    </li>
+                                                )}
                                                 {isUserLoggedIn ? (
                                                     <li><span style={{ cursor: 'pointer' }} onClick={handleLogoutClick}>Log Out</span></li>
                                                 ) : (

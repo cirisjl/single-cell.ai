@@ -15,6 +15,6 @@ async def download_dataset_task(ds: DownloadDataset):
     Download a dataset after processing user specified tool
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_download_dataset_task.apply_async(args=[ds_dict])
+    task = create_download_dataset_task.apply_async(args=[ds_dict], queue="dataset")
 
     return JSONResponse({"job_id": task.id, "status": "Download Dataset Task Submitted Successfully!"})

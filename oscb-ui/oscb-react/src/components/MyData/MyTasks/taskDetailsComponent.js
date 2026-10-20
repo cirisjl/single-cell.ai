@@ -889,7 +889,7 @@ function TaskDetailsComponent() {
                               key={result.job_id || `annotation-${index}`}
                               data={result.annotation_panel.table || []}
                               cellTypeOptions={result.annotation_panel.unique_labels || []}
-                              onSubmit={(data) => handleToolSubmit(data, 'manualannotattion')}
+                              onSubmit={(data) => handleToolSubmit(data, 'manualannotation')}
                             />
                           </CardContent>
                         </Card>

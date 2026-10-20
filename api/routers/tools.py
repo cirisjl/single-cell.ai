@@ -11,7 +11,7 @@ from utils.mongodb import upsert_jobs
 
 router = APIRouter(prefix='/api/tools', tags=['tools'], responses={404: {"Description": "API Not found"}})
 
-
+gpu_methods = {"scANVI", "scVI"}
 # @router.post("/ConvertToAnndata")
 # async def ConvertToAnndata_task_async(request_data: PathRequest):
 #     """
@@ -61,7 +61,7 @@ async def create_qc_task_async(ds: Dataset):
     Create a task for quality control
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_qc_task.apply_async(args=[ds_dict])
+    task = create_qc_task.apply_async(args=[ds_dict], queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Quality Control task submitted successfully"})
@@ -73,7 +73,7 @@ async def create_normalization_task_async(ds: Dataset):
     Create a task for normalization
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_normalization_task.apply_async(args=[ds_dict])
+    task = create_normalization_task.apply_async(args=[ds_dict], queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Normalization task submitted successfully"})
@@ -85,7 +85,7 @@ async def create_imputation_task_async(ds: Dataset):
     Create a task for imputation
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_imputation_task.apply_async(args=[ds_dict])
+    task = create_imputation_task.apply_async(args=[ds_dict], queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Imputation task submitted successfully"})
@@ -97,7 +97,7 @@ async def create_reduction_task_async(ds: Dataset):
     Create a task for imputation
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_reduction_task.apply_async(args=[ds_dict])
+    task = create_reduction_task.apply_async(args=[ds_dict], queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Dimension reduction task submitted successfully"})
@@ -109,7 +109,7 @@ async def create_conversion_task_async(ds: Dataset):
     Create a task for imputation
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_conversion_task.apply_async(args=[ds_dict])
+    task = create_conversion_task.apply_async(args=[ds_dict], queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Conversion task submitted successfully"})
@@ -121,7 +121,7 @@ async def create_integration_task_async(ids: Datasets):
     Create a task for integration
     """
     ids_dict = ids.model_dump()  # Convert the Pydantic model to a dict
-    task = create_integration_task.apply_async(args=[ids_dict])
+    task = create_integration_task.apply_async(args=[ids_dict], queue=("gpu" if gpu_methods.intersection(set(ids_dict['method'])) else "cpu"))
 
     upsert_jobs(
         {
@@ -146,19 +146,19 @@ async def create_annotation_task_async(ds: Dataset):
     Create a task for imputation
     """
     ds_dict = ds.model_dump()  # Convert the Pydantic model to a dict
-    task = create_annotation_task.apply_async(args=[ds_dict])
+    task = create_annotation_task.apply_async(args=[ds_dict], queue=("gpu" if gpu_methods.intersection(set(ds_dict['method'])) else "cpu"))
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id, "Status": "Annotation task submitted successfully"})
 
 
-@router.post("/manualannotattion")
+@router.post("/manualannotation")
 async def manual_annotation_task_async(ma: ManualAnnotationRequest):
     """
     Create a task for Manual annotation
     """
     ma_dict = ma.model_dump()  # Convert the Pydantic model to a dict
-    task = manual_annotation_task.apply_async(args=[ma_dict])
+    task = manual_annotation_task.apply_async(args=[ma_dict], queue="cpu")
 
     return JSONResponse({"job_id": task.id, "Status": "Manual annotation task submitted successfully"})
 
@@ -169,7 +169,7 @@ async def outlier_correction_task_async(oc: OutlierCorrectionRequest):
     Create a task for Olutlier Correction
     """
     oc_dict = oc.model_dump()  # Convert the Pydantic model to a dict
-    task = outlier_correction_task.apply_async(args=[oc_dict])
+    task = outlier_correction_task.apply_async(args=[oc_dict], queue="cpu")
 
     return JSONResponse({"job_id": task.id, "Status": "Outlier correction task submitted successfully"})
 
@@ -180,7 +180,7 @@ async def create_evaluation_task_async(ds: Dataset):
     Create a task for evaluation
     """
     ds_dict = ds.model_dump() 
-    task = create_evaluation_task.apply_async(args=[ds['dataset'], ds['input'], ds['userID'], ds['output'], ds['methods']], kwargs={'layer':ds['layer'], 'genes':ds.genes, 'ncores':ds.ncores, 'show_error': ds.show_error})
+    task = create_evaluation_task.apply_async(args=[ds['dataset'], ds['input'], ds['userID'], ds['output'], ds['methods']], kwargs={'layer':ds['layer'], 'genes':ds.genes, 'ncores':ds.ncores, 'show_error': ds.show_error}, queue="cpu")
     create_job(task.id, ds_dict)
 
     return JSONResponse({"job_id": task.id})
@@ -189,6 +189,6 @@ async def create_evaluation_task_async(ds: Dataset):
 @router.post('/metadata')
 async def load_metadata_async(request_body: UploadRequest):
     file_dict = request_body.model_dump()
-    task = load_metadata_task.apply_async(args=[file_dict])
+    task = load_metadata_task.apply_async(args=[file_dict], queue="cpu")
 
     return JSONResponse({"job_id": task.id}) 

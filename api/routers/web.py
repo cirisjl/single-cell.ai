@@ -21,7 +21,7 @@ async def getPreProcessResults_sync(req: ProcessResultsRequest):
     Get details of pp_results
     """
     req_dict = req.model_dump() 
-    task = getPreProcessResults.apply_async(args=[req_dict])
+    task = getPreProcessResults.apply_async(args=[req_dict], queue="web")
 
     return JSONResponse({"job_id": task.id})
 
@@ -32,7 +32,7 @@ async def umapplot_sync(req: ProcessResultsRequest):
     Get details of pp_results
     """
     req_dict = req.model_dump() 
-    task = umapplot.apply_async(args=[req_dict])
+    task = umapplot.apply_async(args=[req_dict], queue="web")
 
     return JSONResponse({"job_id": task.id})
 

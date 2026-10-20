@@ -70,6 +70,16 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
 
 const cardStyle = { height: '100%', display: 'flex', flexDirection: 'column' };
 const cardContentStyle = { flexGrow: 1, overflow: 'auto' };
+const BoxStyle = {
+  flex: '1 1 0%',
+  width: '100%',
+  minWidth: 600,
+  maxWidth: '100%',
+  padding: '16px',
+  boxSizing: 'border-box',
+  overflowX: 'auto',
+  overflowY: 'auto'
+};
 
 // --- Helper Functions & Small Components ---
 const StatusChip = ({ status }) => {
@@ -273,29 +283,25 @@ const ProcessAccordionItem = ({ processData, process, handleToolSubmit }) => {
 
         {/* Tool Panels */}
         {process === "Quality Control" && processData?.outlier_panel && (
-          <Grid item xs={12} sx={{ mt: 4 }}>
-            <Card raised sx={cardStyle}>
-              <CardHeader title="Outlier Correction" />
-              <CardContent sx={cardContentStyle}>
-                <OutlierTable data={processData.outlier_panel.table || []} onSubmit={(data) => handleToolSubmit(data, 'outliercorrection')} />
-              </CardContent>
-            </Card>
-          </Grid>
+          <>
+            <Typography variant="h5" sx={{ mt: 4 }}>Outlier Correction</Typography>
+            <Box sx={BoxStyle}>
+              <OutlierTable data={processData.outlier_panel.table || []} onSubmit={(data) => handleToolSubmit(data, 'outliercorrection')} />
+            </Box>
+          </>
         )}
 
-        {process !== "Quality Control" && processData?.annotation_panel && (
-          <Grid item xs={12} sx={{ mt: 4 }}>
-            <Card raised sx={cardStyle}>
-              <CardHeader title="Manual Annotation" />
-              <CardContent sx={cardContentStyle}>
-                <AnnotationTable
-                  data={processData.annotation_panel.table || []}
-                  cellTypeOptions={processData.annotation_panel.unique_labels || []}
-                  onSubmit={(data) => handleToolSubmit(data, 'manualannotattion')}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
+        {process !== "Quality Control" && process !== "Integration" && processData?.annotation_panel && (
+          <>
+            <Typography variant="h5" sx={{ mt: 4 }}>Manual Annotation</Typography>
+            <Box sx={BoxStyle}>
+              <AnnotationTable
+                data={processData.annotation_panel.table || []}
+                cellTypeOptions={processData.annotation_panel.unique_labels || []}
+                onSubmit={(data) => handleToolSubmit(data, 'manualannotation')}
+              />
+            </Box>
+          </>
         )}
       </div>
     </div>

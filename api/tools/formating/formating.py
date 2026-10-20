@@ -591,7 +591,7 @@ def get_metadata_from_anndata(adata, pp_stage, process_id, process, method, para
             obsSets = None
         if process != 'QC':
             # Add annotation panels for cell type labels
-            annotation_panel = create_annotation_panel(adata.obs, cluster_id=cluster_colname, ground_truth=ground_truth, label_columns=label_columns, score_columns=score_columns)
+            annotation_panel = create_annotation_panel(adata.obs, cluster_id=cluster_colname, ground_truth=ground_truth)
 
         tools = get_tools()
 
@@ -1782,9 +1782,11 @@ def add_majority_vote(
     return out
 
 
-def create_annotation_panel(obs, cluster_id='leiden', ground_truth=None, label_columns=['celltypist_label', 'celltypist_ref_label', 'SingleR_main', 'SingleR_fine', 'SingleR_user_ref', 'scANVI_predicted'], score_columns=['celltypist_score', 'celltypist_ref_score', 'scANVI_transfer_score']):
+def create_annotation_panel(obs, cluster_id='leiden', ground_truth=None):
     unique_cell_labels = []
     obs_cols = []
+    label_columns=['celltypist_label', 'celltypist_ref_label', 'SingleR_main', 'SingleR_fine', 'SingleR_user_ref', 'scANVI_predicted']
+    score_columns=['celltypist_score', 'celltypist_ref_score', 'scANVI_transfer_score']
 
     print(f"label columns: {label_columns}")
     print(f"score columns: {score_columns}")
@@ -1868,7 +1870,9 @@ def create_annotation_panel(obs, cluster_id='leiden', ground_truth=None, label_c
     return { "cluster_id": cluster_id, "table": mapping_res_dict, "unique_labels": unique_labels, }
 
 
-def create_outlier_panel(obs, cluster_id='leiden', outlier_columns=["discard", "outlier", "mt_outlier", "doublet_class", "predicted_doublet", "clf_doublet"], score_columns=['doublet_score', 'clf_score']):
+def create_outlier_panel(obs, cluster_id='leiden'):
+    outlier_columns=["discard", "outlier", "mt_outlier", "doublet_class", "predicted_doublet", "clf_doublet"]
+    score_columns=['doublet_score', 'clf_score']
     # Validate outlier columns and score columns
     for outlier_column in outlier_columns.copy():
         if outlier_column not in obs.columns:
