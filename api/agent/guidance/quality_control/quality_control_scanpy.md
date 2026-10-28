@@ -1,0 +1,6 @@
+- `min_genes`: cells with fewer detected genes are removed. `max_genes`: cells with more are removed (50000 = off).
+- `min_cells`: GENES detected in fewer than this many cells are removed (it does not filter cells).
+- `pct_counts_mt` is NOT a percentage cutoff. It is the number of median absolute deviations (MADs) above the median mitochondrial percentage at which a cell is flagged as an outlier (3 = 3 MADs). Flagged outliers are currently only annotated, not removed, so this setting does not change which cells are kept.
+- `doublet_rate` is passed to Scrublet as the expected doublet rate; predicted doublets are annotated, not removed.
+- After filtering, the tool normalizes to `target_sum` counts per cell, log-transforms, keeps the `n_top_genes` highly variable genes, regresses out total counts and mitochondrial percentage, and scales.
+- `n_neighbors` and `n_pcs` drive the neighbor graph and UMAP (`n_pcs` 0 = automatic); `resolution` drives Leiden clustering.

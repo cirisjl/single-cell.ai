@@ -197,6 +197,52 @@ router.post('/', upload.single('file'), async (req, res) => {
             reply = completion.choices[0].message.content;
             await sync_chat(userId, 'user', messages);
             await sync_chat(userId, 'ChatGPT', reply);
+        } else if (model === 'qwen') {
+            // Self-hosted Qwen via Ollama's OpenAI-compatible API, for users who
+            // don't want their data sent to an external provider.
+            const qwen = new OpenAI({
+                baseURL: process.env.OLLAMA_BASE_URL || 'http://host.docker.internal:11434/v1',
+                apiKey: 'ollama', // ignored by Ollama, but required by the SDK
+                timeout: 180 * 1000,
+                maxRetries: 0,
+            });
+
+            const messages = [
+                {
+                    role: "system",
+                    content: "You are an expert bioinformatician specializing in single-cell RNA sequencing (scRNA-seq)."
+                }
+            ];
+
+            // Qwen 3.5 models read images, so attach them the same way as for GPT.
+            if (imagePart) {
+                messages.push({
+                    role: "user",
+                    content: [
+                        { type: "text", text: message },
+                        {
+                            type: "image_url",
+                            image_url: {
+                                "url": `data:${imagePart.mimeType};base64,${imagePart.data}`
+                            }
+                        }
+                    ]
+                });
+            } else {
+                messages.push({ role: "user", content: message + fileContext });
+            }
+
+            const completion = await qwen.chat.completions.create({
+                messages: messages,
+                model: process.env.QWEN_MODEL || 'qwen3.5:0.8b',
+                reasoning_effort: 'none', // skip the thinking phase, slow on CPU
+                // The model's Ollama preset is temperature 1 (tuned for thinking mode);
+                // a lower value suits non-thinking chat.
+                temperature: parseFloat(process.env.QWEN_CHAT_TEMPERATURE || '0.7'),
+            });
+            reply = (completion.choices[0].message.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+            await sync_chat(userId, 'user', messages);
+            await sync_chat(userId, 'Qwen', reply);
         } else if (model === 'gemini') {
             const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
             // Use gemini-1.5-flash-001 for specific version compatibility
@@ -236,6 +282,9 @@ router.post('/', upload.single('file'), async (req, res) => {
 
     } catch (error) {
         console.error('Chat API Error:', error);
+        if (model === 'qwen' && (error.code === 'ECONNREFUSED' || error.name === 'APIConnectionError' || error.constructor?.name === 'APIConnectionError')) {
+            return res.status(503).json({ error: 'AI Provider Error', details: 'Could not reach the local Qwen model. Check that Ollama is running.' });
+        }
         if (error.response) {
             console.error('Chat API Error Response:', error.response.data);
         }

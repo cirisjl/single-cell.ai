@@ -138,11 +138,34 @@ def prompt_text(desc: Dict[str, Any]) -> str:
 
     if desc.get("group_params"):
         lines.append(f"\nParameters (belong under `{desc['group_key']}`):")
-        lines += [fmt(p) for p in desc["group_params"]]
+        # use_default is a UI switch the engine sets itself (see engine._sync_use_default).
+        lines += [fmt(p) for p in desc["group_params"] if p["name"] != "use_default"]
     if desc.get("top_params"):
         lines.append("\nTop-level parameters (belong directly under `parameters`):")
         lines += [fmt(p) for p in desc["top_params"]]
     return "\n".join(lines)
+
+
+_GUIDANCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "guidance")
+
+
+@lru_cache(maxsize=None)
+def guidance_text(category: str, method: str) -> str:
+    """Notes on what a tool's parameters actually do, written from the tool code.
+
+    Read from ``guidance/<category>.md`` (shared by the category) and
+    ``guidance/<category>/<method>.md`` (specific to the method). Either may be
+    missing; returns "" when there is nothing for this tool.
+    """
+    parts = []
+    for path in (os.path.join(_GUIDANCE_DIR, f"{category}.md"),
+                 os.path.join(_GUIDANCE_DIR, category, f"{method}.md")):
+        if category and method and os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as fh:
+                text = fh.read().strip()
+            if text:
+                parts.append(text)
+    return "\n".join(parts)
 
 
 def _coerce(value: Any, spec: Dict[str, Any]) -> Any:
@@ -162,6 +185,41 @@ def _coerce(value: Any, spec: Dict[str, Any]) -> Any:
     return value
 
 
+def _relocate_misplaced(root: Dict[str, Any], group_key: Optional[str],
+                        params: Dict[str, Any]) -> Dict[str, Any]:
+    """Move settings the model put at the wrong level to where the schema has them.
+
+    Smaller models often flatten the form, e.g. returning ``n_neighbors`` at the
+    top level instead of under ``reduction_params``. A name that exists at only one
+    level is unambiguous, so move it there instead of letting the filter drop it.
+    A value already at the correct level wins over a misplaced duplicate.
+    """
+    group_spec = root.get(group_key) if group_key else None
+    if not isinstance(group_spec, dict) or group_spec.get("type") != "object":
+        return params
+    group_props = group_spec.get("properties", {}) or {}
+    top_keys = {k for k, v in root.items()
+                if isinstance(v, dict) and v.get("type") != "object"}
+
+    params = dict(params)
+    group = params.get(group_key)
+    group = dict(group) if isinstance(group, dict) else {}
+
+    for key in list(params):
+        if key != group_key and key in group_props and key not in top_keys:
+            group.setdefault(key, params.pop(key))
+    for key in list(group):
+        if key in top_keys and key not in group_props:
+            value = group.pop(key)
+            params.setdefault(key, value)
+
+    if group:
+        params[group_key] = group
+    else:
+        params.pop(group_key, None)
+    return params
+
+
 def validate_and_filter(category: str, method: str, params: Dict[str, Any]) -> Dict[str, Any]:
     """Drop unknown keys and enum-violating values; coerce types.
 
@@ -174,6 +232,7 @@ def validate_and_filter(category: str, method: str, params: Dict[str, Any]) -> D
 
     root = _params_root(schema)
     group_key = PARAMS_KEY_BY_CATEGORY.get(category)
+    params = _relocate_misplaced(root, group_key, params)
     out: Dict[str, Any] = {}
 
     def clean_leaf(spec: Dict[str, Any], value: Any) -> Any:

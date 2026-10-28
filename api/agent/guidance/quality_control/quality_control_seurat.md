@@ -1,0 +1,5 @@
+- `min_genes` / `max_genes`: cells must have more than `min_genes` and fewer than `max_genes` detected genes (50000 = no upper limit).
+- `min_cells` is used as the MINIMUM UMI COUNT PER CELL (Seurat nCount): cells with this many total counts or fewer are removed. It does not filter genes.
+- `pct_counts_mt` IS a percentage cutoff here: cells with this percentage of mitochondrial counts or more are removed (5 = 5%). Typical values: 5–10 for most tissues, 10–20 for metabolically active tissues.
+- `doublet_rate` sets how many cells DoubletFinder calls as doublets (rate × number of cells), and predicted doublets ARE removed. 0 turns it off.
+- `n_neighbors` is used as the number of principal components (dims 1:n) for neighbors, clustering, UMAP and t-SNE; `resolution` drives clustering. `n_pcs` and `target_sum` are not used by this method.

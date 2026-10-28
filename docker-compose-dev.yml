@@ -102,9 +102,16 @@ services:
       - /ps/code/oscb/user_storage:/usr/src/app/storage/
       # Tool JSON schemas (agent parameter catalog), mounted read-only from the React source.
       - ./oscb-ui/oscb-react/src/schema/react-json-schema/Tools:/usr/src/app/tool_schemas:ro
+      # Recommend-parameters prompt/response log, readable from the repo at ./logs/agent.
+      - ./logs/agent:/agent_logs
     environment:
       - TOOL_SCHEMA_DIR=/usr/src/app/tool_schemas
+      - AGENT_LOG_DIR=/agent_logs
       # OPENAI_API_KEY comes from .env (env_file); without it the agent uses heuristics.
+    # Lets the container reach Ollama on the Docker host (needed on Linux;
+    # Docker Desktop provides host.docker.internal already).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - oscb-network
     env_file:
@@ -244,6 +251,10 @@ services:
         condition: service_healthy
     volumes:
       - /ps/code/oscb/user_storage:/usr/src/app/storage/
+    # Lets the container reach Ollama on the Docker host (needed on Linux;
+    # Docker Desktop provides host.docker.internal already).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - oscb-network
     secrets:

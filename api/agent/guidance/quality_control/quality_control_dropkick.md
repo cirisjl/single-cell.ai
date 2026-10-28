@@ -1,0 +1,2 @@
+- Dropkick learns which barcodes are empty droplets or low-quality cells by itself. `min_genes`, `max_genes`, `min_cells`, `target_sum` and `doublet_rate` are not passed to it, so leave them at their defaults.
+- Only `n_neighbors`, `n_pcs`, `resolution` and `n_top_genes` are used, for the clustering and embedding after filtering.

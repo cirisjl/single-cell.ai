@@ -617,7 +617,7 @@ const Chatbot = (props = null) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('gpt'); // 'gpt' or 'gemini'
+  const [selectedModel, setSelectedModel] = useState('gpt'); // 'gpt', 'gemini' or 'qwen'
   const [selectedFile, setSelectedFile] = useState(null);
   const [isMinimized, setIsMinimized] = useState(() => {
     const savedState = localStorage.getItem('chatbot_minimized');
@@ -836,7 +836,7 @@ const Chatbot = (props = null) => {
     } catch (error) {
       if (axios.isCancel(error)) {
         console.log("Request canceled by user.");
-        setMessages(prev => [...prev, "Request canceled by user."]);
+        setMessages(prev => [...prev, { role: 'assistant', content: 'Request canceled by user.' }]);
       } else {
         console.error("Chat error:", error);
         let messageContent = "Sorry, something went wrong. Please check your API keys in oscb-node/.env.";
@@ -871,11 +871,6 @@ const Chatbot = (props = null) => {
     if (!text) return;
 
     const userMessage = { role: 'user', content: text };
-    // Snapshot history BEFORE appending, to send as conversation context.
-    const history = messages.map(m => ({
-      role: m.role,
-      content: typeof m.content === 'string' ? m.content : String(m.content),
-    }));
 
     startTransition(() => {
       setMessages(prev => [...prev, userMessage]);
@@ -886,8 +881,11 @@ const Chatbot = (props = null) => {
 
     try {
       const payload = {
-        messages: [...history, { role: 'user', content: text }],
+        // Only the current request: each recommendation is made fresh from the
+        // dataset, schema and form values, not anchored on earlier chat.
+        messages: [{ role: 'user', content: text }],
         context: contextOverride || null,
+        model: selectedModel, // 'qwen' keeps the request on the self-hosted model
       };
       const { data } = await axios.post(`${CELERY_BACKEND_API}/agent/recommend`, payload, {
         headers: { 'Content-Type': 'application/json' },
@@ -904,9 +902,12 @@ const Chatbot = (props = null) => {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Request canceled by user.' }]);
       } else {
         console.error('Recommend error:', error);
+        const reason = error.response
+          ? `The API service returned an error (HTTP ${error.response.status}).`
+          : 'The API service is not responding. After a restart it can take a few minutes to become ready.';
         setMessages(prev => [...prev, {
           role: 'assistant',
-          content: 'Sorry, I could not generate a recommendation. Please check that the API service is running.',
+          content: `Sorry, I could not generate a recommendation. ${reason}`,
         }]);
       }
     } finally {
@@ -1313,6 +1314,7 @@ const Chatbot = (props = null) => {
             >
               <option value="gpt">GPT-4o (OpenAI)</option>
               <option value="gemini">Gemini Flash (Latest) (Google)</option>
+              <option value="qwen">Qwen (Local, private)</option>
             </ModelSelect>
             <IconWrapper>
               <FontAwesomeIcon icon={faRotateRight} rotation={90} size="xs" />

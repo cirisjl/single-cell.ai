@@ -107,6 +107,10 @@ services:
       # Source of truth for the agent's tool/parameter catalog (see mount above).
       - TOOL_SCHEMA_DIR=/usr/src/app/tool_schemas
       # OPENAI_API_KEY is loaded from .env (env_file below)
+    # Lets the container reach Ollama on the Docker host (needed on Linux;
+    # Docker Desktop provides host.docker.internal already).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - oscb-network
     env_file:
@@ -248,6 +252,10 @@ services:
         condition: service_healthy
     volumes:
       - /data/oscb/user_storage:/usr/src/app/storage/
+    # Lets the container reach Ollama on the Docker host (needed on Linux;
+    # Docker Desktop provides host.docker.internal already).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - oscb-network
     secrets:

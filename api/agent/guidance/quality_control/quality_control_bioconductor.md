@@ -1,0 +1,2 @@
+- This method runs a fixed Bioconductor (scater) report. The filtering thresholds (`min_genes`, `max_genes`, `min_cells`, `target_sum`, `doublet_rate`, `n_neighbors`, `n_pcs`, `resolution`, `regress_cell_cycle`) are not passed to it, so leave them at their defaults.
+- Only `n_top_genes`, `idtype`, `species` and the plot settings (`colour_by`, `shape_by_1`, `shape_by_2`) are used. `colour_by` and the shape settings should name categorical obs columns of the dataset.

@@ -31,4 +31,4 @@ async def recommend(req: RecommendRequest) -> RecommendResponse:
     context = req.context or RecommendContext()
     # engine.recommend() does blocking I/O (OpenAI SDK, pymongo). Run it in a
     # worker thread so a slow model call never blocks the FastAPI event loop.
-    return await run_in_threadpool(engine.recommend, req.messages, context)
+    return await run_in_threadpool(engine.recommend, req.messages, context, req.model)

@@ -1,0 +1,4 @@
+- QC tools expect RAW COUNTS. If the dataset looks already processed (existing PCA/UMAP/clusters, a gene count that looks like a highly-variable-gene subset of ~1,000–3,000 genes, or an already-filtered cell count), say in the reply that running QC again may be unnecessary or give misleading results, and that the raw count data should be used instead. Still return parameters.
+- `doublet_rate` is the expected doublet fraction (0.08 = 8%). For 10x data it scales with the number of cells loaded: about 0.008 per 1,000 cells (2,600 cells → ~0.02; 10,000 cells → ~0.08). 0 turns doublet detection off.
+- `max_genes` of 50000 (the default) means "no upper limit"; the runner turns it off. Set a real value to remove likely multiplets with unusually many genes.
+- `n_top_genes` is the number of highly variable genes kept after QC.

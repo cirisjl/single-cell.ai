@@ -2,7 +2,7 @@
 
 The response is intentionally shaped as ``{reply, actions[]}`` so the UI stays
 decoupled from the engine behind ``/api/agent/recommend``: whether that engine is
-GPT-5.6 Luna today or a Deep-Agents pipeline later, the frontend contract is the
+an OpenAI or Qwen model today or a Deep-Agents pipeline later, the frontend contract is the
 same.
 """
 from typing import List, Optional, Dict, Any
@@ -25,6 +25,9 @@ class RecommendContext(BaseModel):
 class RecommendRequest(BaseModel):
     messages: List[ChatMessage] = []
     context: Optional[RecommendContext] = None
+    # Model picked in the chatbot dropdown: "gpt" | "gemini" | "qwen". "qwen" keeps
+    # the request on the self-hosted model; anything else uses the default engine.
+    model: Optional[str] = None
 
 
 class PrefillAction(BaseModel):
@@ -41,5 +44,7 @@ class PrefillAction(BaseModel):
 class RecommendResponse(BaseModel):
     reply: str
     actions: List[PrefillAction] = Field(default_factory=list)
-    # "luna" | "heuristic" | "chat" — lets the UI/telemetry know how the answer was produced
+    # "openai" | "qwen" | "heuristic" | "chat" | "unavailable" — how the answer was produced
     source: Optional[str] = None
+    # The exact model that answered (e.g. "gpt-5.6-terra"); None for the offline heuristic.
+    model: Optional[str] = None
