@@ -8,7 +8,6 @@ import 'github-markdown-css';
 
 import RightRail from "../components/RightNavigation/rightRail";
 import { DIRECTUS_URL } from '../constants/declarations'
-// import { getCookie } from "../utils/utilFunctions";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import remarkGfm from 'remark-gfm';
@@ -16,6 +15,7 @@ import rehypeRaw from 'rehype-raw'
 import rehypeGithubAlerts from 'rehype-github-alert'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Chatbot from "../components/RightNavigation/Chatbot";
+import { getCookie } from "../utils/utilFunctions";
 
 
 // Extract visible text from a rendered Markdown AST node.
@@ -32,6 +32,16 @@ export default function Benchmarks() {
     const [markdownText, setMarkdownText] = useState('');
     // let jwtToken = getCookie('jwtToken');
     const [copiedIndex, setCopiedIndex] = useState(null);
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+    
+    useEffect(() => {
+        const userCookie = getCookie('jwtToken');
+
+        if (userCookie !== '') {
+            setIsUserLoggedIn(true);
+        }
+
+    }, [isUserLoggedIn]);
 
     const handleCopy = (index) => {
         setCopiedIndex(index);
@@ -187,10 +197,12 @@ export default function Benchmarks() {
                     }}
                 />
             </div>
-            <div className="right-rail">
-                <RightRail />
-                <Chatbot presetQuestions={null} />
-            </div>
+            <Chatbot presetQuestions={null} />
+            {isUserLoggedIn && (
+                <div className="right-rail">
+                    <RightRail />
+                </div>
+            )}
         </div >
     )
 }

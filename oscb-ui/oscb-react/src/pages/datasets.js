@@ -1,7 +1,7 @@
 // import LeftNav from "../components/leftNav";
 import DatasetTable from "../components/MyData/datasetTable";
 import RightRail from "../components/RightNavigation/rightRail";
-// import { getCookie } from "../utils/utilFunctions";
+import { getCookie } from "../utils/utilFunctions";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DIRECTUS_URL } from '../constants/declarations'
@@ -26,6 +26,16 @@ const getMarkdownNodeText = (node) => {
 
 
 export default function MyData() {
+    const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+
+    useEffect(() => {
+        const userCookie = getCookie('jwtToken');
+
+        if (userCookie !== '') {
+            setIsUserLoggedIn(true);
+        }
+
+    }, [isUserLoggedIn]);
 
     const filterCategory = null;
     const [selectedDatasets, setSelectedDatasets] = useState({});
@@ -255,10 +265,12 @@ export default function MyData() {
                     /></p>
                 </div>
             </div>
-            <div className="right-rail">
-                <RightRail />
-                <Chatbot presetQuestions={null} />
-            </div>
+            <Chatbot presetQuestions={null} />
+            {isUserLoggedIn && (
+                <div className="right-rail">
+                    <RightRail />
+                </div>
+            )}
         </div >
     )
 }

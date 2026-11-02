@@ -36,9 +36,7 @@ x-backend-depends-on: &backend-depends-on
 # broker passwords from secrets and URL-encodes reserved characters safely.
 x-celery-defaults: &celery-defaults
   <<: *service-defaults
-  build:
-    context: .
-    dockerfile: api/Dockerfile
+  image: stormgod/oscb-api:1.0
   env_file: .env
   init: true
   stop_grace_period: 2m
@@ -247,10 +245,7 @@ services:
   oscb-node:
     <<: *service-defaults
     container_name: oscb-node
-    image: oscb-node
-    build:
-      context: .
-      dockerfile: oscb-ui/oscb-node/Dockerfile
+    image: stormgod/oscb-node:1.0
     env_file: .env
     ports:
       - "${OSCB_PUBLIC_BIND_IP:-0.0.0.0}:3001:3001"
@@ -276,9 +271,7 @@ services:
   oscb-react:
     <<: *service-defaults
     container_name: oscb-react
-    build:
-      context: .
-      dockerfile: oscb-ui/oscb-react/Dockerfile
+    image: stormgod/oscb-react:1.0
     env_file: .env
     ports:
       - "${OSCB_PUBLIC_BIND_IP:-0.0.0.0}:3000:3000"
