@@ -1,2 +1,11 @@
-secrets/
 .env
+.env_*
+secrets/*.txt
+secrets/*.env
+__pycache__/
+*.log
+docker-compose-dev.yml
+docker-compose-mu.yml
+docker-compose-prod.yml
+docker-compose-v1.yml
+entrypoint-*.py

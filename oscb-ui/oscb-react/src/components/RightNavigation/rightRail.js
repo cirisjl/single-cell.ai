@@ -31,7 +31,18 @@ function RightRail() {
     }, []);
 
     return (
-        <div>
+        <div
+            className="right-rail-sticky-wrapper"
+            style={{
+                position: 'sticky',
+                top: 'var(--right-rail-top-offset, 0px)',
+                right: 0,
+                alignSelf: 'flex-start',
+                marginLeft: 'auto',
+                height: `calc(100dvh - var(--right-rail-top-offset, 0px))`,
+                minHeight: 0,
+                overflow: 'hidden',
+            }}>
             {isUserLoggedIn && (
                 <div className="right-container border-l border-gray-100 right-rail-container">
                     <div className="rightpane-1">

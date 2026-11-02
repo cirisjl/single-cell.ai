@@ -1,0 +1,32 @@
+{{- range $name, $w := .Values.workloads }}
+{{- if and $w.enabled $w.service.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+{{ include "single-cell-ai.labels" (dict "root" $ "component" $name) | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+{{ include "single-cell-ai.selectorLabels" (dict "root" $ "component" $name) | nindent 4 }}
+  ports:
+{{ toYaml $w.service.ports | nindent 4 }}
+{{- if eq $w.kind "StatefulSet" }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ printf "%s-headless" $name }}
+  labels:
+{{ include "single-cell-ai.labels" (dict "root" $ "component" $name) | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+{{ include "single-cell-ai.selectorLabels" (dict "root" $ "component" $name) | nindent 4 }}
+  ports:
+{{ toYaml $w.service.ports | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}

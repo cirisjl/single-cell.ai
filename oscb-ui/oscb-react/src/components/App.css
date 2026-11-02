@@ -360,7 +360,12 @@ Styles for Benchmarks page
 }
 
 .left-nav {
+  position: sticky;
+  top: var(--left-nav-top-offset, 0px);
+  max-height: calc(100vh - var(--left-nav-top-offset, 0px));
+  
   overflow-y: auto;
+  scrollbar-width: thin;
   height: 100vh;
 }
 

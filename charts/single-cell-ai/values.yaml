@@ -1,0 +1,980 @@
+# Generated from the previously produced 13-service Kubernetes conversion.
+# Install ONE release per namespace: service names stay identical to the source manifests
+# (oscbdb, oscb-redis, oscb-mysql, celery-api, etc.) for application compatibility.
+# Preserve image names/tags by default; override only images of your own built services.
+# WARNING: no secret VALUES belong in this file or in Helm --set arguments.
+# Existing Kubernetes Secret must include 19 keys. See DEPLOYMENT_TUTORIAL.md.
+# Shared storage MUST support ReadWriteMany for concurrent API and worker access.
+global:
+  imagePullSecrets: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podSecurityContext: {}
+secrets:
+  existingSecret: oscb-secrets
+config:
+  enabled: true
+  name: oscb-app-config
+  data:
+    OSCB_APP_DATA_DIR: /data/oscb
+    OSCB_WORKER_DATA_DIR: /data/oscb
+    OSCB_NOTEBOOK_DATA_DIR: /data
+    OSCB_ADMIN_BIND_IP: 127.0.0.1
+    OSCB_PUBLIC_BIND_IP: 0.0.0.0
+    OSCB_WEB_WORKER_CONCURRENCY: '2'
+    OSCB_CPU_WORKER_CONCURRENCY: '4'
+    OSCB_CELERY_MAX_MEMORY_KB: '100000000'
+    HOST_URL: app.example.org
+    MONGO_URL: mongodb://oscbdb:65530
+    UPLOAD_FOLDER: /data/upload
+    OUTPUT_FOLDER: /data/results
+    ERROR_FOLDER: /data/errors
+    REDIS_PASSWORD_FILE: /run/secrets/redis_password
+    REDIS_PORT: '6388'
+    RABBITMQ_DEFAULT_USER: admin
+    RABBITMQ_PORT: '5672'
+    MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_password
+    MYSQL_DATABASE: oscb
+    MYSQL_TCP_PORT: '3308'
+    EXTERNAL_PORT: '3001'
+    DBUSER: root
+    DATABASE: oscb
+    EMAIL_HOST: smtp.gmail.com
+    EMAIL_PORT: '465'
+    EMAIL_ACCOUNT: notifications@example.org
+    EMAIL_PWD_FILE: /run/secrets/email_password
+    OPENAI_API_KEY_FILE: /run/secrets/openai_api_key
+    GEMINI_API_KEY_FILE: /run/secrets/gemini_api_key
+    CONNECTION_LIMIT: '25'
+    COMPANION_UPLOAD_URLS: /.*/
+    GOOGLEDRIVE_KEY_FILE: /run/secrets/googledrive_key
+    GOOGLEDRIVE_SECRET_FILE: /run/secrets/googledrive_secret
+    DROPBOX_KEY_FILE: /run/secrets/dropbox_key
+    DROPBOX_SECRET_FILE: /run/secrets/dropbox_secret
+    ONEDRIVE_KEY_FILE: /run/secrets/onedrive_key
+    ONEDRIVE_SECRET_FILE: /run/secrets/onedrive_secret
+    NODE_ENV: development
+    MONGO_DB_NAME: oscb
+    MONGO_COLLECTION_OPTIONS: form_options
+    MONGO_COLLECTION_DATASETS: datasets
+    MONGO_COLLECTION_TASK_BUILDER: benchmarks
+    MONGO_COLLECTION_USER_DATASETS: user_datasets
+    MONGO_COLLECTION_JOBS: jobs
+    MONGO_COLLECTION_PREPROCESS_RESULTS: pp_results
+    MONGO_COLLECTION_BENCHMARKS: benchmarks
+    MONGO_COLLECTION_ERROR_LOG: error_log
+    MONGO_COLLECTION_PROJECTS: projects
+    MONGO_COLLECTION_CHAT_HISTORY: chat_history
+    NODE_MYSQL_CONNECTION_LIMIT: '10'
+    STORAGE_DIR: /usr/src/app/storage/
+    STORAGE_ALLOWANCE: '50'
+    INTERMEDIATE_STORAGE: /usr/src/app/temp/
+    PUBLIC_STORAGE: /usr/src/app/storage/publicDatasets/
+    REACT_APP_DIRECTUS_URL: https://directus.example.org
+    GITHUB_OWNER: cirisjl
+    GITHUB_REPO: single-cell.ai
+    GITHUB_TOKEN_FILE: /run/secrets/github_token
+    APP_ENV: Development
+    CELERY_BROKER_HOST: oscb-rabbitmq
+    CELERY_BROKER_USER: admin
+    CELERY_RESULT_BACKEND_HOST: oscb-redis
+    MAX_CONTENT_LENGTH: '16000000'
+    MAXCAPACITY: '104857600'
+    CORS_ENABLED: 'true'
+    CORS_ORIGIN: https://app.example.org
+    CORS_METHODS: GET,POST,PATCH,DELETE
+    CORS_ALLOWED_HEADERS: Content-Type,Authorization
+    CORS_EXPOSED_HEADERS: Content-Range
+    CORS_CREDENTIALS: 'true'
+    CORS_MAX_AGE: '18000'
+    ME_CONFIG_MONGODB_URL: mongodb://oscbdb:65530/
+    ME_CONFIG_MONGODB_SERVER: oscbdb
+    ME_CONFIG_MONGODB_PORT: '65530'
+    ME_CONFIG_BASICAUTH_ENABLED: 'true'
+    ME_CONFIG_BASICAUTH_USERNAME: admin
+    ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/mongo_express_password
+    DB_CLIENT: mysql
+    DB_HOST: oscb-mysql
+    DB_PORT: '3308'
+    DB_DATABASE: oscb
+    DB_USER: root
+    DB_PASSWORD_FILE: /run/secrets/mysql_password
+    KEY_FILE: /run/secrets/directus_key
+    SECRET_FILE: /run/secrets/directus_secret
+    ADMIN_EMAIL: admin@example.org
+    ADMIN_PASSWORD_FILE: /run/secrets/directus_password
+    PUBLIC_URL: https://directus.example.org
+    FLOWER_BASIC_AUTH_USER: admin
+storage:
+  shared:
+    enabled: true
+    name: oscb-shared-data
+    accessModes:
+    - ReadWriteMany
+    size: 100Gi
+    storageClassName: null
+    keepOnUninstall: true
+  directus:
+    enabled: true
+    name: directus-uploads
+    accessModes:
+    - ReadWriteOnce
+    size: 10Gi
+    storageClassName: null
+    keepOnUninstall: true
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+  tls:
+  - hosts:
+    - app.example.org
+    - api.example.org
+    - directus.example.org
+    - companion.example.org
+    secretName: oscb-tls
+  hosts:
+  - host: app.example.org
+    paths:
+    - path: /node
+      pathType: Prefix
+      service: oscb-node
+      port: 3001
+    - path: /
+      pathType: Prefix
+      service: oscb-react
+      port: 3000
+  - host: api.example.org
+    paths:
+    - path: /
+      pathType: Prefix
+      service: celery-api
+      port: 5005
+  - host: directus.example.org
+    paths:
+    - path: /
+      pathType: Prefix
+      service: directus
+      port: 8055
+  - host: companion.example.org
+    paths:
+    - path: /
+      pathType: Prefix
+      service: oscb-node
+      port: 3020
+workloads:
+  oscbdb:
+    enabled: true
+    kind: StatefulSet
+    image: mongo:7.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: mongo
+        port: 65530
+        targetPort: 65530
+    containerPorts:
+    - name: mongo
+      containerPort: 65530
+    envFromConfig: false
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: '2'
+        memory: 4Gi
+    terminationGracePeriodSeconds: 60
+    persistence:
+      name: data
+      accessModes:
+      - ReadWriteOnce
+      size: 30Gi
+      storageClassName: null
+    command:
+    - mongod
+    - --port
+    - '65530'
+    readinessProbe:
+      exec:
+        command:
+        - mongosh
+        - --quiet
+        - --port
+        - '65530'
+        - --eval
+        - db.adminCommand({ping:1})
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+    livenessProbe:
+      tcpSocket:
+        port: 65530
+      initialDelaySeconds: 45
+      periodSeconds: 15
+    volumeMounts:
+    - name: data
+      mountPath: /data/db
+  oscb-mysql:
+    enabled: true
+    kind: StatefulSet
+    image: mysql:8.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: mysql
+        port: 3308
+        targetPort: 3308
+    containerPorts:
+    - name: mysql
+      containerPort: 3308
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: '3'
+        memory: 5Gi
+    terminationGracePeriodSeconds: 60
+    persistence:
+      name: data
+      accessModes:
+      - ReadWriteOnce
+      size: 30Gi
+      storageClassName: null
+    args:
+    - --character-set-server=utf8mb4
+    - --collation-server=utf8mb4_unicode_ci
+    - --default-authentication-plugin=mysql_native_password
+    - --port=3308
+    readinessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -ec
+        - MYSQL_PWD="$(cat /run/secrets/mysql_password)" mysql --protocol=TCP -h 127.0.0.1 -P 3308 -uroot -Nse
+          "SELECT 1" | grep -qx 1
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5
+    livenessProbe:
+      tcpSocket:
+        port: 3308
+      initialDelaySeconds: 60
+      periodSeconds: 15
+    volumeMounts:
+    - name: data
+      mountPath: /var/lib/mysql
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    env:
+    - name: MYSQL_ROOT_PASSWORD_FILE
+      value: /run/secrets/mysql_password
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - mysql_password
+  oscb-rabbitmq:
+    enabled: true
+    kind: StatefulSet
+    image: rabbitmq:4.2.8-management
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: amqp
+        port: 5672
+        targetPort: 5672
+      - name: management
+        port: 15672
+        targetPort: 15672
+    containerPorts:
+    - name: amqp
+      containerPort: 5672
+    - name: management
+      containerPort: 15672
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: '2'
+        memory: 3Gi
+    terminationGracePeriodSeconds: 60
+    persistence:
+      name: data
+      accessModes:
+      - ReadWriteOnce
+      size: 10Gi
+      storageClassName: null
+    command:
+    - /bin/sh
+    - -ec
+    args:
+    - export RABBITMQ_DEFAULT_PASS="$(cat /run/secrets/rabbitmq_password)"; exec rabbitmq-server
+    readinessProbe:
+      exec:
+        command:
+        - rabbitmq-diagnostics
+        - -q
+        - ping
+      initialDelaySeconds: 25
+      periodSeconds: 10
+      timeoutSeconds: 5
+    livenessProbe:
+      tcpSocket:
+        port: 5672
+      initialDelaySeconds: 45
+      periodSeconds: 15
+    volumeMounts:
+    - name: data
+      mountPath: /var/lib/rabbitmq
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+  oscb-redis:
+    enabled: true
+    kind: StatefulSet
+    image: redis:6-alpine
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: redis
+        port: 6388
+        targetPort: 6388
+    containerPorts:
+    - name: redis
+      containerPort: 6388
+    envFromConfig: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+    terminationGracePeriodSeconds: 60
+    persistence:
+      name: data
+      accessModes:
+      - ReadWriteOnce
+      size: 5Gi
+      storageClassName: null
+    command:
+    - /bin/sh
+    - -ec
+    args:
+    - exec redis-server --port 6388 --save 20 1 --loglevel warning --requirepass "$(cat /run/secrets/redis_password)"
+    readinessProbe:
+      exec:
+        command:
+        - /bin/sh
+        - -ec
+        - REDISCLI_AUTH="$(cat /run/secrets/redis_password)" redis-cli -p 6388 ping | grep -qx PONG
+      initialDelaySeconds: 5
+      periodSeconds: 10
+      timeoutSeconds: 5
+    livenessProbe:
+      tcpSocket:
+        port: 6388
+      initialDelaySeconds: 20
+      periodSeconds: 10
+    volumeMounts:
+    - name: data
+      mountPath: /data
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - redis_password
+  celery-api:
+    enabled: true
+    kind: Deployment
+    image: stormgod/oscb-api:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 5005
+        targetPort: 5005
+    containerPorts:
+    - name: http
+      containerPort: 5005
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: '2'
+        memory: 4Gi
+    terminationGracePeriodSeconds: 45
+    strategy:
+      type: Recreate
+    command:
+    - python3
+    - /usr/local/bin/celery-entrypoint.py
+    args:
+    - python3
+    - main.py
+    readinessProbe:
+      tcpSocket:
+        port: 5005
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 5005
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: shared-data
+      mountPath: /data/results
+      subPath: results
+    - name: shared-data
+      mountPath: /data/upload
+      subPath: uploads
+    - name: shared-data
+      mountPath: /data/logs
+      subPath: logs
+    - name: shared-data
+      mountPath: /data/errors
+      subPath: errors
+    - name: shared-data
+      mountPath: /usr/src/app/storage
+      subPath: user_storage
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+      - redis_password
+    - name: shared-data
+      type: pvc
+      claim: shared
+  directus:
+    enabled: true
+    kind: Deployment
+    image: directus/directus:9.24.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 8055
+        targetPort: 8055
+    containerPorts:
+    - name: http
+      containerPort: 8055
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: '2'
+        memory: 2Gi
+    terminationGracePeriodSeconds: 45
+    strategy:
+      type: Recreate
+    readinessProbe:
+      tcpSocket:
+        port: 8055
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 8055
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: directus-uploads
+      mountPath: /directus/uploads
+    env:
+    - name: DB_PASSWORD
+      secretKey: mysql_password
+    - name: ADMIN_PASSWORD
+      secretKey: directus_password
+    - name: KEY
+      secretKey: directus_key
+    - name: SECRET
+      secretKey: directus_secret
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - mysql_password
+      - directus_password
+      - directus_key
+      - directus_secret
+    - name: directus-uploads
+      type: pvc
+      claim: directus
+  oscb-node:
+    enabled: true
+    kind: Deployment
+    image: stormgod/oscb-node:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 3001
+        targetPort: 3001
+      - name: companion
+        port: 3020
+        targetPort: 3020
+    containerPorts:
+    - name: http
+      containerPort: 3001
+    - name: companion
+      containerPort: 3020
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 200m
+        memory: 256Mi
+      limits:
+        cpu: '2'
+        memory: 3Gi
+    terminationGracePeriodSeconds: 45
+    strategy:
+      type: Recreate
+    readinessProbe:
+      tcpSocket:
+        port: 3001
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 3001
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: user-data
+      mountPath: /usr/src/app/storage
+      subPath: user_storage
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - mysql_password
+      - openai_api_key
+      - gemini_api_key
+      - googledrive_key
+      - googledrive_secret
+      - dropbox_key
+      - dropbox_secret
+      - onedrive_key
+      - onedrive_secret
+      - email_password
+      - jwt_token_secret
+    - name: user-data
+      type: pvc
+      claim: shared
+  oscb-react:
+    enabled: true
+    kind: Deployment
+    image: stormgod/oscb-react:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 3000
+        targetPort: 3000
+    containerPorts:
+    - name: http
+      containerPort: 3000
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: '2'
+        memory: 2Gi
+    terminationGracePeriodSeconds: 45
+    strategy:
+      type: RollingUpdate
+    readinessProbe:
+      tcpSocket:
+        port: 3000
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 3000
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - github_token
+      - googledrive_key
+      - googledrive_secret
+      - dropbox_key
+      - dropbox_secret
+      - onedrive_key
+      - onedrive_secret
+  worker-cpu:
+    enabled: true
+    kind: Deployment
+    image: stormgod/oscb-api:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: false
+      ports: []
+    containerPorts: []
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: '1'
+        memory: 1Gi
+      limits:
+        cpu: '6'
+        memory: 10Gi
+    terminationGracePeriodSeconds: 120
+    strategy:
+      type: Recreate
+    command:
+    - python3
+    - /usr/local/bin/celery-entrypoint.py
+    args:
+    - celery
+    - -A
+    - main.celery
+    - worker
+    - --loglevel=info
+    - -Q
+    - cpu
+    - --concurrency=4
+    - --prefetch-multiplier=1
+    - --max-tasks-per-child=50
+    - --max-memory-per-child=100000000
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: shared-data
+      mountPath: /data/results
+      subPath: results
+    - name: shared-data
+      mountPath: /data/upload
+      subPath: uploads
+    - name: shared-data
+      mountPath: /data/logs
+      subPath: logs
+    - name: shared-data
+      mountPath: /data/errors
+      subPath: errors
+    - name: shared-data
+      mountPath: /usr/src/app/storage
+      subPath: user_storage
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+      - redis_password
+    - name: shared-data
+      type: pvc
+      claim: shared
+  worker-web:
+    enabled: true
+    kind: Deployment
+    image: stormgod/oscb-api:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: false
+      ports: []
+    containerPorts: []
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 300m
+        memory: 512Mi
+      limits:
+        cpu: '1'
+        memory: 3Gi
+    terminationGracePeriodSeconds: 120
+    strategy:
+      type: Recreate
+    command:
+    - python3
+    - /usr/local/bin/celery-entrypoint.py
+    args:
+    - celery
+    - -A
+    - main.celery
+    - worker
+    - --loglevel=info
+    - -Q
+    - web,dataset
+    - --concurrency=2
+    - --prefetch-multiplier=1
+    - --max-tasks-per-child=50
+    - --max-memory-per-child=100000000
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: shared-data
+      mountPath: /data/results
+      subPath: results
+    - name: shared-data
+      mountPath: /data/upload
+      subPath: uploads
+    - name: shared-data
+      mountPath: /data/logs
+      subPath: logs
+    - name: shared-data
+      mountPath: /data/errors
+      subPath: errors
+    - name: shared-data
+      mountPath: /usr/src/app/storage
+      subPath: user_storage
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+      - redis_password
+    - name: shared-data
+      type: pvc
+      claim: shared
+  dashboard:
+    enabled: false
+    kind: Deployment
+    image: stormgod/oscb-api:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 5555
+        targetPort: 5555
+    containerPorts:
+    - name: http
+      containerPort: 5555
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: '1'
+        memory: 2Gi
+    terminationGracePeriodSeconds: 30
+    strategy:
+      type: RollingUpdate
+    command:
+    - /bin/sh
+    - -ec
+    args:
+    - export FLOWER_BASIC_AUTH="${FLOWER_BASIC_AUTH_USER:-admin}:$(cat /run/secrets/flower_basicauth_password)";
+      exec python3 /usr/local/bin/celery-entrypoint.py celery --app main.celery flower --port=5555
+    readinessProbe:
+      tcpSocket:
+        port: 5555
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 5555
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+      - redis_password
+      - flower_basicauth_password
+  mongo-express:
+    enabled: false
+    kind: Deployment
+    image: mongo-express:latest
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: true
+      ports:
+      - name: http
+        port: 8081
+        targetPort: 8081
+    containerPorts:
+    - name: http
+      containerPort: 8081
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: '1'
+        memory: 1Gi
+    terminationGracePeriodSeconds: 45
+    strategy:
+      type: RollingUpdate
+    readinessProbe:
+      tcpSocket:
+        port: 8081
+      initialDelaySeconds: 3
+      periodSeconds: 5
+      timeoutSeconds: 3
+      failureThreshold: 6
+    livenessProbe:
+      tcpSocket:
+        port: 8081
+      initialDelaySeconds: 15
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 6
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    env:
+    - name: ME_CONFIG_MONGODB_URL
+      value: mongodb://oscbdb:65530/
+    - name: ME_CONFIG_BASICAUTH_ENABLED
+      value: 'true'
+    - name: ME_CONFIG_BASICAUTH_PASSWORD
+      secretKey: mongo_express_password
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - mongo_express_password
+  worker-gpu:
+    enabled: false
+    kind: Deployment
+    image: stormgod/oscb-api:1.0
+    imagePullPolicy: IfNotPresent
+    replicas: 1
+    service:
+      enabled: false
+      ports: []
+    containerPorts: []
+    envFromConfig: true
+    resources:
+      requests:
+        cpu: '1'
+        memory: 2Gi
+      limits:
+        cpu: '6'
+        memory: 24Gi
+        nvidia.com/gpu: 1
+    terminationGracePeriodSeconds: 120
+    strategy:
+      type: Recreate
+    command:
+    - python3
+    - /usr/local/bin/celery-entrypoint.py
+    args:
+    - celery
+    - -A
+    - main.celery
+    - worker
+    - --loglevel=info
+    - -Q
+    - gpu
+    - --pool=solo
+    - --concurrency=1
+    - --prefetch-multiplier=1
+    volumeMounts:
+    - name: secrets
+      mountPath: /run/secrets
+      readOnly: true
+    - name: shared-data
+      mountPath: /data/results
+      subPath: results
+    - name: shared-data
+      mountPath: /data/upload
+      subPath: uploads
+    - name: shared-data
+      mountPath: /data/logs
+      subPath: logs
+    - name: shared-data
+      mountPath: /data/errors
+      subPath: errors
+    - name: shared-data
+      mountPath: /usr/src/app/storage
+      subPath: user_storage
+    volumes:
+    - name: secrets
+      type: secret
+      keys:
+      - rabbitmq_password
+      - redis_password
+    - name: shared-data
+      type: pvc
+      claim: shared

@@ -6,21 +6,39 @@ function LeftNavComponent(props) {
   const [categories, setCategories] = useState([
     {
       category_id: 1,
-      category_name: 'Analyses',
+      category_name: 'Deployment',
       expanded: true,
-      filters: ['Data Management', 'Tools', 'Workflows', 'Job Management'],
+      filters: ['Docker Compose', 'Kubernetes', 'Helm'],
     },
     {
       category_id: 2,
+      category_name: 'Analyses',
+      expanded: true,
+      filters: ['Data Management', 'Tools', 'Workflows', 'Job Management', 'Sample Report'],
+    },
+    {
+      category_id: 3,
       category_name: 'Benchmarks',
       expanded: true,
       filters: ['Create New Benchmarks', 'Benchmarks'],
     },
     {
-      category_id: 3,
-      category_name: 'Python API',
+      category_id: 4,
+      category_name: 'Python Packages',
       expanded: true,
       filters: ['Installation', 'Data Loader', 'Evaluators'],
+    },
+    {
+      category_id: 5,
+      category_name: 'API',
+      expanded: true,
+      filters: ['FastAPI Endpoints'],
+    },
+    {
+      category_id: 6,
+      category_name: 'Tutorials',
+      expanded: true,
+      filters: ['Annotation Workflow', 'Identify outliers', 'Refine Annotation'],
     }
   ]);
 

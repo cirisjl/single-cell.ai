@@ -86,7 +86,7 @@
             "pct_counts_mt": {
               "type": "integer",
               "title": "Percentage of Counts in Mitochondrial Genes",
-              "default": 3
+              "default": 5
             },
             "target_sum": {
               "type": "integer",

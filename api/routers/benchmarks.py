@@ -18,7 +18,6 @@ from fastapi.encoders import jsonable_encoder
 from utils.mongodb import upsert_jobs
 from datetime import datetime
 
-
 router = APIRouter(prefix='/api/benchmarks', tags=['benchmarks'], responses={404: {"Description": "API Not found"}})
 
 

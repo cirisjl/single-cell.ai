@@ -1,0 +1,105 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-api
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: celery-api
+spec:
+  selector:
+    app: celery-api
+  ports:
+  - name: http
+    port: 5005
+    targetPort: 5005
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-api
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: celery-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: celery-api
+  template:
+    metadata:
+      labels:
+        app: celery-api
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: celery-api
+        image: stormgod/oscb-api:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 5005
+        command:
+        - python3
+        - /usr/local/bin/celery-entrypoint.py
+        args:
+        - python3
+        - main.py
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 4Gi
+        readinessProbe:
+          tcpSocket:
+            port: 5005
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 5005
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+        - name: shared-data
+          mountPath: /data/results
+          subPath: results
+        - name: shared-data
+          mountPath: /data/upload
+          subPath: uploads
+        - name: shared-data
+          mountPath: /data/logs
+          subPath: logs
+        - name: shared-data
+          mountPath: /data/errors
+          subPath: errors
+        - name: shared-data
+          mountPath: /usr/src/app/storage
+          subPath: user_storage
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: rabbitmq_password
+            path: rabbitmq_password
+          - key: redis_password
+            path: redis_password
+      - name: shared-data
+        persistentVolumeClaim:
+          claimName: oscb-shared-data

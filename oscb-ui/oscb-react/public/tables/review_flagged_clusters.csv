@@ -1,0 +1,22 @@
+Integration,Cluster,CellTypist_ref,SingleR_user_ref,scANVI,Majority_vote,CTref_vs_scANVI_lineage_match,SingleRuser_vs_scANVI_lineage_match,scANVI_transfer_score,reason
+LIGER,8,macrophage,macrophage,macrophage,macrophage,True,True,0.6182000041007996,scANVI score <0.8
+LIGER,11,monocyte,Fraction A pre-pro B cell,monocyte,Monocytes,True,False,0.8264999985694885,SingleR-user/scANVI lineage mismatch
+LIGER,18,basophil,basophil,basophil,basophil,True,True,0.7098000049591064,scANVI score <0.8
+LIGER,28,granulocyte,monocyte,granulocyte,Granulocytes,True,False,0.9854000210762024,SingleR-user/scANVI lineage mismatch
+Harmony,8,macrophage,macrophage,macrophage,macrophage,True,True,0.6358000040054321,scANVI score <0.8
+Harmony,11,monocyte,Fraction A pre-pro B cell,monocyte,Monocytes,True,False,0.8319000005722046,SingleR-user/scANVI lineage mismatch
+Harmony,18,basophil,basophil,T cell,basophil,False,False,0.6704999804496765,CTref/scANVI lineage mismatch; SingleR-user/scANVI lineage mismatch; scANVI score <0.8
+Harmony,19,T cell,T cell,T cell,T cell,True,True,0.7239999771118164,scANVI score <0.8
+Harmony,28,granulocyte,monocyte,granulocyte,Granulocytes,True,False,0.8420000076293945,SingleR-user/scANVI lineage mismatch
+Seurat,1,basophil,hematopoietic precursor cell,hematopoietic precursor cell,Monocytes,False,True,0.8245000243186951,CTref/scANVI lineage mismatch
+Seurat,8,macrophage,macrophage,macrophage,macrophage,True,True,0.5900999903678894,scANVI score <0.8
+Seurat,11,monocyte,Fraction A pre-pro B cell,monocyte,Monocytes,True,False,0.8565000295639038,SingleR-user/scANVI lineage mismatch
+Seurat,19,T cell,T cell,T cell,T cell,True,True,0.5498999953269958,scANVI score <0.8
+Seurat,20,T cell,T cell,T cell,T cell,True,True,0.680400013923645,scANVI score <0.8
+Seurat,28,granulocyte,monocyte,granulocyte,Granulocytes,True,False,0.9477999806404114,SingleR-user/scANVI lineage mismatch
+scVI,1,hematopoietic precursor cell,hematopoietic precursor cell,hematopoietic precursor cell,hematopoietic precursor cell,True,True,0.7439000010490417,scANVI score <0.8
+scVI,8,macrophage,macrophage,macrophage,macrophage,True,True,0.7516999840736389,scANVI score <0.8
+scVI,11,monocyte,Fraction A pre-pro B cell,monocyte,Monocytes,True,False,0.8356000185012817,SingleR-user/scANVI lineage mismatch
+scVI,15,immature B cell,immature B cell,late pro-B cell,B cells,True,True,0.7890999913215637,scANVI score <0.8
+scVI,19,T cell,T cell,T cell,T cell,True,True,0.6902999877929688,scANVI score <0.8
+scVI,28,granulocyte,monocyte,monocyte,Granulocytes,False,True,0.6735000014305115,CTref/scANVI lineage mismatch; scANVI score <0.8

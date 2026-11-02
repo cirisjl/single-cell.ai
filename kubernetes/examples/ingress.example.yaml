@@ -1,0 +1,65 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oscb-ingress
+  namespace: oscb
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - app.example.org
+    - api.example.org
+    - directus.example.org
+    - companion.example.org
+    secretName: oscb-tls
+  rules:
+  - host: app.example.org
+    http:
+      paths:
+      - path: /node
+        pathType: Prefix
+        backend:
+          service:
+            name: oscb-node
+            port:
+              number: 3001
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: oscb-react
+            port:
+              number: 3000
+  - host: api.example.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: celery-api
+            port:
+              number: 5005
+  - host: directus.example.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: directus
+            port:
+              number: 8055
+  - host: companion.example.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: oscb-node
+            port:
+              number: 3020

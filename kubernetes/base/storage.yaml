@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: oscb-shared-data
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-shared-data
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: directus-uploads
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: directus-uploads
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi

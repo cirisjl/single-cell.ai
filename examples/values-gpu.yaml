@@ -1,0 +1,8 @@
+# Requires NVIDIA GPU nodes and the Kubernetes NVIDIA device plugin.
+workloads:
+  worker-gpu:
+    enabled: true
+    replicas: 1
+    # Example placement; replace the node label with one actually present in your cluster.
+    # nodeSelector:
+    #   accelerator: nvidia

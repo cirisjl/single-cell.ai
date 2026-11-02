@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-gpu
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: worker-gpu
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: worker-gpu
+  template:
+    metadata:
+      labels:
+        app: worker-gpu
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: worker-gpu
+        image: stormgod/oscb-api:1.0
+        imagePullPolicy: IfNotPresent
+        command:
+        - python3
+        - /usr/local/bin/celery-entrypoint.py
+        args:
+        - celery
+        - -A
+        - main.celery
+        - worker
+        - --loglevel=info
+        - -Q
+        - gpu
+        - --pool=solo
+        - --concurrency=1
+        - --prefetch-multiplier=1
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: '1'
+            memory: 2Gi
+          limits:
+            cpu: '6'
+            memory: 24Gi
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+        - name: shared-data
+          mountPath: /data/results
+          subPath: results
+        - name: shared-data
+          mountPath: /data/upload
+          subPath: uploads
+        - name: shared-data
+          mountPath: /data/logs
+          subPath: logs
+        - name: shared-data
+          mountPath: /data/errors
+          subPath: errors
+        - name: shared-data
+          mountPath: /usr/src/app/storage
+          subPath: user_storage
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: rabbitmq_password
+            path: rabbitmq_password
+          - key: redis_password
+            path: redis_password
+      - name: shared-data
+        persistentVolumeClaim:
+          claimName: oscb-shared-data

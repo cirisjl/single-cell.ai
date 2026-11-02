@@ -1,0 +1,29 @@
+Integration,Method,Different_exact_cluster_indices_vs_LIGER,Different_lineage_cluster_indices_vs_LIGER
+LIGER,CellTypist default,0,0
+LIGER,CellTypist reference,0,0
+LIGER,SingleR main,0,0
+LIGER,SingleR fine,0,0
+LIGER,SingleR user reference,0,0
+LIGER,scANVI,0,0
+LIGER,Majority vote,0,0
+Harmony,CellTypist default,0,0
+Harmony,CellTypist reference,0,0
+Harmony,SingleR main,0,0
+Harmony,SingleR fine,0,0
+Harmony,SingleR user reference,0,0
+Harmony,scANVI,2,1
+Harmony,Majority vote,1,0
+Seurat,CellTypist default,0,0
+Seurat,CellTypist reference,1,1
+Seurat,SingleR main,0,0
+Seurat,SingleR fine,0,0
+Seurat,SingleR user reference,0,0
+Seurat,scANVI,4,0
+Seurat,Majority vote,5,1
+scVI,CellTypist default,0,0
+scVI,CellTypist reference,1,0
+scVI,SingleR main,0,0
+scVI,SingleR fine,0,0
+scVI,SingleR user reference,0,0
+scVI,scANVI,4,1
+scVI,Majority vote,4,0

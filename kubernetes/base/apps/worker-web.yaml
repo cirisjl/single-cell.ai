@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-web
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: worker-web
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: worker-web
+  template:
+    metadata:
+      labels:
+        app: worker-web
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: worker-web
+        image: stormgod/oscb-api:1.0
+        imagePullPolicy: IfNotPresent
+        command:
+        - python3
+        - /usr/local/bin/celery-entrypoint.py
+        args:
+        - celery
+        - -A
+        - main.celery
+        - worker
+        - --loglevel=info
+        - -Q
+        - web,dataset
+        - --concurrency=2
+        - --prefetch-multiplier=1
+        - --max-tasks-per-child=50
+        - --max-memory-per-child=100000000
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: 300m
+            memory: 512Mi
+          limits:
+            cpu: '1'
+            memory: 3Gi
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+        - name: shared-data
+          mountPath: /data/results
+          subPath: results
+        - name: shared-data
+          mountPath: /data/upload
+          subPath: uploads
+        - name: shared-data
+          mountPath: /data/logs
+          subPath: logs
+        - name: shared-data
+          mountPath: /data/errors
+          subPath: errors
+        - name: shared-data
+          mountPath: /usr/src/app/storage
+          subPath: user_storage
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: rabbitmq_password
+            path: rabbitmq_password
+          - key: redis_password
+            path: redis_password
+      - name: shared-data
+        persistentVolumeClaim:
+          claimName: oscb-shared-data

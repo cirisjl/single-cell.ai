@@ -3,7 +3,7 @@
   "properties": {
     "parameters": {
       "type": "object",
-      "title": "Parameters for Integration Workflow",
+      "title": "Parameters for Annotation Workflow",
       "properties": {
         "species": {
           "type": ["string", "null"],
@@ -60,7 +60,7 @@
             "pct_counts_mt": {
               "type": "integer",
               "title": "Percentage of Counts in Mitochondrial Genes",
-              "default": 3
+              "default": 5
             },
             "target_sum": {
               "type": "integer",

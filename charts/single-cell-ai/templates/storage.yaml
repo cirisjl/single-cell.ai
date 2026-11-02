@@ -1,0 +1,26 @@
+{{- range $key, $store := .Values.storage }}
+{{- if $store.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $store.name }}
+  labels:
+    app.kubernetes.io/name: {{ $.Chart.Name | quote }}
+    app.kubernetes.io/instance: {{ $.Release.Name | quote }}
+    app.kubernetes.io/component: {{ printf "storage-%s" $key | quote }}
+  {{- if $store.keepOnUninstall }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
+spec:
+  accessModes:
+{{ toYaml $store.accessModes | nindent 4 }}
+  {{- if $store.storageClassName }}
+  storageClassName: {{ $store.storageClassName | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $store.size | quote }}
+{{- end }}
+{{- end }}

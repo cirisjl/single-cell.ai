@@ -660,7 +660,7 @@ export default function WorkflowTaskDetailsComponent() {
           <div align="center">
             <div className='section'>
               <div className='section-heading' onClick={() => toggleSectionVisibility('preprocessResults')}>
-                <h3>Details for each method</h3>
+                <h3>Details for Each Method</h3>
                 <span className="category-icon"><FontAwesomeIcon icon={sectionsVisibility.preprocessResults ? faAngleDown : faAngleRight} /></span>
               </div>
               <div className='section-content' style={{ display: sectionsVisibility.preprocessResults ? 'block' : 'none' }}>

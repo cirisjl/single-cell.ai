@@ -1,0 +1,22 @@
+{{- range $name, $w := .Values.workloads }}
+{{- if and $w.enabled (eq $w.kind "Deployment") }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+{{ include "single-cell-ai.labels" (dict "root" $ "component" $name) | nindent 4 }}
+spec:
+  replicas: {{ $w.replicas }}
+  selector:
+    matchLabels:
+{{ include "single-cell-ai.selectorLabels" (dict "root" $ "component" $name) | nindent 6 }}
+  {{- with $w.strategy }}
+  strategy:
+{{ toYaml . | nindent 4 }}
+  {{- end }}
+  template:
+{{ include "single-cell-ai.pod" (dict "root" $ "name" $name "workload" $w) | nindent 4 }}
+{{- end }}
+{{- end }}

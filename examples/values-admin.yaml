@@ -1,0 +1,6 @@
+# Add -f examples/values-admin.yaml to enable the administrator workloads.
+workloads:
+  dashboard:
+    enabled: true
+  mongo-express:
+    enabled: true

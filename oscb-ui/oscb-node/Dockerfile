@@ -3,25 +3,17 @@ FROM node:18
 WORKDIR /usr/src/app
 
 COPY oscb-ui/oscb-node/package*.json ./
+# Reproducible dependency installation with a lockfile; preserve npm install
+# as the fallback for older repositories that have no package-lock.json.
+RUN if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; \
+    else npm install --no-audit --no-fund; fi
 
-RUN npm install
-
-COPY oscb-ui/oscb-node/ .
-
-RUN mkdir uploads
-RUN chmod +x deploy.sh
-RUN chmod +x deploy_companion.sh
-
-# Copy the entrypoint script into the container
+COPY oscb-ui/oscb-node/ ./
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN mkdir -p uploads \
+    && chmod +x deploy.sh deploy_companion.sh /usr/local/bin/entrypoint.sh
 
-# Make sure it's executable inside the container
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Set the entrypoint
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-
-EXPOSE 3001
-EXPOSE 3020
-
+EXPOSE 3001 3020
+# Keep legacy two-script lifecycle until their actual source is available for review.
 CMD ["sh", "-c", "./deploy.sh & ./deploy_companion.sh"]

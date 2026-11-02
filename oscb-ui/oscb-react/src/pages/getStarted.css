@@ -1,0 +1,1479 @@
+.sc-home {
+    color-scheme: light;
+    --ink: #13223e;
+    --ink2: #283c58;
+    --muted: #63738b;
+    --blue: #165da8;
+    --blue-2: #0b4c91;
+    --cyan: #177fa6;
+    --teal: #0d827d;
+    --purple: #436aa7;
+    --line: #e4eaf4;
+    --paper: #fff;
+    --wash: #f7f9fd;
+    --shadow: 0 18px 60px rgba(28, 57, 102, .08);
+    --radius: 22px;
+    --content: 1160px
+}
+
+.sc-home * {
+    box-sizing: border-box
+}
+
+.sc-home {
+    scroll-behavior: smooth;
+    scroll-padding-top: 18px
+}
+
+.sc-home {
+    margin: 0;
+    background: var(--paper);
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+    line-height: 1.58;
+    -webkit-font-smoothing: antialiased
+}
+
+.sc-home a {
+    color: var(--blue-2);
+    text-decoration: none
+}
+
+.sc-home a:hover {
+    text-decoration: underline
+}
+
+.sc-home button {
+    font: inherit
+}
+
+.sc-home svg {
+    max-width: 100%
+}
+
+.sc-home img {
+    max-width: 100%;
+    height: auto;
+    display: block
+}
+
+.sc-home .sc-container {
+    width: min(var(--content), calc(100% - 48px));
+    margin-inline: auto
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.sc-home .sc-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    justify-content: center;
+    border-radius: 12px;
+    padding: 12px 19px;
+    border: 1px solid transparent;
+    font-size: 13px;
+    font-weight: 730;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: transform .2s, box-shadow .2s, background .2s;
+    cursor: pointer
+}
+
+.sc-home .sc-cta:hover {
+    transform: translateY(-2px)
+}
+
+.sc-home .sc-cta.primary {
+    color: white;
+    background: linear-gradient(115deg, #0c509b, #186ba7);
+    box-shadow: 0 11px 25px rgba(43, 93, 207, .20)
+}
+
+.sc-home .sc-cta.primary:hover {
+    box-shadow: 0 14px 28px rgba(43, 93, 207, .27)
+}
+
+.sc-home .sc-cta.secondary {
+    color: var(--blue-2);
+    border-color: #cfddf0;
+    background: white
+}
+
+.sc-home .sc-cta.small {
+    padding: 9px 14px;
+    font-size: 12px
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.sc-home h1,
+.sc-home h2,
+.sc-home h3,
+.sc-home p {
+    margin-top: 0
+}
+
+.sc-home h1 {
+    font-size: clamp(45px, 5.0vw, 72px);
+    letter-spacing: -3.7px;
+    line-height: 1.065;
+    font-weight: 820;
+    margin: 24px 0 23px
+}
+
+.sc-home h1 .gradient {
+    background: linear-gradient(95deg, #163968 10%, #145da1 48%, #137e8a 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.sc-home .stats-wrap {
+    padding: 20px 0;
+    background: #f8fafd;
+    border-top: 1px solid #edf1f7;
+    border-bottom: 1px solid #eaf0f8
+}
+
+.sc-home .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr))
+}
+
+.sc-home .stat {
+    padding: 14px 22px;
+    border-right: 1px solid #dde5f1
+}
+
+.sc-home .stat:first-child {
+    padding-left: 0
+}
+
+.sc-home .stat:last-child {
+    border: none
+}
+
+.sc-home .stat strong {
+    font-size: 25px;
+    letter-spacing: -1.1px;
+    display: block;
+    color: #16335d;
+    line-height: 1.15
+}
+
+.sc-home .stat span {
+    font-size: 11px;
+    color: #62748b;
+    margin-top: 5px;
+    display: block
+}
+
+.sc-home .stats-caption {
+    text-align: right;
+    font-size: 10px;
+    color: #93a0b1;
+    margin-top: 8px
+}
+
+.sc-home .sc-section {
+    padding: 103px 0
+}
+
+.sc-home .sc-section.wash {
+    background: #f8fafd
+}
+
+.sc-home .sc-section.hero {
+    background: radial-gradient(ellipse at 96% 15%, rgba(153, 220, 247, .2), transparent 48%), radial-gradient(ellipse at 10% 94%, rgba(217, 233, 248, .24), transparent 45%), #fff
+}
+
+.sc-home .sc-section.compact {
+    padding: 78px 0
+}
+
+/* Section intro is a self-contained vertical stack.  Do not reuse the
+   generic `section-heading` class: app-wide styles may render it as a
+   horizontal grid and place the heading underneath the following cards. */
+.sc-home .sc-section-heading {
+    position: relative;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+    row-gap: 13px;
+    width: 100%;
+    max-width: 790px;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    margin: 0 0 38px;
+    padding: 0;
+    float: none;
+    clear: both;
+    overflow: visible;
+    text-align: left;
+}
+.sc-home .sc-section-heading--center {
+    margin-inline: auto;
+    text-align: center;
+    align-items: center;
+}
+.sc-home .sc-section-heading > .kicker {
+    display: block;
+    order: 0;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    position: static;
+    float: none;
+    line-height: 1.5;
+    white-space: normal;
+}
+.sc-home .sc-section-heading > h2 {
+    display: block;
+    order: 1;
+    position: static;
+    float: none;
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(27px, 4.0cqw, 43px);
+    font-weight: 800;
+    line-height: 1.19;
+    letter-spacing: -.037em;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+.sc-home .sc-section-heading > p.lead {
+    display: block;
+    order: 2;
+    position: static;
+    float: none;
+    width: 100%;
+    max-width: 750px;
+    height: auto;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(13px, 1.65cqw, 16px);
+    line-height: 1.75;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+
+.sc-home .kicker {
+    color: #236fc8;
+    text-transform: uppercase;
+    letter-spacing: 2.6px;
+    font-size: 10px;
+    font-weight: 830;
+    margin-bottom: 14px;
+    display: block
+}
+
+.sc-home h2 {
+    font-size: clamp(31px, 3.3vw, 45px);
+    letter-spacing: -1.8px;
+    line-height: 1.16;
+    font-weight: 800;
+    margin-bottom: 16px
+}
+
+.sc-home .lead {
+    font-size: 15px;
+    color: #65758b;
+    line-height: 1.8;
+    margin-bottom: 0
+}
+
+.sc-home .two-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px
+}
+
+.sc-home .persona {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 31px 32px 27px;
+    box-shadow: 0 8px 34px rgba(40, 80, 128, .04);
+    position: relative;
+    overflow: hidden
+}
+
+.sc-home .persona:before {
+    content: "";
+    height: 4px;
+    background: linear-gradient(90deg, #0bbfae, #4a9ae9);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%
+}
+
+.sc-home .persona.purple:before {
+    background: linear-gradient(90deg, #426cae, #2a899a)
+}
+
+.sc-home .persona-icon {
+    height: 49px;
+    width: 49px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e7f8f5;
+    color: #099c92;
+    margin-bottom: 20px;
+    font-size: 22px
+}
+
+.sc-home .persona.purple .persona-icon {
+    background: #eaf2fc;
+    color: #3b66a0
+}
+
+.sc-home .persona h3 {
+    font-size: 22px;
+    letter-spacing: -.6px;
+    margin-bottom: 10px
+}
+
+.sc-home .persona p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.85;
+    margin-bottom: 20px
+}
+
+.sc-home .link-inline {
+    font-size: 12px;
+    font-weight: 750
+}
+
+.sc-home .persona.purple .link-inline {
+    color: #285d9d
+}
+
+.sc-home .feature-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 18px
+}
+
+.sc-home .feature-mini {
+    display: flex;
+    gap: 12px;
+    padding: 19px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 15px;
+    align-items: flex-start
+}
+
+.sc-home .feature-mini .symbol {
+    font-size: 20px;
+    line-height: 1.2
+}
+
+.sc-home .feature-mini strong {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 3px
+}
+
+.sc-home .feature-mini span {
+    font-size: 11px;
+    line-height: 1.6;
+    color: #79879a;
+    display: block
+}
+
+.sc-home .fig-wrap {
+    margin: 0;
+    border: 1px solid #e2e9f4;
+    background: white;
+    padding: 10px;
+    border-radius: 22px;
+    box-shadow: var(--shadow)
+}
+
+.sc-home .fig-wrap img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+    border-radius: 14px;
+    object-fit: contain
+}
+
+.sc-home .fig-wrap figcaption {
+    color: #617188;
+    font-size: 12px;
+    line-height: 1.8;
+    padding: 15px 14px 10px
+}
+
+.sc-home .fig-wrap figcaption strong {
+    color: #234167
+}
+
+.sc-home .fig-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px
+}
+
+.sc-home .figure-label {
+    margin-bottom: 15px;
+    color: #4e6480;
+    font-size: 14px;
+    font-weight: 700
+}
+
+.sc-home .motion-panel {
+    background: linear-gradient(135deg, #ffffff, #f9fcff);
+    border: 1px solid #e1eaf7;
+    border-radius: 26px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    position: relative;
+    overflow: hidden
+}
+
+.sc-home .motion-toolbar {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 24px
+}
+
+.sc-home .segment {
+    padding: 5px;
+    display: inline-flex;
+    gap: 3px;
+    border-radius: 12px;
+    background: #ecf2fa;
+    max-width: 100%
+}
+
+.sc-home .segment button {
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+    color: #687b95;
+    padding: 10px 17px;
+    font-size: 12px;
+    font-weight: 740;
+    border-radius: 9px;
+    transition: background .2s
+}
+
+.sc-home .segment button[aria-selected="true"] {
+    background: white;
+    color: #2069bc;
+    box-shadow: 0 2px 10px #d4e0f0
+}
+
+.sc-home .motion-caption {
+    font-size: 12px;
+    color: #8a9aaf
+}
+
+.sc-home .pause-btn {
+    border: 1px solid #dbe5f0;
+    background: #fff;
+    padding: 8px 13px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #47647d;
+    border-radius: 10px;
+    cursor: pointer
+}
+
+.sc-home .flow-nodes {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch
+}
+
+.sc-home .flow-node {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    min-height: 133px;
+    border: 1px solid #dfe8f5;
+    border-radius: 17px;
+    background: #fff;
+    padding: 14px 8px;
+    transition: border .25s, transform .25s, box-shadow .25s, background .25s;
+    cursor: pointer
+}
+
+.sc-home .flow-node.active {
+    border-color: #6ba9e7;
+    background: linear-gradient(160deg, #fff, #eff8ff);
+    box-shadow: 0 8px 30px rgba(44, 123, 219, .15);
+    transform: translateY(-4px)
+}
+
+.sc-home .flow-node.active:before {
+    content: "";
+    position: absolute;
+    height: 3px;
+    background: linear-gradient(90deg, #41a4e9, #20b9b6);
+    left: 20px;
+    right: 20px;
+    top: 0;
+    border-radius: 5px
+}
+
+.sc-home .flow-node:not(:last-child):after {
+    content: "→";
+    font-size: 19px;
+    color: #68a5de;
+    position: absolute;
+    right: -17px;
+    top: 43%;
+    z-index: 3;
+    font-weight: 800
+}
+
+.sc-home .flow-icon {
+    height: 45px;
+    width: 45px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff5fe;
+    color: #267acc;
+    font-size: 21px;
+    margin-bottom: 10px;
+    transition: background .2s
+}
+
+.sc-home .flow-node.active .flow-icon {
+    background: #d5ecfe
+}
+
+.sc-home .flow-node strong {
+    display: block;
+    font-size: 12px;
+    color: #20334e
+}
+
+.sc-home .flow-node small {
+    font-size: 10px;
+    color: #91a0b1;
+    margin-top: 4px
+}
+
+.sc-home .motion-detail {
+    margin-top: 22px;
+    background: #f1f7ff;
+    border: 1px solid #e2eefc;
+    border-radius: 14px;
+    min-height: 66px;
+    padding: 18px 20px;
+    color: #526d8e;
+    font-size: 13px;
+    display: flex;
+    gap: 18px;
+    align-items: center
+}
+
+.sc-home .motion-detail strong {
+    color: #215793;
+    white-space: nowrap
+}
+
+.sc-home .motion-detail span {
+    flex: 1
+}
+
+.sc-home .tiny-note {
+    font-size: 11px;
+    color: #8493a6;
+    margin-top: 14px;
+    margin-bottom: 0
+}
+
+.sc-home .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 14px
+}
+
+.sc-home .step {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: #fff;
+    padding: 20px 17px;
+    box-shadow: 0 4px 17px rgba(46, 80, 123, .04);
+    position: relative
+}
+
+.sc-home .step-num {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #3583c9;
+    background: #e8f3ff;
+    border-radius: 9px;
+    display: inline-flex;
+    padding: 7px 10px;
+    font-weight: 760;
+    margin-bottom: 16px
+}
+
+.sc-home .step h3 {
+    font-size: 15px;
+    letter-spacing: -.2px;
+    line-height: 1.4;
+    margin: 0 0 8px
+}
+
+.sc-home .step p {
+    font-size: 12px;
+    color: #6e7e94;
+    line-height: 1.75;
+    margin: 0
+}
+
+.sc-home .code-panel {
+    border: 1px solid #dce7f4;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #102039;
+    margin-top: 28px;
+    color: #e9f5ff;
+    box-shadow: 0 18px 34px rgba(25, 53, 100, .12)
+}
+
+.sc-home .code-head {
+    background: #1a2b49;
+    padding: 12px 18px;
+    border-bottom: 1px solid #314766;
+    font-size: 11px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #b0c5e4
+}
+
+.sc-home .code-dots {
+    display: flex;
+    gap: 6px
+}
+
+.sc-home .code-dots i {
+    background: #6594d0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%
+}
+
+.sc-home .code-panel pre {
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    padding: 20px 24px;
+    overflow: auto;
+    margin: 0;
+    font-family: "SFMono-Regular", Consolas, monospace
+}
+
+.sc-home .code-panel .kw {
+    color: #82d6fa
+}
+
+.sc-home .code-panel .string {
+    color: #adf1cf
+}
+
+.sc-home .copy-btn {
+    background: transparent;
+    border: 1px solid #52708e;
+    border-radius: 7px;
+    color: #d1e8f7;
+    padding: 5px 9px;
+    cursor: pointer;
+    font-size: 11px
+}
+
+.sc-home .guides {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px
+}
+
+.sc-home .guide {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 21px;
+    transition: transform .2s, box-shadow .2s;
+    min-height: 132px
+}
+
+.sc-home .guide:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(33, 76, 125, .1);
+    text-decoration: none
+}
+
+.sc-home .guide-icon {
+    font-size: 21px;
+    display: block;
+    margin-bottom: 13px
+}
+
+.sc-home .guide strong {
+    display: block;
+    font-size: 14px;
+    color: var(--ink)
+}
+
+.sc-home .guide small {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #8090a4;
+    line-height: 1.7
+}
+
+.sc-home .bottomband {
+    padding: 75px 0;
+    background: radial-gradient(ellipse at 76% 20%, #eef2ff, transparent 54%), linear-gradient(125deg, #f4fbff, #fbfaff);
+    border-top: 1px solid #e8edf7;
+    border-bottom: 1px solid #e8edf7;
+    text-align: center
+}
+
+.sc-home .bottomband h2 {
+    font-size: 36px
+}
+
+.sc-home .bottomband .lead {
+    max-width: 650px;
+    margin: 0 auto 24px
+}
+
+.sc-home .footer {
+    padding: 30px 0 44px;
+    color: #8a9bad;
+    font-size: 11px
+}
+
+.sc-home .footer-flex {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px
+}
+
+
+
+
+
+@container sc-home (max-width: 960px) {
+    .sc-home .hero-grid {
+        gap: 28px
+    }
+
+    .sc-home .hero-art {
+        height: 380px
+    }
+
+    .sc-home .feature-bar {
+        grid-template-columns: 1fr 1fr
+    }
+
+    .sc-home .steps-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+
+    .sc-home .nav-links {
+        gap: 17px
+    }
+}
+
+@container sc-home (max-width: 640px) {
+    .sc-home .fig-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@container sc-home (max-width: 730px) {
+    .sc-home .hero {
+        padding: 66px 0
+    }
+
+    .sc-home .hero-grid {
+        grid-template-columns: 1fr
+    }
+
+    .sc-home .hero-art {
+        max-width: 600px;
+        width: 100%;
+        margin: auto
+    }
+
+    .sc-home .two-cards {
+        grid-template-columns: 1fr
+    }
+
+    .sc-home .feature-bar {
+        grid-template-columns: 1fr
+    }
+
+    .sc-home .nav-links {
+        display: none;
+        position: absolute;
+        top: 77px;
+        right: 0;
+        left: 0;
+        background: white;
+        border-bottom: 1px solid var(--line);
+        padding: 19px 24px;
+        box-shadow: var(--shadow);
+        flex-direction: column;
+        align-items: stretch;
+        z-index: 10
+    }
+
+    .sc-home .nav-links.open {
+        display: flex
+    }
+
+    .sc-home .mobile-menu {
+        display: flex
+    }
+
+    .sc-home .stats {
+        grid-template-columns: 1fr 1fr
+    }
+
+    .sc-home .stat:nth-child(2) {
+        border-right: 0
+    }
+
+    .sc-home .stat:nth-child(-n + 2) {
+        border-bottom: 1px solid #e1e9f3
+    }
+
+    .sc-home .stat:nth-child(3) {
+        padding-left: 0
+    }
+
+    .sc-home .sc-section {
+        padding: 75px 0
+    }
+
+    .sc-home .guides {
+        grid-template-columns: 1fr 1fr
+    }
+
+    .sc-home .flow-nodes {
+        grid-template-columns: repeat(3, minmax(0, 1fr))
+    }
+
+    .sc-home .flow-node:not(:last-child):after {
+        display: none
+    }
+}
+
+@container sc-home (max-width: 490px) {
+    .sc-home .sc-container {
+        width: min(var(--content), calc(100% - 32px))
+    }
+
+    .sc-home h1 {
+        font-size: 45px;
+        letter-spacing: -2.1px
+    }
+
+    .sc-home .hero-art {
+        height: 300px
+    }
+
+    .sc-home .float-card {
+        transform: scale(.82) !important
+    }
+
+    .sc-home .float-card.top {
+        left: 7px;
+        top: 18px
+    }
+
+    .sc-home .float-card.bottom {
+        right: 7px;
+        bottom: 12px
+    }
+
+    .sc-home .hero-intro {
+        font-size: 15px
+    }
+
+    .sc-home .stats-caption {
+        text-align: center
+    }
+
+    .sc-home .stat {
+        padding: 15px
+    }
+
+    .sc-home .stat strong {
+        font-size: 22px
+    }
+
+    .sc-home .motion-panel {
+        padding: 19px 12px
+    }
+
+    .sc-home .segment {
+        width: 100%
+    }
+
+    .sc-home .segment button {
+        padding: 9px 8px;
+        font-size: 11px;
+        flex: 1
+    }
+
+    .sc-home .motion-toolbar {
+        justify-content: center
+    }
+
+    .sc-home .flow-nodes {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .sc-home .flow-node {
+        min-height: 114px
+    }
+
+    .sc-home .motion-detail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 7px
+    }
+
+    .sc-home .steps-grid {
+        grid-template-columns: 1fr 1fr
+    }
+
+    .sc-home .guides {
+        grid-template-columns: 1fr
+    }
+
+    .sc-home .fig-wrap {
+        padding: 5px
+    }
+
+    .sc-home .fig-wrap figcaption {
+        padding: 12px
+    }
+
+    .sc-home .bottomband h2 {
+        font-size: 30px
+    }
+
+    .sc-home .sc-cta {
+        padding: 11px 15px;
+        font-size: 12px
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+
+    .sc-home *,
+    .sc-home *:before,
+    .sc-home *:after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important
+    }
+}
+
+/* Host page integration: never change surrounding right/left rail layout. */
+.sc-home {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+    overflow-x: clip;
+    background: white;
+    font-size: 16px;
+}
+
+.sc-home .sc-container {
+    width: min(var(--content), calc(100% - 36px));
+}
+
+.sc-home figure {
+    margin-block: 0;
+}
+
+.sc-home .fig-wrap img {
+    image-rendering: auto;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+
+
+.sc-home section[id] {
+    scroll-margin-top: 20px;
+}
+
+.sc-home button:focus-visible,
+.sc-home a:focus-visible {
+    outline: 3px solid #2895c6;
+    outline-offset: 3px;
+}
+
+@container sc-home (max-width: 650px) {
+    .sc-home .sc-container {
+        width: calc(100% - 28px);
+    }
+}
+
+/* ======================================================================
+   APP.CSS / NAVBAR.CSS INTEGRATION FIXES
+   These declarations affect only getStarted.js; other page styles remain intact.
+   All layout breakpoints above are container queries, based on THIS page's
+   actual width, not the full browser viewport.
+   ====================================================================== */
+.sc-home {
+    /* This page can be rendered inside a narrow grid column. */
+    container: sc-home / inline-size;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    isolation: isolate;
+    overflow-x: clip;
+    color: #13223e;
+    background: #fff;
+    text-align: left;
+}
+
+.sc-home .sc-container {
+    /* NEVER use App.css' generic .container: its height:100vh caused
+       enormous empty spaces and layout overflow on every section. */
+    display: block;
+    position: relative;
+    width: min(100% - 36px, var(--content));
+    max-width: 100%;
+    min-height: 0;
+    height: auto;
+    margin-inline: auto;
+    padding: 0;
+}
+
+.sc-home .sc-section {
+    display: block;
+    min-width: 0;
+    width: 100%;
+    height: auto;
+    padding-block: clamp(36px, 5cqw, 72px);
+}
+
+.sc-home main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    display: block;
+    margin: 0;
+    padding: 0;
+    height: auto;
+}
+
+.sc-home .two-cards,
+.sc-home .feature-bar,
+.sc-home .fig-grid,
+.sc-home .steps-grid,
+.sc-home .guides,
+.sc-home .flow-nodes {
+    min-width: 0;
+}
+
+.sc-home .two-cards > *,
+.sc-home .feature-bar > *,
+.sc-home .fig-grid > *,
+.sc-home .steps-grid > *,
+.sc-home .guides > *,
+.sc-home .flow-nodes > * {
+    min-width: 0;
+}
+
+.sc-home .fig-grid {
+    /* Figures share the row at desktop/content widths; image links allow full-size inspection. */
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    align-items: stretch;
+    gap: 20px;
+}
+
+.sc-home .fig-wrap {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+
+.sc-home .fig-wrap img {
+    /* Remove the old wrong 745:402 aspect ratio; actual files are 4:3. */
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    aspect-ratio: auto;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.sc-home .sc-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 19px;
+    gap: 8px;
+    text-decoration: none;
+    font-weight: 730;
+    font-size: 13px;
+    line-height: 1.5;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    white-space: normal;
+}
+.sc-home .sc-cta.primary {
+    color: #fff;
+    background: linear-gradient(115deg, #0c509b, #186ba7);
+    box-shadow: 0 11px 25px rgba(43, 93, 207, .2);
+}
+.sc-home .sc-cta.primary:hover {
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 14px 28px rgba(43, 93, 207, .27);
+}
+
+/* App.css styles .main-content pre and code for Markdown pages. Ensure
+   this native JSX code example retains its intentional dark styling. */
+.sc-home .code-panel pre {
+    display: block;
+    background: transparent;
+    color: #e9f5ff;
+    border: 0;
+    border-radius: 0;
+    margin: 0;
+    padding: 20px 24px;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-wrap: normal;
+    white-space: pre;
+    font-size: 13px;
+    line-height: 1.8;
+}
+.sc-home .code-panel pre code {
+    color: inherit;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    white-space: inherit;
+}
+.sc-home .code-panel .kw { color: #82d6fa; }
+.sc-home .code-panel .string { color: #adf1cf; }
+
+/* Use actual component width; a 1200px browser may provide only 700px
+   to this page after the surrounding navigation rails are laid out. */
+@container sc-home (max-width: 1040px) {
+    .sc-home .steps-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .sc-home .feature-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container sc-home (max-width: 780px) {
+    .sc-home .two-cards { grid-template-columns: minmax(0, 1fr); }
+    .sc-home .feature-bar { grid-template-columns: minmax(0, 1fr); }
+    .sc-home .flow-nodes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .sc-home .flow-node:not(:last-child):after { display: none; }
+    .sc-home .steps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sc-home .guides { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sc-home .motion-panel { padding: 20px; }
+    .sc-home .sc-container { width: calc(100% - 28px); }
+}
+@container sc-home (max-width: 500px) {
+    .sc-home .steps-grid { grid-template-columns: minmax(0, 1fr); }
+    .sc-home .guides { grid-template-columns: minmax(0, 1fr); }
+    .sc-home .flow-nodes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sc-home .fig-wrap { padding: 5px; }
+    .sc-home .fig-wrap figcaption { padding: 12px; }
+    .sc-home .segment { width: 100%; }
+    .sc-home .segment button { flex: 1 1 auto; min-width: 0; padding: 9px 7px; }
+    .sc-home .motion-toolbar { justify-content: center; }
+    .sc-home .motion-detail { display: block; }
+    .sc-home .motion-detail strong { display: block; margin-bottom: 8px; white-space: normal; }
+    .sc-home .sc-container { width: calc(100% - 24px); }
+    .sc-home .code-panel pre { padding: 14px; font-size: 11px; }
+}
+
+/* When the existing three-column Get Started shell is used on narrow
+   screens, its 15% / 65% / 20% grid leaves too little space for the page.
+   Affect ONLY the shell containing this component; other routes and the
+   shared navbar remain unchanged. */
+@media (max-width: 900px) {
+    .getStarted-container:has(.sc-home) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .getStarted-container:has(.sc-home) > .left-nav,
+    .getStarted-container:has(.sc-home) > .right-rail {
+        display: none;
+    }
+    .getStarted-container:has(.sc-home) > .main-content,
+    .getStarted-container:has(.sc-home) > .main-content-no-scroll {
+        min-width: 0;
+        padding: 12px;
+        overflow-x: clip;
+    }
+}
+
+/* Keep headings and subsequent content separate at every host width.
+   All selectors are scoped; App.css and navbar.css remain untouched. */
+.sc-home .sc-section-heading + .two-cards,
+.sc-home .sc-section-heading + .fig-grid,
+.sc-home .sc-section-heading + .motion-panel,
+.sc-home .sc-section-heading + .steps-grid,
+.sc-home .sc-section-heading + .guides,
+.sc-home .sc-section-heading + .fig-wrap {
+    position: relative;
+    clear: both;
+    min-width: 0;
+}
+@container sc-home (max-width: 600px) {
+    .sc-home .sc-section-heading { row-gap: 11px; margin-bottom: 25px; }
+    .sc-home .sc-section-heading > h2 { font-size: clamp(24px, 5.1cqw, 34px); }
+    .sc-home .sc-section-heading > p.lead { font-size: 13px; }
+}
+
+/* Platform diagrams: two equal columns in the existing main-content region.
+   Breakpoints use the page container's width, so the host's left/right rails
+   do not cause accidental side-by-side overflow. */
+.sc-home #architecture .fig-grid.fig-grid--side-by-side {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+    gap: clamp(12px, 2cqw, 24px);
+    width: 100%;
+    max-width: none;
+}
+.sc-home #architecture .fig-grid--side-by-side > .fig-wrap {
+    min-width: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+.sc-home #architecture .fig-grid--side-by-side .fig-image-link {
+    display: block;
+    width: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+}
+.sc-home #architecture .fig-grid--side-by-side .fig-image-link img {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+.sc-home #architecture .fig-grid--side-by-side figcaption {
+    flex: 1;
+}
+@container sc-home (max-width: 640px) {
+    .sc-home #architecture .fig-grid.fig-grid--side-by-side {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+
+/* Python code example: preserve intentional line breaks from React text nodes,
+   avoid host Markdown/pre styling, and keep Copy usable on small screens. */
+.sc-home .code-panel {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.sc-home .code-panel .code-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+}
+
+.sc-home .code-panel .code-title {
+    min-width: 0;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.sc-home .code-panel .code-dots {
+    flex-shrink: 0;
+}
+
+.sc-home .code-panel pre.sc-code-pre {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    padding: 18px 24px;
+    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: transparent;
+    color: #e9f5ff;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    tab-size: 4;
+}
+
+.sc-home .code-panel pre.sc-code-pre code.sc-code-text {
+    display: block;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.sc-home .code-panel pre.sc-code-pre .kw { color: #82d6fa; }
+.sc-home .code-panel pre.sc-code-pre .string { color: #adf1cf; }
+
+.sc-home .code-panel .copy-btn {
+    min-width: 78px;
+    min-height: 34px;
+    padding: 7px 12px;
+    white-space: nowrap;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+    background-color: #203a5b;
+    color: #e9f5ff;
+}
+.sc-home .code-panel .copy-btn:hover { background-color: #2d507c; }
+.sc-home .code-panel .copy-btn:focus-visible {
+    outline: 2px solid #8ad5ff;
+    outline-offset: 2px;
+}
+
+@container sc-home (max-width: 540px) {
+    .sc-home .code-panel .code-head {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        padding: 12px;
+    }
+    .sc-home .code-panel .code-dots { display: none; }
+    .sc-home .code-panel .code-title { text-align: left; }
+    .sc-home .code-panel pre.sc-code-pre {
+        padding: 16px 14px;
+        font-size: 11px;
+    }
+    .sc-home .code-panel .copy-btn {
+        padding: 7px 9px;
+        min-width: 56px;
+        font-size: 11px;
+    }
+}

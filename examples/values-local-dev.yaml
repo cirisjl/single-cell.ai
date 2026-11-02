@@ -1,0 +1,17 @@
+# Enable only for clusters with locally available application images.
+# For most remote clusters you must build and PUSH images to a registry instead.
+workloads:
+  celery-api:
+    imagePullPolicy: Never
+  worker-web:
+    imagePullPolicy: Never
+  worker-cpu:
+    imagePullPolicy: Never
+  worker-gpu:
+    imagePullPolicy: Never
+  dashboard:
+    imagePullPolicy: Never
+  oscb-react:
+    imagePullPolicy: Never
+  oscb-node:
+    imagePullPolicy: Never

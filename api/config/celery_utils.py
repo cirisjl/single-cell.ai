@@ -15,10 +15,10 @@ rabbitmq_password = read_secret("/run/secrets/rabbitmq_password")
 redis_password = read_secret("/run/secrets/redis_password")
 
 broker_user = os.getenv("CELERY_BROKER_USER", "admin")
-broker_host = os.getenv("CELERY_BROKER_HOST", "oscb_rabbitmq")
+broker_host = os.getenv("CELERY_BROKER_HOST", "oscb-rabbitmq")
 broker_port = os.getenv("RABBITMQ_PORT", "5672")
 
-redis_host = os.getenv("CELERY_RESULT_BACKEND_HOST", "oscb_redis")
+redis_host = os.getenv("CELERY_RESULT_BACKEND_HOST", "oscb-redis")
 redis_port = os.getenv("REDIS_PORT", "6388")
 
 broker_url = f"amqp://{broker_user}:{rabbitmq_password}@{broker_host}:{broker_port}//"

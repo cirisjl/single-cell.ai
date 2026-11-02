@@ -18,10 +18,10 @@ class BaseConfig:
     # redis_pass = os.environ.get("REDIS_PASSWORD")
     # redis_port = os.environ.get("REDIS_PORT")
 
-    # broker_url  = f'amqp://admin:{rmg_pass}@oscb_rabbitmq:{rmg_port}//'
-    # result_backend = f'redis://:{redis_pass}@oscb_redis:{redis_port}/0'
-    # broker_url : str = "amqp://admin:dRlBRiklTEridrlQa89DI5os@oscb_rabbitmq:5672//"
-    # result_backend: str = "redis://:b6tHecatruchlwRaSplZlXaV@oscb_redis:6388"
+    # broker_url  = f'amqp://admin:{rmg_pass}@oscb-rabbitmq:{rmg_port}//'
+    # result_backend = f'redis://:{redis_pass}@oscb-redis:{redis_port}/0'
+    # broker_url : str = "amqp://admin:dRlBRiklTEridrlQa89DI5os@oscb-rabbitmq:5672//"
+    # result_backend: str = "redis://:b6tHecatruchlwRaSplZlXaV@oscb-redis:6388"
 
     # print(f"broker_url : {broker_url }")
     # print(f"result_backend: {result_backend}")

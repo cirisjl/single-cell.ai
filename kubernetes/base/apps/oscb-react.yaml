@@ -1,0 +1,91 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oscb-react
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-react
+spec:
+  selector:
+    app: oscb-react
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oscb-react
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-react
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: oscb-react
+  template:
+    metadata:
+      labels:
+        app: oscb-react
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: oscb-react
+        image: stormgod/oscb-react:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 2Gi
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 3000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: github_token
+            path: github_token
+          - key: googledrive_key
+            path: googledrive_key
+          - key: googledrive_secret
+            path: googledrive_secret
+          - key: dropbox_key
+            path: dropbox_key
+          - key: dropbox_secret
+            path: dropbox_secret
+          - key: onedrive_key
+            path: onedrive_key
+          - key: onedrive_secret
+            path: onedrive_secret

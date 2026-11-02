@@ -1,0 +1,7 @@
+*.swp
+*.bak
+.DS_Store
+.git/
+*.tgz
+secrets/
+.env

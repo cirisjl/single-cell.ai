@@ -1,0 +1,179 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: dashboard
+spec:
+  selector:
+    app: dashboard
+  ports:
+  - name: http
+    port: 5555
+    targetPort: 5555
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: dashboard
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: dashboard
+        image: stormgod/oscb-api:1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 5555
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 2Gi
+        readinessProbe:
+          tcpSocket:
+            port: 5555
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 5555
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+        command:
+        - /bin/sh
+        - -ec
+        args:
+        - export FLOWER_BASIC_AUTH="${FLOWER_BASIC_AUTH_USER:-admin}:$(cat /run/secrets/flower_basicauth_password)";
+          exec python3 /usr/local/bin/celery-entrypoint.py celery --app main.celery
+          flower --port=5555
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: rabbitmq_password
+            path: rabbitmq_password
+          - key: redis_password
+            path: redis_password
+          - key: flower_basicauth_password
+            path: flower_basicauth_password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-express
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: mongo-express
+spec:
+  selector:
+    app: mongo-express
+  ports:
+  - name: http
+    port: 8081
+    targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: mongo-express
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: mongo-express
+        image: mongo-express:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 8081
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        env:
+        - name: ME_CONFIG_MONGODB_URL
+          value: mongodb://oscbdb:65530/
+        - name: ME_CONFIG_BASICAUTH_ENABLED
+          value: 'true'
+        - name: ME_CONFIG_BASICAUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: oscb-secrets
+              key: mongo_express_password
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        readinessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: mongo_express_password
+            path: mongo_express_password

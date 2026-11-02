@@ -1,0 +1,33 @@
+# COPY THIS FILE and customize it. Values shown here are NOT deployable image registry paths.
+# Base chart keeps every original third-party image version. Override only YOUR built images.
+workloads:
+  celery-api:
+    image: registry.example.org/my-team/oscb-api:v1
+  worker-web:
+    image: registry.example.org/my-team/oscb-api:v1
+  worker-cpu:
+    image: registry.example.org/my-team/oscb-api:v1
+  worker-gpu:
+    image: registry.example.org/my-team/oscb-api:v1
+  dashboard:
+    image: registry.example.org/my-team/oscb-api:v1
+  oscb-react:
+    image: registry.example.org/my-team/oscb-react:v1
+  oscb-node:
+    image: registry.example.org/my-team/oscb-node:v1
+storage:
+  shared:
+    storageClassName: nfs-rwx
+  directus:
+    storageClassName: standard-rwo
+config:
+  data:
+    HOST_URL: app.example.org
+    CORS_ORIGIN: https://app.example.org
+    REACT_APP_DIRECTUS_URL: https://directus.example.org
+    PUBLIC_URL: https://directus.example.org
+    NODE_ENV: production
+    APP_ENV: Production
+ingress:
+  enabled: true
+  className: nginx

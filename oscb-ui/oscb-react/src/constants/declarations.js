@@ -1,20 +1,33 @@
-// Development
-// export const NODE_API_URL = `http://${process.env.REACT_APP_HOST_URL}:3001/node`;
-// export const NODE_DATA_URL = `http://${process.env.REACT_APP_HOST_URL}:3001/zarr`;
-// export const CELERY_BACKEND_API = `http://${process.env.REACT_APP_HOST_URL}:5005/api`;
-// // export const FLASK_BACKEND_API = `http://${process.env.REACT_APP_HOST_URL}:5003`;
-// export const WEB_SOCKET_URL = `ws://${process.env.REACT_APP_HOST_URL}:5005/wsapi`;
-// export const UPPY_API_URL = `http://${process.env.REACT_APP_HOST_URL}:3020`;
-// export const DIRECTUS_URL = `http://${process.env.REACT_APP_HOST_URL}:8055`;
+const isDevelopment = process.env.NODE_ENV === "development";
+const host = process.env.REACT_APP_HOST_URL;
 
-// Production
-export const NODE_API_URL = `https://${process.env.REACT_APP_HOST_URL}/node`;
-export const NODE_DATA_URL = `https://${process.env.REACT_APP_HOST_URL}/zarr`;
-export const CELERY_BACKEND_API = `https://${process.env.REACT_APP_HOST_URL}/api`;
-export const FLASK_BACKEND_API = `https://${process.env.REACT_APP_HOST_URL}:5003`;
-export const WEB_SOCKET_URL = `wss://${process.env.REACT_APP_HOST_URL}/wsapi`;
-export const UPPY_API_URL = `https://${process.env.REACT_APP_HOST_URL}`;
-export const DIRECTUS_URL = `https://${process.env.REACT_APP_HOST_URL}`;
+export const NODE_API_URL = isDevelopment
+  ? `http://${host}:3001/node`
+  : `https://${host}/node`;
+
+export const NODE_DATA_URL = isDevelopment
+  ? `http://${host}:3001/zarr`
+  : `https://${host}/zarr`;
+
+export const CELERY_BACKEND_API = isDevelopment
+  ? `http://${host}:5005/api`
+  : `https://${host}/api`;
+
+export const FLASK_BACKEND_API = isDevelopment
+  ? `http://${host}:5003`
+  : `https://${host}:5003`; 
+
+export const WEB_SOCKET_URL = isDevelopment
+  ? `ws://${host}:5005/wsapi`
+  : `wss://${host}/wsapi`;
+
+export const UPPY_API_URL = isDevelopment
+  ? `http://${host}:3020`
+  : `https://${host}`;
+
+export const DIRECTUS_URL = isDevelopment
+  ? `http://${host}:8055`
+  : `https://${host}`;
 
 // Storage
 export const PUBLIC_DATASETS = "/usr/src/app/storage/publicDatasets/";

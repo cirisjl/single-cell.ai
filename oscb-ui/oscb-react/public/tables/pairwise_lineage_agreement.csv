@@ -1,0 +1,61 @@
+Integration,Method_A,Method_B,Agreement_clusters,Total_clusters,Agreement_percent
+LIGER,CellTypist default,CellTypist reference,9,31,29.0
+LIGER,CellTypist default,SingleR main,11,31,35.5
+LIGER,CellTypist default,SingleR user reference,10,31,32.3
+LIGER,CellTypist default,scANVI,9,31,29.0
+LIGER,CellTypist default,Majority vote,10,31,32.3
+LIGER,CellTypist reference,SingleR main,26,31,83.9
+LIGER,CellTypist reference,SingleR user reference,29,31,93.5
+LIGER,CellTypist reference,scANVI,31,31,100.0
+LIGER,CellTypist reference,Majority vote,30,31,96.8
+LIGER,SingleR main,SingleR user reference,24,31,77.4
+LIGER,SingleR main,scANVI,26,31,83.9
+LIGER,SingleR main,Majority vote,27,31,87.1
+LIGER,SingleR user reference,scANVI,29,31,93.5
+LIGER,SingleR user reference,Majority vote,28,31,90.3
+LIGER,scANVI,Majority vote,30,31,96.8
+Harmony,CellTypist default,CellTypist reference,9,31,29.0
+Harmony,CellTypist default,SingleR main,11,31,35.5
+Harmony,CellTypist default,SingleR user reference,10,31,32.3
+Harmony,CellTypist default,scANVI,8,31,25.8
+Harmony,CellTypist default,Majority vote,10,31,32.3
+Harmony,CellTypist reference,SingleR main,26,31,83.9
+Harmony,CellTypist reference,SingleR user reference,29,31,93.5
+Harmony,CellTypist reference,scANVI,30,31,96.8
+Harmony,CellTypist reference,Majority vote,30,31,96.8
+Harmony,SingleR main,SingleR user reference,24,31,77.4
+Harmony,SingleR main,scANVI,26,31,83.9
+Harmony,SingleR main,Majority vote,27,31,87.1
+Harmony,SingleR user reference,scANVI,28,31,90.3
+Harmony,SingleR user reference,Majority vote,28,31,90.3
+Harmony,scANVI,Majority vote,29,31,93.5
+Seurat,CellTypist default,CellTypist reference,9,31,29.0
+Seurat,CellTypist default,SingleR main,11,31,35.5
+Seurat,CellTypist default,SingleR user reference,10,31,32.3
+Seurat,CellTypist default,scANVI,9,31,29.0
+Seurat,CellTypist default,Majority vote,10,31,32.3
+Seurat,CellTypist reference,SingleR main,26,31,83.9
+Seurat,CellTypist reference,SingleR user reference,28,31,90.3
+Seurat,CellTypist reference,scANVI,30,31,96.8
+Seurat,CellTypist reference,Majority vote,29,31,93.5
+Seurat,SingleR main,SingleR user reference,24,31,77.4
+Seurat,SingleR main,scANVI,26,31,83.9
+Seurat,SingleR main,Majority vote,28,31,90.3
+Seurat,SingleR user reference,scANVI,29,31,93.5
+Seurat,SingleR user reference,Majority vote,27,31,87.1
+Seurat,scANVI,Majority vote,29,31,93.5
+scVI,CellTypist default,CellTypist reference,9,31,29.0
+scVI,CellTypist default,SingleR main,11,31,35.5
+scVI,CellTypist default,SingleR user reference,10,31,32.3
+scVI,CellTypist default,scANVI,9,31,29.0
+scVI,CellTypist default,Majority vote,10,31,32.3
+scVI,CellTypist reference,SingleR main,26,31,83.9
+scVI,CellTypist reference,SingleR user reference,29,31,93.5
+scVI,CellTypist reference,scANVI,30,31,96.8
+scVI,CellTypist reference,Majority vote,30,31,96.8
+scVI,SingleR main,SingleR user reference,24,31,77.4
+scVI,SingleR main,scANVI,25,31,80.6
+scVI,SingleR main,Majority vote,27,31,87.1
+scVI,SingleR user reference,scANVI,30,31,96.8
+scVI,SingleR user reference,Majority vote,28,31,90.3
+scVI,scANVI,Majority vote,29,31,93.5

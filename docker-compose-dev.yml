@@ -32,10 +32,10 @@ services:
     secrets:
       - mongo_express_password
 
-  oscb_redis:
+  oscb-redis:
     image: "redis:6-alpine"
-    container_name: oscb_redis 
-    hostname: oscb_redis
+    container_name: oscb-redis 
+    hostname: oscb-redis
     restart: always
     command: sh -c 'redis-server --port 6388 --save 20 1 --loglevel warning --requirepass "$$(cat /run/secrets/redis_password)"'
     volumes:
@@ -51,9 +51,9 @@ services:
     secrets:
       - redis_password
 
-  oscb_rabbitmq:
+  oscb-rabbitmq:
     image: "rabbitmq:management"
-    container_name: oscb_rabbitmq 
+    container_name: oscb-rabbitmq 
     restart: always
     ports:
       - 15672:15672
@@ -89,8 +89,8 @@ services:
       - |
         RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
-        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
-        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb-rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb-redis:6388/0"
         exec python3 main.py
     restart: always
     ports:
@@ -107,9 +107,9 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      oscb_redis:
+      oscb-redis:
         condition: service_healthy
-      oscb_rabbitmq:
+      oscb-rabbitmq:
         condition: service_healthy
     secrets:
       - rabbitmq_password
@@ -126,8 +126,8 @@ services:
       - |
         RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
-        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
-        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb-rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb-redis:6388/0"
         exec celery -A main.celery worker --loglevel=info -Q web,dataset --max-tasks-per-child=50 --max-memory-per-child=200000000
     env_file:
       - .env 
@@ -151,9 +151,9 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      oscb_redis:
+      oscb-redis:
         condition: service_healthy
-      oscb_rabbitmq:
+      oscb-rabbitmq:
         condition: service_healthy
       celery-api:
         condition: service_started
@@ -172,8 +172,8 @@ services:
       - |
         RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
-        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
-        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb-rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb-redis:6388/0"
         exec celery -A main.celery worker --loglevel=info -Q cpu,gpu --max-tasks-per-child=50 --max-memory-per-child=200000000
     env_file:
       - .env 
@@ -197,9 +197,9 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      oscb_redis:
+      oscb-redis:
         condition: service_healthy
-      oscb_rabbitmq:
+      oscb-rabbitmq:
         condition: service_healthy
       celery-api:
         condition: service_started
@@ -218,8 +218,8 @@ services:
       - |
         RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
-        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
-        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb-rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb-redis:6388/0"
         exec celery -A main.celery worker --loglevel=info -Q gpu --pool=solo --concurrency=1 --prefetch-multiplier=1
     env_file:
       - .env 
@@ -243,9 +243,9 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-      oscb_redis:
+      oscb-redis:
         condition: service_healthy
-      oscb_rabbitmq:
+      oscb-rabbitmq:
         condition: service_healthy
       celery-api:
         condition: service_started
@@ -265,8 +265,8 @@ services:
       - |
         RABBITMQ_PASSWORD="$$(cat /run/secrets/rabbitmq_password)"
         REDIS_PASSWORD="$$(cat /run/secrets/redis_password)"
-        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb_rabbitmq:5672//"
-        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb_redis:6388/0"
+        export CELERY_BROKER_URL="amqp://admin:$${RABBITMQ_PASSWORD}@oscb-rabbitmq:5672//"
+        export CELERY_RESULT_BACKEND="redis://:$${REDIS_PASSWORD}@oscb-redis:6388/0"
         exec celery --app main.celery flower --port=5555 --basic-auth="admin:$$(cat /run/secrets/flower_basicauth_password)"
     ports:
       - 5555:5555
@@ -275,9 +275,9 @@ services:
     depends_on:
       celery-api:
         condition: service_started
-      oscb_rabbitmq:
+      oscb-rabbitmq:
         condition: service_healthy
-      oscb_redis:
+      oscb-redis:
         condition: service_healthy
     networks:
       - oscb-network
@@ -286,8 +286,8 @@ services:
       - redis_password
       - flower_basicauth_password
 
-  oscb_mysql:
-    container_name: oscb_mysql
+  oscb-mysql:
+    container_name: oscb-mysql
     image: mysql:8.0
     build:
       context: ./oscb-ui/oscb-mysql
@@ -313,9 +313,9 @@ services:
     secrets:
       - mysql_password
 
-  oscb_node:
-    container_name: oscb_node
-    image: oscb_node
+  oscb-node:
+    container_name: oscb-node
+    image: oscb-node
     build:
       context: .
       dockerfile: oscb-ui/oscb-node/Dockerfile
@@ -326,7 +326,7 @@ services:
     env_file:
       - .env  
     depends_on:
-      oscb_mysql:
+      oscb-mysql:
         condition: service_healthy
     volumes:
       - /ps/code/oscb/user_storage:/usr/src/app/storage/
@@ -345,8 +345,8 @@ services:
       - email_password
       - jwt_token_secret
 
-  oscb_react:
-    container_name: oscb_react
+  oscb-react:
+    container_name: oscb-react
     restart: always
     build: 
       context: .
@@ -354,7 +354,7 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      oscb_node:
+      oscb-node:
         condition: service_started
     env_file:
       - .env 
@@ -378,7 +378,7 @@ services:
     volumes:
       - /ps/code/oscb/Directus_uploads:/directus/uploads
     depends_on:
-      oscb_mysql:
+      oscb-mysql:
         condition: service_healthy
     env_file:
       - .env 

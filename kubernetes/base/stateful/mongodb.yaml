@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-headless
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: mongodb-headless
+spec:
+  selector:
+    app: oscbdb
+  ports:
+  - name: mongo
+    port: 65530
+    targetPort: 65530
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oscbdb
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscbdb
+spec:
+  selector:
+    app: oscbdb
+  ports:
+  - name: mongo
+    port: 65530
+    targetPort: 65530
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oscbdb
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscbdb
+spec:
+  serviceName: mongodb-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oscbdb
+  template:
+    metadata:
+      labels:
+        app: oscbdb
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: oscbdb
+        image: mongo:7.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: mongo
+          containerPort: 65530
+        command:
+        - mongod
+        - --port
+        - '65530'
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            cpu: '2'
+            memory: 4Gi
+        readinessProbe:
+          exec:
+            command:
+            - mongosh
+            - --quiet
+            - --port
+            - '65530'
+            - --eval
+            - db.adminCommand({ping:1})
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 65530
+          initialDelaySeconds: 45
+          periodSeconds: 15
+        volumeMounts:
+        - name: data
+          mountPath: /data/db
+      terminationGracePeriodSeconds: 60
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 30Gi

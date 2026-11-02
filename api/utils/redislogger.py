@@ -9,14 +9,14 @@ class RedisLogger:
         # redis_pass = os.getenv("REDIS_PASSWORD")
         # redis_port = os.getenv("REDIS_PORT")
         redis_password = self.read_secret(path="/run/secrets/redis_password")
-        redis_host = os.getenv("CELERY_RESULT_BACKEND_HOST", "oscb_redis")
+        redis_host = os.getenv("CELERY_RESULT_BACKEND_HOST", "oscb-redis")
         redis_port = os.getenv("REDIS_PORT", "6388")
 
         print(f"Connecting to Redis at {redis_host}:{redis_port} with password: {redis_password}")
 
         pool = redis.ConnectionPool(host=redis_host, port=redis_port, password=redis_password, db=0)
         self.r = redis.Redis(connection_pool=pool)
-        # self.r = redis.Redis(host='oscb_redis', port=6388, password='eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81', db=0)
+        # self.r = redis.Redis(host='oscb-redis', port=6388, password='eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81', db=0)
         self.app_logger = logger
 
     

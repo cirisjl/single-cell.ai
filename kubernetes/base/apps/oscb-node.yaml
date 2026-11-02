@@ -1,0 +1,110 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oscb-node
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-node
+spec:
+  selector:
+    app: oscb-node
+  ports:
+  - name: http
+    port: 3001
+    targetPort: 3001
+  - name: companion
+    port: 3020
+    targetPort: 3020
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oscb-node
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-node
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: oscb-node
+  template:
+    metadata:
+      labels:
+        app: oscb-node
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: oscb-node
+        image: oscb-node
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 3001
+        - name: companion
+          containerPort: 3020
+        envFrom:
+        - configMapRef:
+            name: oscb-app-config
+        resources:
+          requests:
+            cpu: 200m
+            memory: 256Mi
+          limits:
+            cpu: '2'
+            memory: 3Gi
+        readinessProbe:
+          tcpSocket:
+            port: 3001
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+        livenessProbe:
+          tcpSocket:
+            port: 3001
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+        - name: user-data
+          mountPath: /usr/src/app/storage
+          subPath: user_storage
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: mysql_password
+            path: mysql_password
+          - key: openai_api_key
+            path: openai_api_key
+          - key: gemini_api_key
+            path: gemini_api_key
+          - key: googledrive_key
+            path: googledrive_key
+          - key: googledrive_secret
+            path: googledrive_secret
+          - key: dropbox_key
+            path: dropbox_key
+          - key: dropbox_secret
+            path: dropbox_secret
+          - key: onedrive_key
+            path: onedrive_key
+          - key: onedrive_secret
+            path: onedrive_secret
+          - key: email_password
+            path: email_password
+          - key: jwt_token_secret
+            path: jwt_token_secret
+      - name: user-data
+        persistentVolumeClaim:
+          claimName: oscb-shared-data

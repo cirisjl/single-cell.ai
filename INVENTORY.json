@@ -1,0 +1,49 @@
+{
+  "services": [
+    "oscbdb",
+    "oscb-redis",
+    "oscb-rabbitmq",
+    "oscb-mysql",
+    "celery-api",
+    "worker-web",
+    "worker-cpu",
+    "worker-gpu",
+    "dashboard",
+    "mongo-express",
+    "oscb-node",
+    "oscb-react",
+    "directus"
+  ],
+  "secrets": [
+    "mongo_express_password",
+    "redis_password",
+    "rabbitmq_password",
+    "mysql_password",
+    "github_token",
+    "email_password",
+    "openai_api_key",
+    "gemini_api_key",
+    "jwt_token_secret",
+    "directus_password",
+    "flower_basicauth_password",
+    "googledrive_key",
+    "googledrive_secret",
+    "dropbox_key",
+    "dropbox_secret",
+    "onedrive_key",
+    "onedrive_secret",
+    "directus_key",
+    "directus_secret"
+  ],
+  "originalImages": {
+    "oscbdb": "mongo:7.0",
+    "oscb-redis": "redis:6-alpine",
+    "oscb-rabbitmq": "rabbitmq:4.2.8-management",
+    "oscb-mysql": "mysql:8.0",
+    "mongo-express": "mongo-express:latest",
+    "oscb-node": "stormgod/oscb-node:1.0",
+    "directus": "directus/directus:9.24.0",
+    "api-workers-dashboard": "stormgod/oscb-api:1.0",
+    "oscb-react": "stormgod/oscb-react:1.0"
+  }
+}

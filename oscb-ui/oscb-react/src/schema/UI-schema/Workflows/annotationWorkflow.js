@@ -120,8 +120,8 @@ export const uiSchema = (dynamicOptions) => ({
             max: 50,
             step: 1,
             marks: [
-              { value: 3, label: '3*' },
-              { value: 5, label: '5' },
+              { value: 3, label: '3' },
+              { value: 5, label: '5*' },
               { value: 7, label: '7' },
               { value: 10, label: '10' },
               { value: 20, label: '20' },

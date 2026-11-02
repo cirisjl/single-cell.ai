@@ -1,0 +1,373 @@
+Integration,Cluster,Annotation_method,Score
+LIGER,0,CellTypist default,0.0147
+LIGER,0,CellTypist reference,0.1313
+LIGER,0,scANVI,0.9994000196456909
+LIGER,1,CellTypist default,0.0299
+LIGER,1,CellTypist reference,0.6462
+LIGER,1,scANVI,0.8716999888420105
+LIGER,2,CellTypist default,0.0148
+LIGER,2,CellTypist reference,0.0581
+LIGER,2,scANVI,0.9868000149726868
+LIGER,3,CellTypist default,0.285
+LIGER,3,CellTypist reference,0.7078
+LIGER,3,scANVI,0.9789999723434448
+LIGER,4,CellTypist default,0.0272
+LIGER,4,CellTypist reference,0.0675
+LIGER,4,scANVI,0.9768999814987183
+LIGER,5,CellTypist default,0.0153
+LIGER,5,CellTypist reference,0.0174
+LIGER,5,scANVI,0.9200000166893005
+LIGER,6,CellTypist default,0.0105
+LIGER,6,CellTypist reference,0.0242
+LIGER,6,scANVI,0.9897000193595886
+LIGER,7,CellTypist default,0.5302
+LIGER,7,CellTypist reference,0.2972
+LIGER,7,scANVI,0.9074000120162964
+LIGER,8,CellTypist default,0.1708
+LIGER,8,CellTypist reference,0.7651
+LIGER,8,scANVI,0.6182000041007996
+LIGER,9,CellTypist default,0.0199
+LIGER,9,CellTypist reference,0.4991
+LIGER,9,scANVI,0.9663000106811523
+LIGER,10,CellTypist default,0.009
+LIGER,10,CellTypist reference,0.1598
+LIGER,10,scANVI,0.9847000241279602
+LIGER,11,CellTypist default,0.0318
+LIGER,11,CellTypist reference,0.2866
+LIGER,11,scANVI,0.8264999985694885
+LIGER,12,CellTypist default,0.0145
+LIGER,12,CellTypist reference,0.6004
+LIGER,12,scANVI,0.9721999764442444
+LIGER,13,CellTypist default,0.0079
+LIGER,13,CellTypist reference,0.2497
+LIGER,13,scANVI,0.8579999804496765
+LIGER,14,CellTypist default,0.1752
+LIGER,14,CellTypist reference,0.8475
+LIGER,14,scANVI,0.9873999953269958
+LIGER,15,CellTypist default,0.0189
+LIGER,15,CellTypist reference,0.5162
+LIGER,15,scANVI,0.9646000266075134
+LIGER,16,CellTypist default,0.5589
+LIGER,16,CellTypist reference,0.9077
+LIGER,16,scANVI,0.9970999956130981
+LIGER,17,CellTypist default,0.0509
+LIGER,17,CellTypist reference,0.0523
+LIGER,17,scANVI,0.9081000089645386
+LIGER,18,CellTypist default,0.0306
+LIGER,18,CellTypist reference,0.9508
+LIGER,18,scANVI,0.7098000049591064
+LIGER,19,CellTypist default,0.186
+LIGER,19,CellTypist reference,0.9834
+LIGER,19,scANVI,0.9850000143051147
+LIGER,20,CellTypist default,0.0566
+LIGER,20,CellTypist reference,0.9133
+LIGER,20,scANVI,0.9789999723434448
+LIGER,21,CellTypist default,0.0179
+LIGER,21,CellTypist reference,0.052
+LIGER,21,scANVI,0.9998999834060669
+LIGER,22,CellTypist default,0.0123
+LIGER,22,CellTypist reference,0.0733
+LIGER,22,scANVI,0.8601999878883362
+LIGER,23,CellTypist default,0.022
+LIGER,23,CellTypist reference,0.0115
+LIGER,23,scANVI,0.9175000190734863
+LIGER,24,CellTypist default,0.0178
+LIGER,24,CellTypist reference,0.0805
+LIGER,24,scANVI,0.9973999857902527
+LIGER,25,CellTypist default,0.0136
+LIGER,25,CellTypist reference,0.0534
+LIGER,25,scANVI,0.9998999834060669
+LIGER,26,CellTypist default,0.0223
+LIGER,26,CellTypist reference,0.0554
+LIGER,26,scANVI,0.9997000098228455
+LIGER,27,CellTypist default,0.0348
+LIGER,27,CellTypist reference,0.0306
+LIGER,27,scANVI,0.9997000098228455
+LIGER,28,CellTypist default,0.029
+LIGER,28,CellTypist reference,0.0399
+LIGER,28,scANVI,0.9854000210762024
+LIGER,29,CellTypist default,0.0204
+LIGER,29,CellTypist reference,0.119
+LIGER,29,scANVI,0.996399998664856
+LIGER,30,CellTypist default,0.1405
+LIGER,30,CellTypist reference,0.3419
+LIGER,30,scANVI,0.942799985408783
+Harmony,0,CellTypist default,0.0147
+Harmony,0,CellTypist reference,0.1243
+Harmony,0,scANVI,0.9994999766349792
+Harmony,1,CellTypist default,0.0299
+Harmony,1,CellTypist reference,0.7406
+Harmony,1,scANVI,0.8169000148773193
+Harmony,2,CellTypist default,0.0148
+Harmony,2,CellTypist reference,0.0583
+Harmony,2,scANVI,0.9851999878883362
+Harmony,3,CellTypist default,0.285
+Harmony,3,CellTypist reference,0.5726
+Harmony,3,scANVI,0.8748999834060669
+Harmony,4,CellTypist default,0.0272
+Harmony,4,CellTypist reference,0.0573
+Harmony,4,scANVI,0.9807999730110168
+Harmony,5,CellTypist default,0.0153
+Harmony,5,CellTypist reference,0.0156
+Harmony,5,scANVI,0.9251000285148621
+Harmony,6,CellTypist default,0.0105
+Harmony,6,CellTypist reference,0.0273
+Harmony,6,scANVI,0.9884999990463257
+Harmony,7,CellTypist default,0.5302
+Harmony,7,CellTypist reference,0.2992
+Harmony,7,scANVI,0.8021000027656555
+Harmony,8,CellTypist default,0.1708
+Harmony,8,CellTypist reference,0.7758
+Harmony,8,scANVI,0.6358000040054321
+Harmony,9,CellTypist default,0.0199
+Harmony,9,CellTypist reference,0.3434
+Harmony,9,scANVI,0.9351000189781189
+Harmony,10,CellTypist default,0.009
+Harmony,10,CellTypist reference,0.1838
+Harmony,10,scANVI,0.9049000144004822
+Harmony,11,CellTypist default,0.0318
+Harmony,11,CellTypist reference,0.1793
+Harmony,11,scANVI,0.8319000005722046
+Harmony,12,CellTypist default,0.0145
+Harmony,12,CellTypist reference,0.4922
+Harmony,12,scANVI,0.9638000130653381
+Harmony,13,CellTypist default,0.0079
+Harmony,13,CellTypist reference,0.1762
+Harmony,13,scANVI,0.9811000227928162
+Harmony,14,CellTypist default,0.1752
+Harmony,14,CellTypist reference,0.7697
+Harmony,14,scANVI,0.9958999752998352
+Harmony,15,CellTypist default,0.0189
+Harmony,15,CellTypist reference,0.3509
+Harmony,15,scANVI,0.9998999834060669
+Harmony,16,CellTypist default,0.5589
+Harmony,16,CellTypist reference,0.8716
+Harmony,16,scANVI,0.9998000264167786
+Harmony,17,CellTypist default,0.0509
+Harmony,17,CellTypist reference,0.0749
+Harmony,17,scANVI,0.9577999711036682
+Harmony,18,CellTypist default,0.0306
+Harmony,18,CellTypist reference,0.9751
+Harmony,18,scANVI,0.6704999804496765
+Harmony,19,CellTypist default,0.186
+Harmony,19,CellTypist reference,0.9884
+Harmony,19,scANVI,0.7239999771118164
+Harmony,20,CellTypist default,0.0566
+Harmony,20,CellTypist reference,0.9373
+Harmony,20,scANVI,0.8169999718666077
+Harmony,21,CellTypist default,0.0179
+Harmony,21,CellTypist reference,0.0566
+Harmony,21,scANVI,0.9994000196456909
+Harmony,22,CellTypist default,0.0123
+Harmony,22,CellTypist reference,0.0876
+Harmony,22,scANVI,0.8669000267982483
+Harmony,23,CellTypist default,0.022
+Harmony,23,CellTypist reference,0.015
+Harmony,23,scANVI,0.9625999927520752
+Harmony,24,CellTypist default,0.0178
+Harmony,24,CellTypist reference,0.0802
+Harmony,24,scANVI,0.974399983882904
+Harmony,25,CellTypist default,0.0136
+Harmony,25,CellTypist reference,0.0607
+Harmony,25,scANVI,0.9998999834060669
+Harmony,26,CellTypist default,0.0223
+Harmony,26,CellTypist reference,0.0608
+Harmony,26,scANVI,0.9990000128746033
+Harmony,27,CellTypist default,0.0348
+Harmony,27,CellTypist reference,0.031
+Harmony,27,scANVI,0.9729999899864197
+Harmony,28,CellTypist default,0.029
+Harmony,28,CellTypist reference,0.0196
+Harmony,28,scANVI,0.8420000076293945
+Harmony,29,CellTypist default,0.0204
+Harmony,29,CellTypist reference,0.0385
+Harmony,29,scANVI,0.9980000257492065
+Harmony,30,CellTypist default,0.1405
+Harmony,30,CellTypist reference,0.2125
+Harmony,30,scANVI,0.9997000098228455
+Seurat,0,CellTypist default,0.0147
+Seurat,0,CellTypist reference,0.2848
+Seurat,0,scANVI,0.9994999766349792
+Seurat,1,CellTypist default,0.0299
+Seurat,1,CellTypist reference,0.6409
+Seurat,1,scANVI,0.8245000243186951
+Seurat,2,CellTypist default,0.0148
+Seurat,2,CellTypist reference,0.1297
+Seurat,2,scANVI,0.989799976348877
+Seurat,3,CellTypist default,0.285
+Seurat,3,CellTypist reference,0.7396
+Seurat,3,scANVI,0.974399983882904
+Seurat,4,CellTypist default,0.0272
+Seurat,4,CellTypist reference,0.1189
+Seurat,4,scANVI,0.9818999767303467
+Seurat,5,CellTypist default,0.0153
+Seurat,5,CellTypist reference,0.0152
+Seurat,5,scANVI,0.9318000078201294
+Seurat,6,CellTypist default,0.0105
+Seurat,6,CellTypist reference,0.019
+Seurat,6,scANVI,0.9918000102043152
+Seurat,7,CellTypist default,0.5302
+Seurat,7,CellTypist reference,0.3181
+Seurat,7,scANVI,0.8981000185012817
+Seurat,8,CellTypist default,0.1708
+Seurat,8,CellTypist reference,0.8243
+Seurat,8,scANVI,0.5900999903678894
+Seurat,9,CellTypist default,0.0199
+Seurat,9,CellTypist reference,0.5624
+Seurat,9,scANVI,0.942799985408783
+Seurat,10,CellTypist default,0.009
+Seurat,10,CellTypist reference,0.3539
+Seurat,10,scANVI,0.9998000264167786
+Seurat,11,CellTypist default,0.0318
+Seurat,11,CellTypist reference,0.3106
+Seurat,11,scANVI,0.8565000295639038
+Seurat,12,CellTypist default,0.0145
+Seurat,12,CellTypist reference,0.7093
+Seurat,12,scANVI,0.9785000085830688
+Seurat,13,CellTypist default,0.0079
+Seurat,13,CellTypist reference,0.2909
+Seurat,13,scANVI,0.9921000003814697
+Seurat,14,CellTypist default,0.1752
+Seurat,14,CellTypist reference,0.8304
+Seurat,14,scANVI,0.8812999725341797
+Seurat,15,CellTypist default,0.0189
+Seurat,15,CellTypist reference,0.4976
+Seurat,15,scANVI,0.8896999955177307
+Seurat,16,CellTypist default,0.5589
+Seurat,16,CellTypist reference,0.8833
+Seurat,16,scANVI,0.982200026512146
+Seurat,17,CellTypist default,0.0509
+Seurat,17,CellTypist reference,0.0431
+Seurat,17,scANVI,0.9395999908447266
+Seurat,18,CellTypist default,0.0306
+Seurat,18,CellTypist reference,0.9786
+Seurat,18,scANVI,0.881600022315979
+Seurat,19,CellTypist default,0.186
+Seurat,19,CellTypist reference,0.9894
+Seurat,19,scANVI,0.5498999953269958
+Seurat,20,CellTypist default,0.0566
+Seurat,20,CellTypist reference,0.9417
+Seurat,20,scANVI,0.680400013923645
+Seurat,21,CellTypist default,0.0179
+Seurat,21,CellTypist reference,0.0295
+Seurat,21,scANVI,0.9998999834060669
+Seurat,22,CellTypist default,0.0123
+Seurat,22,CellTypist reference,0.163
+Seurat,22,scANVI,0.9854000210762024
+Seurat,23,CellTypist default,0.022
+Seurat,23,CellTypist reference,0.0174
+Seurat,23,scANVI,0.9588000178337097
+Seurat,24,CellTypist default,0.0178
+Seurat,24,CellTypist reference,0.0716
+Seurat,24,scANVI,0.9937999844551086
+Seurat,25,CellTypist default,0.0136
+Seurat,25,CellTypist reference,0.0494
+Seurat,25,scANVI,0.9998999834060669
+Seurat,26,CellTypist default,0.0223
+Seurat,26,CellTypist reference,0.0841
+Seurat,26,scANVI,0.9995999932289124
+Seurat,27,CellTypist default,0.0348
+Seurat,27,CellTypist reference,0.0675
+Seurat,27,scANVI,0.998199999332428
+Seurat,28,CellTypist default,0.029
+Seurat,28,CellTypist reference,0.0559
+Seurat,28,scANVI,0.9477999806404114
+Seurat,29,CellTypist default,0.0204
+Seurat,29,CellTypist reference,0.2047
+Seurat,29,scANVI,0.9824000000953674
+Seurat,30,CellTypist default,0.1405
+Seurat,30,CellTypist reference,0.2923
+Seurat,30,scANVI,0.9290000200271606
+scVI,0,CellTypist default,0.0147
+scVI,0,CellTypist reference,0.5214
+scVI,0,scANVI,0.9988999962806702
+scVI,1,CellTypist default,0.0299
+scVI,1,CellTypist reference,0.7643
+scVI,1,scANVI,0.7439000010490417
+scVI,2,CellTypist default,0.0148
+scVI,2,CellTypist reference,0.2459
+scVI,2,scANVI,0.9943000078201294
+scVI,3,CellTypist default,0.285
+scVI,3,CellTypist reference,0.7122
+scVI,3,scANVI,0.9513999819755554
+scVI,4,CellTypist default,0.0272
+scVI,4,CellTypist reference,0.2274
+scVI,4,scANVI,0.9839000105857849
+scVI,5,CellTypist default,0.0153
+scVI,5,CellTypist reference,0.0456
+scVI,5,scANVI,0.9211000204086304
+scVI,6,CellTypist default,0.0105
+scVI,6,CellTypist reference,0.0293
+scVI,6,scANVI,0.9857000112533569
+scVI,7,CellTypist default,0.5302
+scVI,7,CellTypist reference,0.3442
+scVI,7,scANVI,0.8664000034332275
+scVI,8,CellTypist default,0.1708
+scVI,8,CellTypist reference,0.8314
+scVI,8,scANVI,0.7516999840736389
+scVI,9,CellTypist default,0.0199
+scVI,9,CellTypist reference,0.5497
+scVI,9,scANVI,0.9434999823570251
+scVI,10,CellTypist default,0.009
+scVI,10,CellTypist reference,0.1241
+scVI,10,scANVI,0.9991999864578247
+scVI,11,CellTypist default,0.0318
+scVI,11,CellTypist reference,0.2947
+scVI,11,scANVI,0.8356000185012817
+scVI,12,CellTypist default,0.0145
+scVI,12,CellTypist reference,0.6704
+scVI,12,scANVI,0.9645000100135803
+scVI,13,CellTypist default,0.0079
+scVI,13,CellTypist reference,0.1792
+scVI,13,scANVI,0.9375
+scVI,14,CellTypist default,0.1752
+scVI,14,CellTypist reference,0.779
+scVI,14,scANVI,0.9016000032424927
+scVI,15,CellTypist default,0.0189
+scVI,15,CellTypist reference,0.3844
+scVI,15,scANVI,0.7890999913215637
+scVI,16,CellTypist default,0.5589
+scVI,16,CellTypist reference,0.8448
+scVI,16,scANVI,0.9509999752044678
+scVI,17,CellTypist default,0.0509
+scVI,17,CellTypist reference,0.0665
+scVI,17,scANVI,0.9230999946594238
+scVI,18,CellTypist default,0.0306
+scVI,18,CellTypist reference,0.9789
+scVI,18,scANVI,0.90829998254776
+scVI,19,CellTypist default,0.186
+scVI,19,CellTypist reference,0.9831
+scVI,19,scANVI,0.6902999877929688
+scVI,20,CellTypist default,0.0566
+scVI,20,CellTypist reference,0.9399
+scVI,20,scANVI,0.8592000007629395
+scVI,21,CellTypist default,0.0179
+scVI,21,CellTypist reference,0.038
+scVI,21,scANVI,0.9994000196456909
+scVI,22,CellTypist default,0.0123
+scVI,22,CellTypist reference,0.3677
+scVI,22,scANVI,0.8040000200271606
+scVI,23,CellTypist default,0.022
+scVI,23,CellTypist reference,0.039
+scVI,23,scANVI,0.973800003528595
+scVI,24,CellTypist default,0.0178
+scVI,24,CellTypist reference,0.0566
+scVI,24,scANVI,0.9685999751091003
+scVI,25,CellTypist default,0.0136
+scVI,25,CellTypist reference,0.0614
+scVI,25,scANVI,0.9994999766349792
+scVI,26,CellTypist default,0.0223
+scVI,26,CellTypist reference,0.0652
+scVI,26,scANVI,0.9894999861717224
+scVI,27,CellTypist default,0.0348
+scVI,27,CellTypist reference,0.0357
+scVI,27,scANVI,0.809499979019165
+scVI,28,CellTypist default,0.029
+scVI,28,CellTypist reference,0.0397
+scVI,28,scANVI,0.6735000014305115
+scVI,29,CellTypist default,0.0204
+scVI,29,CellTypist reference,0.1732
+scVI,29,scANVI,0.9925000071525574
+scVI,30,CellTypist default,0.1405
+scVI,30,CellTypist reference,0.2085
+scVI,30,scANVI,0.8442000150680542

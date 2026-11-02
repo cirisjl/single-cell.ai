@@ -1,0 +1,20 @@
+# Prevent secrets/private host configuration from entering image builds.
+.env
+.env.*
+secrets/
+.git/
+.gitignore
+**/node_modules/
+**/.next/
+**/build/
+**/dist/
+**/__pycache__/
+**/.pytest_cache/
+**/*.pyc
+**/.DS_Store
+*.log
+results/
+uploads/
+logs/
+user_storage/
+README.md

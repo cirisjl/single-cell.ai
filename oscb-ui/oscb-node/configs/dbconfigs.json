@@ -1,7 +1,0 @@
-{
-    "host": "oscb_mysql",
-    "port": "3308",
-    "user": "root",
-    "database": "oscb",
-    "connectionLimit": 10
-  }

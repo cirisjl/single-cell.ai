@@ -23,10 +23,23 @@ import './navbar.css';
 import Chatbot from "../components/RightNavigation/Chatbot";
 
 
+// Extract visible text from a rendered Markdown AST node.
+const getMarkdownNodeText = (node) => {
+    if (!node) return '';
+    if (node.type === 'text') return node.value || '';
+    return Array.isArray(node.children)
+        ? node.children.map(getMarkdownNodeText).join('')
+        : '';
+};
+
+
 export default function Doc() {
     const [markdownText, setMarkdownText] = useState('');
     const [copiedIndex, setCopiedIndex] = useState(null);
-    const [uniqueFilter, setUniqueFilter] = useState("");
+    const [uniqueFilter, setUniqueFilter] = useState(() => {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('doc')?.trim() || '';
+    });
 
     const handleFilterSelection = (filter) => {
         setUniqueFilter(filter);
@@ -42,29 +55,116 @@ export default function Doc() {
 
     useEffect(() => {
         async function fetchFileData() {
-            try {
-                const response = await axios.get(DIRECTUS_URL + "/items/filemappings?filter[filename]=" + uniqueFilter.replace(/ /g, "_"));
-                const data = response.data.data;
+            if (!uniqueFilter || uniqueFilter === '') {
+                try {
+                    const localResponse = await fetch('/markdown/doc/docs_overview.md');
 
-                if (data.length === 1) {
-                    const fileMappingObject = data[0];
-                    const fileID = fileMappingObject.fileID;
-                    if (fileID !== null) {
-                        fetch(DIRECTUS_URL + "/assets/" + fileID)
-                            .then(response => response.text())
-                            .then(data => setMarkdownText(data))
-                            .catch(error => console.error('Error retrieving markdown:', error));
+                    if (localResponse.ok) {
+                        const contentType =
+                            localResponse.headers.get('content-type') || '';
+
+                        const markdownData = await localResponse.text();
+
+                        // Detect HTML returned by React's SPA fallback
+                        const isHtml =
+                            contentType.includes('text/html') ||
+                            /^\s*(<!doctype\s+html|<html\b)/i.test(markdownData);
+
+                        if (!isHtml) {
+                            setMarkdownText(markdownData);
+
+                            console.log(
+                                'Markdown loaded from local file:',
+                                '/markdown/doc/docs_overview.md'
+                            );
+
+                            return;
+                        }
+                    }
+
+                    console.log('Local Markdown not found. Falling back to Directus API.');
+                    return;
+
+                } catch (error) {
+                    console.warn('Unable to load local Markdown:', error);
+                    return;
+                }
+            }
+
+            // 1. Check whether the local Markdown file exists
+            const filename = uniqueFilter.replace(/ /g, "_");
+            const localFilePath = `/markdown/doc/${encodeURIComponent(filename)}.md`;
+
+            try {
+                const localResponse = await fetch(localFilePath);
+
+                if (localResponse.ok) {
+                    const contentType =
+                        localResponse.headers.get('content-type') || '';
+
+                    const markdownData = await localResponse.text();
+
+                    // Detect HTML returned by React's SPA fallback
+                    const isHtml =
+                        contentType.includes('text/html') ||
+                        /^\s*(<!doctype\s+html|<html\b)/i.test(markdownData);
+
+                    if (!isHtml) {
+                        setMarkdownText(markdownData);
+                        
+                        console.log(
+                            'Markdown loaded from local file:',
+                            localFilePath
+                        );
+
+                        return;
                     }
                 }
 
+                console.log('Local Markdown not found. Falling back to Directus API.');
+
             } catch (error) {
-                console.error('Error retrieving data:', error);
+                console.warn('Unable to load local Markdown:', error);
+            }
+
+            // 2. Fall back to the Directus API
+            try {
+                const response = await axios.get(
+                    `${DIRECTUS_URL}/items/filemappings?filter[filename]=${encodeURIComponent(filename)}`
+                );
+
+                const data = response.data.data;
+
+                if (data.length === 1) {
+                    const fileID = data[0].fileID;
+
+                    if (fileID != null) {
+                        const fileResponse = await fetch(
+                            `${DIRECTUS_URL}/assets/${fileID}`
+                        );
+
+                        if (!fileResponse.ok) {
+                            throw new Error(
+                                `Failed to fetch Markdown: ${fileResponse.status}`
+                            );
+                        }
+
+                        const markdownData = await fileResponse.text();
+                        setMarkdownText(markdownData);
+
+                        console.log('Markdown loaded from Directus:', fileID);
+                        return;
+                    }
+                }
+
+                console.warn('Markdown document not found:', uniqueFilter);
+
+            } catch (error) {
+                console.error('Error retrieving Markdown from Directus:', error);
             }
         }
-
-        if (uniqueFilter !== "") {
-            fetchFileData();
-        }
+            
+        fetchFileData();
     }, [uniqueFilter]);
 
     return (
@@ -80,6 +180,41 @@ export default function Doc() {
                         rehypePlugins={[rehypeRaw, rehypeGithubAlerts]}
                         children={markdownText}
                         components={{
+                            p({ node, children, style, ...props }) {
+                                // Center figure captions without changing the Markdown source.
+                                // Example: *Figure 10. Download an integration-and-annotation result.*
+                                const isFigureCaption = /^Figure\s+\d+[a-z]?\s*[.:]/i.test(
+                                    getMarkdownNodeText(node).trim()
+                                );
+
+                                return (
+                                    <p
+                                        {...props}
+                                        style={{
+                                            ...style,
+                                            ...(isFigureCaption ? { textAlign: 'center' } : {}),
+                                        }}
+                                    >
+                                        {children}
+                                    </p>
+                                );
+                            },
+                            img({ node, alt, style, ...props }) {
+                                return (
+                                    <img
+                                        {...props}
+                                        alt={alt ?? ''}
+                                        style={{
+                                            ...style,
+                                            display: 'block',
+                                            marginLeft: 'auto',
+                                            marginRight: 'auto',
+                                            maxWidth: '100%',
+                                            height: 'auto',
+                                        }}
+                                    />
+                                );
+                            },
                             code(props) {
                                 const { children, inline, className, node, ...rest } = props;
                                 const match = /language-(\w+)/.exec(className || '');
@@ -127,13 +262,19 @@ export default function Doc() {
                 )}
                 {markdownText === "" && (
                     <div className="tool-message">
-                        <p>Please select a <strong>Topic</strong> from left.</p>
+                        <p>Please select a <strong>Topic</strong> from the left navigation.</p>
                     </div>
                 )}
 
             </div>
             <div className="right-rail navigation">
-                <MarkdownNavbar source={markdownText} />
+                <aside className="markdown-sidebar">
+                    <MarkdownNavbar
+                        source={markdownText}
+                        ordered={false}
+                        headingTopOffset={80}
+                    />
+                </aside>
                 <Chatbot presetQuestions={null} />
             </div>
         </div>

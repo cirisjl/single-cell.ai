@@ -1,0 +1,14 @@
+Installed single-cell.ai / OSCB release {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
+
+Inspect workloads:
+  kubectl -n {{ .Release.Namespace }} get pods,svc,pvc
+
+View Helm configuration:
+  helm get values {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+Optional services are disabled unless enabled via values files:
+  - dashboard and mongo-express: values-admin.yaml
+  - GPU worker: values-gpu.yaml (NVIDIA device plugin required)
+
+Services are ClusterIP by default. Use kubectl port-forward or configure HTTPS Ingress.
+Data claims should be backed up before helm upgrade/rollback/uninstall.

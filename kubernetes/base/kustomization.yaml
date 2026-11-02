@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: oscb
+resources:
+- namespace.yaml
+- storage.yaml
+- stateful/mongodb.yaml
+- stateful/redis.yaml
+- stateful/rabbitmq.yaml
+- stateful/mysql.yaml
+- apps/celery-api.yaml
+- apps/worker-web.yaml
+- apps/worker-cpu.yaml
+- apps/oscb-node.yaml
+- apps/oscb-react.yaml
+- apps/directus.yaml
+configMapGenerator:
+- name: oscb-app-config
+  envs:
+  - app.env
+images:
+- name: oscb-api
+  newName: oscb-api
+  newTag: local
+- name: oscb-node
+  newName: oscb-node
+- name: oscb-react
+  newName: oscb-react
+  newTag: local

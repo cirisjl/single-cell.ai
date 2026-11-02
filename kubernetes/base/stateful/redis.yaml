@@ -1,0 +1,109 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oscb-redis-headless
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-redis-headless
+spec:
+  selector:
+    app: oscb-redis
+  ports:
+  - name: redis
+    port: 6388
+    targetPort: 6388
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oscb-redis
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-redis
+spec:
+  selector:
+    app: oscb-redis
+  ports:
+  - name: redis
+    port: 6388
+    targetPort: 6388
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: oscb-redis
+  labels:
+    app.kubernetes.io/name: single-cell-ai
+    app.kubernetes.io/component: oscb-redis
+spec:
+  serviceName: oscb-redis-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oscb-redis
+  template:
+    metadata:
+      labels:
+        app: oscb-redis
+        app.kubernetes.io/part-of: single-cell-ai
+    spec:
+      containers:
+      - name: oscb-redis
+        image: redis:6-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: redis
+          containerPort: 6388
+        command:
+        - /bin/sh
+        - -ec
+        args:
+        - exec redis-server --port 6388 --save 20 1 --loglevel warning --requirepass
+          "$(cat /run/secrets/redis_password)"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 1Gi
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -ec
+            - REDISCLI_AUTH="$(cat /run/secrets/redis_password)" redis-cli -p 6388
+              ping | grep -qx PONG
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          tcpSocket:
+            port: 6388
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: secrets
+          mountPath: /run/secrets
+          readOnly: true
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oscb-secrets
+          items:
+          - key: redis_password
+            path: redis_password
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi

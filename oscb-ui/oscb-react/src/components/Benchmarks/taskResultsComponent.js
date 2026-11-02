@@ -14,6 +14,16 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Chatbot from "../RightNavigation/Chatbot";
 
 
+// Extract visible text from a rendered Markdown AST node.
+const getMarkdownNodeText = (node) => {
+    if (!node) return '';
+    if (node.type === 'text') return node.value || '';
+    return Array.isArray(node.children)
+        ? node.children.map(getMarkdownNodeText).join('')
+        : '';
+};
+
+
 export default function TaskResultsComponent(task_type) {
     const [markdownText, setMarkdownText] = useState('');
     const title = task_type.task_type;
@@ -46,6 +56,41 @@ export default function TaskResultsComponent(task_type) {
         console.log("presetQuestions:", presetQuestions);
 
         async function fetchFileData() {
+            const filename = title.replace(/ /g, "_");
+            const localFilePath = `/markdown/${encodeURIComponent(filename)}.md`;
+
+            try {
+                const localResponse = await fetch(localFilePath);
+
+                if (localResponse.ok) {
+                    const contentType =
+                        localResponse.headers.get('content-type') || '';
+
+                    const markdownData = await localResponse.text();
+
+                    // Detect HTML returned by React's SPA fallback
+                    const isHtml =
+                        contentType.includes('text/html') ||
+                        /^\s*(<!doctype\s+html|<html\b)/i.test(markdownData);
+
+                    if (!isHtml) {
+                        setMarkdownText(markdownData);
+
+                        console.log(
+                            'Markdown loaded from local file:',
+                            localFilePath
+                        );
+
+                        return;
+                    }
+                }
+
+                console.log('Local Markdown not found. Falling back to Directus API.');
+
+            } catch (error) {
+                console.warn('Unable to load local Markdown:', error);
+            }
+
             try {
                 const response = await axios.get(DIRECTUS_URL + "/items/filemappings?filter[filename]=" + title.replace(/ /g, "_"));
                 const data = response.data.data;
@@ -83,6 +128,41 @@ export default function TaskResultsComponent(task_type) {
                     rehypePlugins={[rehypeRaw, rehypeGithubAlerts]}
                     children={markdownText}
                     components={{
+                        p({ node, children, style, ...props }) {
+                            // Center figure captions without changing the Markdown source.
+                            // Example: *Figure 10. Download an integration-and-annotation result.*
+                            const isFigureCaption = /^Figure\s+\d+[a-z]?\s*[.:]/i.test(
+                                getMarkdownNodeText(node).trim()
+                            );
+
+                            return (
+                                <p
+                                    {...props}
+                                    style={{
+                                        ...style,
+                                        ...(isFigureCaption ? { textAlign: 'center' } : {}),
+                                    }}
+                                >
+                                    {children}
+                                </p>
+                            );
+                        },
+                        img({ node, alt, style, ...props }) {
+                            return (
+                                <img
+                                    {...props}
+                                    alt={alt ?? ''}
+                                    style={{
+                                        ...style,
+                                        display: 'block',
+                                        marginLeft: 'auto',
+                                        marginRight: 'auto',
+                                        maxWidth: '100%',
+                                        height: 'auto',
+                                    }}
+                                />
+                            );
+                        },
                         code(props) {
                             const { children, inline, className, node, ...rest } = props;
                             const match = /language-(\w+)/.exec(className || '');

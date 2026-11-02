@@ -21,7 +21,7 @@ omp_set_num_threads(1)
 # redis_pass <- "b6tHecatruchlwRaSplZlXaV"
 # # redis_port <- Sys.getenv("REDIS_PORT")
 # redis_port <- 6388
-redis_host <- Sys.getenv("CELERY_RESULT_BACKEND_HOST", "oscb_redis")
+redis_host <- Sys.getenv("CELERY_RESULT_BACKEND_HOST", "oscb-redis")
 redis_port <- Sys.getenv("REDIS_PORT", "6388")
 
 redis_password <- trimws(readLines("/run/secrets/redis_password"))
