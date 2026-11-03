@@ -1,33 +1,22 @@
-const isDevelopment = process.env.NODE_ENV === "development";
 const host = process.env.REACT_APP_HOST_URL;
 
-export const NODE_API_URL = isDevelopment
-  ? `http://${host}:3001/node`
-  : `https://${host}/node`;
+// Development
+export const NODE_API_URL = `http://${host}:3001/node`;
+export const NODE_DATA_URL = `http://${host}:3001/zarr`;
+export const CELERY_BACKEND_API = `http://${host}:5005/api`;
+export const FLASK_BACKEND_API = `http://${host}:5003`;
+export const WEB_SOCKET_URL = `ws://${host}:5005/wsapi`;
+export const UPPY_API_URL = `http://${host}:3020`;
+export const DIRECTUS_URL = `http://${host}:8055`;
 
-export const NODE_DATA_URL = isDevelopment
-  ? `http://${host}:3001/zarr`
-  : `https://${host}/zarr`;
-
-export const CELERY_BACKEND_API = isDevelopment
-  ? `http://${host}:5005/api`
-  : `https://${host}/api`;
-
-export const FLASK_BACKEND_API = isDevelopment
-  ? `http://${host}:5003`
-  : `https://${host}:5003`; 
-
-export const WEB_SOCKET_URL = isDevelopment
-  ? `ws://${host}:5005/wsapi`
-  : `wss://${host}/wsapi`;
-
-export const UPPY_API_URL = isDevelopment
-  ? `http://${host}:3020`
-  : `https://${host}`;
-
-export const DIRECTUS_URL = isDevelopment
-  ? `http://${host}:8055`
-  : `https://${host}`;
+// Production, config your reverse proxy for HTTPS and uncomment the following lines to use HTTPS
+// export const NODE_API_URL = `https://${host}/node`;
+// export const NODE_DATA_URL = `https://${host}/zarr`;
+// export const CELERY_BACKEND_API = `https://${host}/api`;
+// export const FLASK_BACKEND_API = `https://${host}:5003`;
+// export const WEB_SOCKET_URL = `wss://${host}/wsapi`;
+// export const UPPY_API_URL = `https://${host}`;
+// export const DIRECTUS_URL = `https://${host}`;
 
 // Storage
 export const PUBLIC_DATASETS = "/usr/src/app/storage/publicDatasets/";

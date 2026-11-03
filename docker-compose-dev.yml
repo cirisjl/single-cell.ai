@@ -388,31 +388,31 @@ services:
       - mysql_password
       - directus_password
 
-  jupyter:
-    image: stormgod/oscb-cuda126-r45-seurat440:1.2.1
-    container_name: jupyter
-    working_dir: /ps
-    command: sh -c 'jupyter lab --ip=0.0.0.0 --no-browser --allow-root --ServerApp.iopub_data_rate_limit=10000000000 --ServerApp.token="$$(cat /run/secrets/jupyter_token | tr -d '"'"'\n'"'"')"'
-    restart: always
-    ports:
-      - "8888:8888"
-    deploy:
-      # resources:
-      #   reservations:
-      #     devices:
-      #       - driver: nvidia
-      #         count: all 
-      #         capabilities: [gpu]
-    networks:
-      - oscb-network
-    volumes:
-      - /data/:/ps/
-      - /ps/code/oscb/results:/data/results
-      - /ps/code/oscb/uploads:/data/upload
-      - /ps/code/oscb/logs:/data/logs
-      - /ps/code/oscb/user_storage:/usr/src/app/storage/
-    secrets:
-      - jupyter_token
+  # jupyter:
+  #   image: stormgod/oscb-cuda126-r45-seurat440:1.2.1
+  #   container_name: jupyter
+  #   working_dir: /ps
+  #   command: sh -c 'jupyter lab --ip=0.0.0.0 --no-browser --allow-root --ServerApp.iopub_data_rate_limit=10000000000 --ServerApp.token="$$(cat /run/secrets/jupyter_token | tr -d '"'"'\n'"'"')"'
+  #   restart: always
+  #   ports:
+  #     - "8888:8888"
+  #   deploy:
+  #     # resources:
+  #     #   reservations:
+  #     #     devices:
+  #     #       - driver: nvidia
+  #     #         count: all 
+  #     #         capabilities: [gpu]
+  #   networks:
+  #     - oscb-network
+  #   volumes:
+  #     - /data/:/ps/
+  #     - /ps/code/oscb/results:/data/results
+  #     - /ps/code/oscb/uploads:/data/upload
+  #     - /ps/code/oscb/logs:/data/logs
+  #     - /ps/code/oscb/user_storage:/usr/src/app/storage/
+  #   secrets:
+  #     - jupyter_token
 
 networks:
   oscb-network:
@@ -427,8 +427,8 @@ secrets:
     file: ./secrets/rabbitmq_password.txt
   mysql_password:
     file: ./secrets/mysql_password.txt
-  jupyter_token:
-    file: ./secrets/jupyter_token.txt
+  # jupyter_token:
+  #   file: ./secrets/jupyter_token.txt
   github_token:
     file: ./secrets/github_token.txt
   email_password:

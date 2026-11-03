@@ -19,26 +19,6 @@ const WORKFLOWS = {
   ],
 };
 
-// Deterministic decorative points for the vector hero; no external image needed.
-function createScatterPoints() {
-  let seed = 42;
-  const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
-  const clusters = [[170,158,72,49,'#46b1df'],[385,151,65,61,'#ae79df'],
-    [351,323,75,44,'#4fc5b7'],[172,305,55,38,'#77a6ed']];
-  const dots = [];
-  for (const [cx,cy,rx,ry,color] of clusters) {
-    for (let i=0;i<85;i++) {
-      const radius=Math.sqrt(random());
-      const angle=random()*Math.PI*2;
-      dots.push({ x:Number((cx+Math.cos(angle)*radius*rx).toFixed(1)),
-        y:Number((cy+Math.sin(angle)*radius*ry).toFixed(1)),
-        r:Number((1+random()*2.5).toFixed(1)), color,
-        opacity:Number((.20+random()*.55).toFixed(2)) });
-    }
-  }
-  return dots;
-}
-const SCATTER_POINTS = createScatterPoints();
 const EXAMPLE_CODE = 'from oscb.data import DataLoader\n\nadata = DataLoader("CL-m-FACS_Bladder-1268-Tabula-2018", data_folder="./datasets/")';
 
 function FlowSection() {
