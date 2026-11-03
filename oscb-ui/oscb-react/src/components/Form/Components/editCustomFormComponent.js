@@ -80,7 +80,7 @@ const EditCustomForm = () => {
     const checkAuthentication = async () => {
       if (getCookie('jwtToken') === undefined || getCookie('jwtToken') === '') {
         // Navigate to the login page
-        window.location.href = '/routing';
+        window.location.href = '/login';
       } else {
         try {
           const authData = await isUserAuth(getCookie('jwtToken'));
@@ -90,7 +90,7 @@ const EditCustomForm = () => {
             fetchDefaultOptions();
           } else {
             console.warn("Token expired! Please login again");
-            window.location.href = '/routing';
+            window.location.href = '/login';
           }
         } catch (error) {
           console.error('Error during authentication:', error);

@@ -26,7 +26,7 @@ export default function IntermediateFiles({ jobId, results_path, task_title }) {
 
   useEffect(() => {
     if (!jwtToken || jwtToken === '')
-      navigate('/routing');
+      navigate('/login');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jwtToken]);
 

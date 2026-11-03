@@ -20,7 +20,7 @@ export default function MyData() {
         let jwtToken = getCookie('jwtToken');
         if (!jwtToken) {
             // Navigate to the login page using window.location.href
-            navigate('/routing');
+            navigate('/login');
         } else {
             // If the token exists, verify authenticity
             isUserAuth(jwtToken).then((authData) => {

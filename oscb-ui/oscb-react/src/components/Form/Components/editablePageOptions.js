@@ -21,7 +21,7 @@ function ManageOptions() {
     let jwtToken = getCookie('jwtToken');
 
     if (!jwtToken) {
-      navigate("/routing");
+      navigate('/login');
     }
 
     isUserAuth(jwtToken).then((authData) => {
@@ -40,7 +40,7 @@ function ManageOptions() {
           });
       } else {
         console.warn("Authentication failed - please login to continue.");
-        navigate("/routing");
+        navigate('/login');
       }
     }).catch((error) => console.error(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -8,7 +8,7 @@ function useUserAuthCheck() {
     useEffect(() => {
         if (!getCookie('jwtToken')) {
             console.warn("Please login to continue");
-            navigate('/routing');
+            navigate('/login');
         }
         isUserAuth(getCookie('jwtToken'))
             .then((authData) => {
@@ -16,7 +16,7 @@ function useUserAuthCheck() {
                     console.log("User is authorised and has access to this page");
                 } else {
                     console.warn("Please login to continue");
-                    navigate('/routing');
+                    navigate('/login');
                 }
             })
             .catch((error) => {

@@ -42,7 +42,7 @@ export default function MyData() {
 
     // useEffect(() => {
     //     if (getCookie('jwtToken') === undefined || getCookie('jwtToken') === '') {
-    //         navigate('/routing');
+    //         navigate('/login');
     //     }
     // }, []);
 

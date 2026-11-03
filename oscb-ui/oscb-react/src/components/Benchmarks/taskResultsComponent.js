@@ -42,7 +42,7 @@ export default function TaskResultsComponent(task_type) {
     // useEffect(() => {
     //     let jwtToken = getCookie('jwtToken');
     //     if(jwtToken===undefined || jwtToken === '') {
-    //         navigate('/routing');
+    //         navigate('/login');
     //     }
     // },[]);
 

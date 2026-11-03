@@ -34,7 +34,7 @@ class MyForm extends Component {
     let jwtToken = getCookie('jwtToken');
     if (!jwtToken) {
       // Navigate to the login page using window.location.href
-      window.location.href = '/routing';
+      window.location.href = '/login';
     } else {
       // If the token exists, verify authenticity
       isUserAuth(jwtToken).then((authData) => {

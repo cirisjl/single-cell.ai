@@ -21,7 +21,7 @@ export default function FlaskDashboard(props) {
           setFlaskURL(FLASK_BACKEND_API)
         } else {
           console.warn("Unauthorized - please login first to continue");
-          navigate("/routing");
+          navigate('/login');
         }
       })
       .catch((error) => {

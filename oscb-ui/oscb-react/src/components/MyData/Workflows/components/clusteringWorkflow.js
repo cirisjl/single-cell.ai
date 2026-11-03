@@ -459,7 +459,7 @@ export function ClusteringWorkFlowComponent(props) {
             });
         } else {
           console.warn("Unauthorized - please login first to continue");
-          navigate("/routing");
+          navigate('/login');
         }
       })
       .catch((error) => {

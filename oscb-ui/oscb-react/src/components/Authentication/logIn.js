@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getCookie} from '../../utils/utilFunctions';
-import {NavLink} from "react-router-dom"
-import { useNavigate } from 'react-router-dom'; 
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { NODE_API_URL  } from '../../constants/declarations'
 
 
 function LoginPage (props) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -35,23 +35,48 @@ function LoginPage (props) {
       return;
     }
 
-
     fetch(NODE_API_URL + "/login", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
       credentials: "include"
     }).then(response => response.json())
-    .then(data => {
-      if(data.status === 200) {
-        navigate('/getStarted');
-        window.location.reload();  
-      } else {
-        setErrorMessage(data.message);
-      }
-    }).catch(error => {
-      setErrorMessage("An error occurred during login");
-    });
+      .then(data => {
+        if (data.status === 200) {
+          // Prefer the original page supplied by a protected route or login link.
+          // Supports both a location object and a pathname string.
+          const from = location.state?.from;
+          const returnPath = typeof from === 'string'
+            ? from
+            : from?.pathname
+              ? `${from.pathname}${from.search || ''}${from.hash || ''}`
+              : null;
+
+          // Only navigate to a safe internal route, never back to the login page.
+          if (
+            returnPath &&
+            returnPath.startsWith('/') &&
+            !returnPath.startsWith('//') &&
+            !/^\/login\/?(?:[?#]|$)/i.test(returnPath)
+          ) {
+            // Reload after login so components reading the auth cookie on mount update.
+            window.location.replace(returnPath);
+          } else if (window.history.state?.idx > 0) {
+            // If login was opened directly from another page in this SPA,
+            // go back to it instead of always opening /getStarted.
+            // Reload after browser history navigation to refresh login-dependent UI.
+            window.addEventListener('popstate', () => window.location.reload(), { once: true });
+            navigate(-1);
+          } else {
+            // A direct visit to /login has no previous in-app page.
+            window.location.replace('/getStarted');
+          }
+        } else {
+          setErrorMessage(data.message);
+        }
+      }).catch(error => {
+        setErrorMessage("An error occurred during login");
+      });
   };
   
   useEffect(() => {

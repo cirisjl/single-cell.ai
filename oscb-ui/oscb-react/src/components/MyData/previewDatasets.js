@@ -61,7 +61,7 @@ export function Preview(props) {
       setHasMessage(true);
       setDeleteToggle(!deleteToggle);
     } else {
-      navigate('/routing');
+      navigate('/login');
     }
     setIsDeleteConfBoxOpen(false);
   }
@@ -96,7 +96,7 @@ export function Preview(props) {
 
         // If user is not logged In - navigate to login page
         if (jwtToken === null || jwtToken === undefined || jwtToken === '') {
-          navigate("/routing");
+          navigate('/login');
         }
 
         // Else verify the authenticity of the user
@@ -119,7 +119,7 @@ export function Preview(props) {
                 });
             } else {
               console.warn("Unauthorized - pLease login first to continue");
-              navigate("/routing");
+              navigate('/login');
             }
           })
           .catch((error) => console.error(error));
@@ -138,7 +138,7 @@ export function Preview(props) {
       };
       fetchData();
     } else {
-      navigate("/routing");
+      navigate('/login');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jwtToken, navigate, deleteToggle]);

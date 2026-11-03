@@ -192,7 +192,7 @@ const TaskTable = () => {
 
     useEffect(() => {
         if (!jwtToken)
-            navigate('/routing');
+            navigate('/login');
         fetchJobs(pagination.current, globalSearchTerm);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

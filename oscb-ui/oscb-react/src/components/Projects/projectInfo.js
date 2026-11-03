@@ -16,13 +16,15 @@ import {
 import { Close as CloseIcon, PersonAdd, Delete } from "@mui/icons-material";
 import { NODE_API_URL } from '../../constants/declarations';
 import { isUserAuth, getCookie } from "../../utils/utilFunctions";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 // Removed useUserAuthCheck import
 
 const ProjectAdminPanel = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const [authStatus, setAuthStatus] = useState("checking");
 
   const [newProjectName, setNewProjectName] = useState("");
   const [selectedProject, setSelectedProject] = useState(null);
@@ -51,21 +53,46 @@ const ProjectAdminPanel = () => {
 
 
   useEffect(() => {
-    isUserAuth(getCookie('jwtToken'))
-      .then((authData) => {
-        if (authData.isAuth) {
-          console.log("User is admin and has access to this page");
+    let cancelled = false;
+    const jwtToken = getCookie('jwtToken');
+
+    const redirectToLogin = () => {
+      if (cancelled) return;
+      setAuthStatus('unauthenticated');
+      navigate('/login', {
+        replace: true,
+        state: { from: location },
+      });
+    };
+
+    const checkAuthentication = async () => {
+      if (!jwtToken) {
+        redirectToLogin();
+        return;
+      }
+
+      try {
+        const authData = await isUserAuth(jwtToken);
+        if (cancelled) return;
+
+        if (authData?.isAuth === true && authData.username) {
           setCurrentUser(authData.username);
+          setAuthStatus('authenticated');
           fetchProjects(authData.username);
         } else {
-          navigate("/routing");
+          redirectToLogin();
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      } catch (error) {
+        console.error('Authentication check failed:', error);
+        redirectToLogin();
+      }
+    };
+
+    checkAuthentication();
+    return () => { cancelled = true; };
+    // fetchProjects is scoped to the component; run the check when this page is visited.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [navigate, location]);
 
   // Create new project
   const createProject = async () => {
@@ -125,6 +152,13 @@ const ProjectAdminPanel = () => {
       console.error(err);
     }
   };
+
+  // Do not display project controls before authentication is verified.
+  if (authStatus !== 'authenticated') {
+    return authStatus === 'checking'
+      ? <Box p={4}><Typography>Checking authentication...</Typography></Box>
+      : null;
+  }
 
   return (
     <Box p={4} maxWidth={900} mx="auto">

@@ -181,7 +181,10 @@ export default function UploadData({ taskStatus, setTaskStatus, taskData, setTas
 
                 } else {
                     console.warn("Unauthorized - pLease login first to continue");
-                    navigate("/routing");
+                    navigate('/login', {
+                        replace: true,
+                        state: { from: location },
+                    });
                 }
             })
             .catch((error) => console.error(error));
@@ -340,7 +343,7 @@ export default function UploadData({ taskStatus, setTaskStatus, taskData, setTas
             .catch(error => {
                 setIsFileManagerOpen(false);
                 if (error.message === 'Please log in first') {
-                    navigate('/routing');
+                    navigate('/login');
                 } else {
                     console.error(error);
                 }
@@ -839,7 +842,7 @@ export default function UploadData({ taskStatus, setTaskStatus, taskData, setTas
 
                     } else {
                         console.warn("Unauthorized - pLease login first to continue");
-                        navigate("/routing");
+                        navigate('/login');
                     }
                 })
                 .catch((error) => console.error(error));
@@ -855,7 +858,7 @@ export default function UploadData({ taskStatus, setTaskStatus, taskData, setTas
     };
 
     if (jwtToken === '' || jwtToken === undefined) {
-        navigate("/routing");
+        navigate('/login');
     }
 
     else return (

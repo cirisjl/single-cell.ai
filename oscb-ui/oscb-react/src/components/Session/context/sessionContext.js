@@ -39,7 +39,7 @@ export const SessionProvider = ({ children }) => {
                 const { exp } = jwtDecode(token);
                 const currentTime = Date.now() / 1000;
                 if (exp < currentTime) {
-                    window.location.href = '/routing'; // Change to use navigate from useNavigate if within component
+                    window.location.href = '/login'; // Change to use navigate from useNavigate if within component
                 }
             }, 1000);
     

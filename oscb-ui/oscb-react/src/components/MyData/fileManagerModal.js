@@ -23,7 +23,7 @@ export default function FileManagerModal({ setEnabledCheckboxes, setFileToPrevie
             fetchDirContents();
         }
         else
-            navigate('/routing');
+            navigate('/login');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isUppyModalOpen]);
 
@@ -83,7 +83,7 @@ export default function FileManagerModal({ setEnabledCheckboxes, setFileToPrevie
             })
             .catch(error => {
                 if (!errorHandled && error.message === 'Please log in first') {
-                    navigate('/routing');
+                    navigate('/login');
                     return;
                 } else if (!errorHandled && error.message === 'Unable to rename. File or Folder being used by dataset.') {
                     setErrorMessage('Unable to rename. File or Folder being used by dataset.')
@@ -104,7 +104,7 @@ export default function FileManagerModal({ setEnabledCheckboxes, setFileToPrevie
             })
             .catch(error => {
                 if (error.message === 'Please log in first') {
-                    navigate('/routing');
+                    navigate('/login');
                 } else {
                     console.error(error);
                 }
@@ -133,7 +133,7 @@ export default function FileManagerModal({ setEnabledCheckboxes, setFileToPrevie
                 return response.json();
             })
             .catch(error => {
-                navigate('/routing');
+                navigate('/login');
                 console.error(error);
                 return;
             });
@@ -222,7 +222,7 @@ export default function FileManagerModal({ setEnabledCheckboxes, setFileToPrevie
             })
             .catch(error => {
                 if (error.message === 'Access denied. Please log in.') {
-                    navigate('/routing');
+                    navigate('/login');
                 }
                 else if (error.message === 'File(s) being used by datasets.') {
                     setErrorMessage('Delete failed. File(s) being used by datasets.');

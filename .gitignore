@@ -10,7 +10,7 @@ secrets/*.txt
 rabbitmq.env
 oscb-ui/.env
 oscb-ui/oscb-node/.env
-*.env
+# *.env
 
 # -----------------------------
 # Docker Volumes & Local Data
@@ -48,3 +48,11 @@ celerybeat-schedule
 # OS System Files
 .DS_Store
 Thumbs.db
+
+docker-compose-dev1.yml
+docker-compose-mu*
+docker-compose-prod*
+docker-compose-v*
+.env_*
+prod.env
+entrypoint-*

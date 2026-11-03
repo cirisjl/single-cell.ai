@@ -22,7 +22,7 @@ const SessionReminder = () => {
 
             if (newTimeLeft <= 0) {
                 setIsModalOpen(false);
-                window.location.href = '/routing';
+                window.location.href = '/login';
             }
         };
 
@@ -60,7 +60,7 @@ const SessionReminder = () => {
                         });
                 } else {
                     console.warn("Please login to continue");
-                    window.location.href = '/routing';
+                    window.location.href = '/login';
                 }
             })
             .catch((error) => {
@@ -109,7 +109,7 @@ const SessionReminder = () => {
         // Setup redirection to occur after the token's remaining time expires
         const remainingTime = Math.max(0, Math.floor(timeLeft));
         setTimeout(() => {
-            window.location.href = '/routing';
+            window.location.href = '/login';
         }, remainingTime * 1000);
     };
 

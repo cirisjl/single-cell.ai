@@ -3,18 +3,24 @@ import React, { useEffect } from 'react';
 import TaskTable from "../components/MyData/taskTable";
 import RightRail from "../components/RightNavigation/rightRail";
 import { getCookie } from "../utils/utilFunctions";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function MyJobs() {
     const navigate = useNavigate();
+    const location = useLocation();
+
     useEffect(() => {
         let jwtToken = getCookie('jwtToken');
         if (jwtToken === undefined || jwtToken === '') {
-            navigate('/routing');
+            // Remember this page so the login screen can return here.
+            navigate('/login', {
+                replace: true,
+                state: { from: location },
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [navigate, location]);
 
     return (
         <div className="page-container">

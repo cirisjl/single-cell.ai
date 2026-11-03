@@ -9,7 +9,7 @@ function useAdminAuthCheck() {
   useEffect(() => {
     if (!getCookie('jwtToken')) {
       console.warn("Please login to continue");
-      navigate('/routing');
+      navigate('/login');
     }
     isUserAuth(getCookie('jwtToken'))
       .then((authData) => {
