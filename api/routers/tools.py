@@ -9,11 +9,7 @@ from schemas.schemas import *
 from datetime import datetime
 from utils.mongodb import upsert_jobs
 
-import torch
-print("CUDA available:", torch.cuda.is_available())
-gpu_methods = {}
-if torch.cuda.is_available():
-    gpu_methods = {"scANVI", "scVI"}
+gpu_methods = {"scANVI", "scVI"}
 
 
 router = APIRouter(prefix='/api/tools', tags=['tools'], responses={404: {"Description": "API Not found"}})

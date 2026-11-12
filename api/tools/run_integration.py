@@ -162,8 +162,12 @@ def run_integration(job_id, ids:dict, fig_path=None, wf=False):
                                 adata.X = adata.layers['raw_counts'].copy() # Restore the raw counts
                                 # Handle NaNs/Infinities, e.g., replace with 0 or a small value, or remove affected genes/cells
                                 # Example: Replacing NaNs with 0 (use with caution based on your data)
-                                adata.X[np.isnan(adata.X)] = 0
-                                adata.X[np.isinf(adata.X)] = 0
+                                try:
+                                    if np.isnan(adata.X.data).any() or np.isinf(adata.X.data).any():
+                                        adata.X[np.isnan(adata.X)] = 0
+                                        adata.X[np.isinf(adata.X)] = 0
+                                except AttributeError:
+                                    redislogger.warning(job_id, "Unable to handle NaNs/Infinities in adata.X")
                                 sc.pp.normalize_total(adata) 
                         else:
                             detail = f"{method} integration is failed: AnnData is None."

@@ -1,15 +1,31 @@
+"""Celery initialization, GPU worker heartbeats, and task utilities."""
+
+import logging
+import os
+import threading
+import uuid
+
 from celery import current_app as current_celery_app
 from celery.result import AsyncResult
+from celery.signals import worker_ready, worker_shutdown
 
-from .celery_config import settings
+from .celery_config import (
+    GPU_HEARTBEAT_INTERVAL,
+    GPU_HEARTBEAT_KEY_PREFIX,
+    GPU_HEARTBEAT_TTL,
+    gpu_heartbeat_client,
+    settings,
+)
 from constants.declarations import USER_STORAGE
 from utils.mongodb import get_job_from_db
-import os
+
+logger = logging.getLogger(__name__)
 
 
 def read_secret(path: str) -> str:
     with open(path, "r", encoding="utf-8") as f:
         return f.read().strip()
+
 
 rabbitmq_password = read_secret("/run/secrets/rabbitmq_password")
 redis_password = read_secret("/run/secrets/redis_password")
@@ -24,55 +40,100 @@ redis_port = os.getenv("REDIS_PORT", "6388")
 broker_url = f"amqp://{broker_user}:{rabbitmq_password}@{broker_host}:{broker_port}//"
 result_backend = f"redis://:{redis_password}@{redis_host}:{redis_port}/0"
 
-print(f"broker_url: {broker_url}")
-print(f"result_backend: {result_backend}")
+# Never print broker_url/result_backend: both include credentials.
+
 
 def create_celery():
     celery_app = current_celery_app
-    celery_app.config_from_object(settings, namespace='CELERY')
-    celery_app.conf.update(task_track_started=True)
-    celery_app.conf.update(task_serializer='json')
-    celery_app.conf.update(result_serializer='json')
-    celery_app.conf.update(accept_content=['json'])
-    celery_app.conf.update(result_persistent=True)
-    celery_app.conf.update(worker_send_task_events=False)
-    celery_app.conf.update(worker_prefetch_multiplier=1)
-    celery_app.conf.update(broker=broker_url)
-    celery_app.conf.update(backend=result_backend)
+    celery_app.config_from_object(settings, namespace="CELERY")
     celery_app.conf.update(
+        task_track_started=True,
+        task_serializer="json",
+        result_serializer="json",
+        accept_content=["json"],
+        result_persistent=True,
+        worker_send_task_events=False,
+        worker_prefetch_multiplier=1,
+        broker_url=broker_url,
+        result_backend=result_backend,
         broker_connection_retry=True,
         broker_connection_retry_on_startup=True,
         broker_connection_max_retries=None,
         broker_heartbeat=300,
         broker_heartbeat_checkrate=2,
         broker_connection_timeout=300,
-        worker_prefetch_multiplier=1,
         worker_cancel_long_running_tasks_on_connection_loss=True,
     )
-
     return celery_app
 
 
-# def get_task_info(job_id):
-#     """
-#     return task info for the given job_id
-#     """
-#     task_result = AsyncResult(job_id)
-#     summary = "Processing"
-#     if task_result.ready():
-#         if task_result.result is not None:
-#             summary = task_result.result
-#         else:
-#             summary = task_result.traceback
-#     result = {
-#         "job_id": job_id,
-#         "task_status": task_result.status,
-#         "task_result": summary
-#     }
-#     print(result)
-#     return result
+_gpu_heartbeat_stop = threading.Event()
+_gpu_heartbeat_thread = None
+_gpu_heartbeat_key = None
 
-#     from celery.result import AsyncResult
+
+def _gpu_heartbeat_loop(key):
+    """Run independently of the solo worker's task-execution thread."""
+    while not _gpu_heartbeat_stop.is_set():
+        try:
+            gpu_heartbeat_client().set(key, "1", ex=GPU_HEARTBEAT_TTL)
+        except Exception as exc:
+            # Allow transient Redis outages; the TTL safely expires on failure.
+            logger.warning("Could not renew GPU heartbeat (%s)", type(exc).__name__)
+        if _gpu_heartbeat_stop.wait(GPU_HEARTBEAT_INTERVAL):
+            break
+
+
+def _consumes_gpu_queue(consumer):
+    """Inspect queues selected by -Q on the ready worker, not all declared queues."""
+    task_consumer = getattr(consumer, "task_consumer", None)
+    queues = getattr(task_consumer, "queues", None)
+    if queues is None:
+        # Compatible with consumers whose task_consumer is not exposed.
+        app = getattr(consumer, "app", None)
+        amqp = getattr(app, "amqp", None)
+        queue_config = getattr(amqp, "queues", None)
+        queues = getattr(queue_config, "consume_from", ())
+    if isinstance(queues, dict):
+        return "gpu" in queues
+    return any(getattr(queue, "name", None) == "gpu" for queue in (queues or ()))
+
+
+@worker_ready.connect(weak=False)
+def _start_gpu_heartbeat(sender=None, **kwargs):
+    """Announce only actual GPU-queue consumers when they become ready."""
+    global _gpu_heartbeat_thread, _gpu_heartbeat_key
+    if sender is None or not _consumes_gpu_queue(sender):
+        return
+    if _gpu_heartbeat_thread is not None and _gpu_heartbeat_thread.is_alive():
+        return
+
+    _gpu_heartbeat_stop.clear()
+    _gpu_heartbeat_key = f"{GPU_HEARTBEAT_KEY_PREFIX}{uuid.uuid4().hex}"
+    _gpu_heartbeat_thread = threading.Thread(
+        target=_gpu_heartbeat_loop,
+        args=(_gpu_heartbeat_key,),
+        name="celery-gpu-heartbeat",
+        daemon=True,
+    )
+    _gpu_heartbeat_thread.start()
+    logger.info("GPU worker heartbeat started")
+
+
+@worker_shutdown.connect(weak=False)
+def _stop_gpu_heartbeat(sender=None, **kwargs):
+    """Remove this worker's heartbeat; the TTL also handles abrupt crashes."""
+    global _gpu_heartbeat_thread, _gpu_heartbeat_key
+    _gpu_heartbeat_stop.set()
+    if _gpu_heartbeat_thread is not None:
+        _gpu_heartbeat_thread.join(timeout=2)
+    if _gpu_heartbeat_key is not None:
+        try:
+            gpu_heartbeat_client().delete(_gpu_heartbeat_key)
+        except Exception:
+            logger.debug("GPU heartbeat will expire via its TTL", exc_info=True)
+    _gpu_heartbeat_thread = None
+    _gpu_heartbeat_key = None
 
 
 def get_task_info(job_id):

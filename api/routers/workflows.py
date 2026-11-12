@@ -7,11 +7,7 @@ from celery_tasks.tasks import create_clustering_task, create_annotation_wf_task
 from schemas.schemas import Dataset, Datasets
 router = APIRouter(prefix='/api/workflows', tags=['workflows'], responses={404: {"description": "API Not found"}})
 
-import torch
-print("CUDA available:", torch.cuda.is_available())
-gpu_methods = {}
-if torch.cuda.is_available():
-    gpu_methods = {"scANVI", "scVI"}
+gpu_methods = {"scANVI", "scVI"}
 
 
 @router.post("/clustering")

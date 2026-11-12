@@ -1581,7 +1581,7 @@ def unique_by_key(data, key):
 
 def create_annotation_prompt(adata, tissue, species, layer=None, use_rep=None, method="t-test", groupby="leiden", top=25,  task=None):
     preset_questions = []
-    if layer is not None and layer in adata.layers.keys():
+    if layer is not None and layer in adata.layers.keys() and groupby in adata.obs.keys():
         sc.tl.rank_genes_groups(adata, groupby, layer=layer, method=method, use_raw=False)
         markers_df = sc.get.rank_genes_groups_df(adata, group=None, pval_cutoff=0.05)
         markers_df = markers_df.sort_values(['group', 'scores'], ascending=[True, False]) # View the top 100 for each cluster (sorted by group)
@@ -1625,7 +1625,7 @@ def create_annotation_prompt(adata, tissue, species, layer=None, use_rep=None, m
         }
         preset_questions.append(preset_question)     
 
-    if use_rep is not None:
+    if use_rep is not None and groupby in adata.obs.keys():
         if type(use_rep) is list:
             for rep in use_rep:
                 if rep in adata.obsm.keys():
@@ -1670,7 +1670,7 @@ def create_annotation_prompt(adata, tissue, species, layer=None, use_rep=None, m
                 }
                 preset_questions.append(preset_question)
 
-    if layer is None and use_rep is None:
+    if layer is None and use_rep is None and groupby in adata.obs.keys():
         sc.tl.rank_genes_groups(adata, groupby, method=method, use_raw=False)
         markers_df = sc.get.rank_genes_groups_df(adata, group=None, pval_cutoff=0.05)
         markers_df = markers_df.sort_values(['group', 'scores'], ascending=[True, False]) # View the top 100 for each cluster (sorted by group)
