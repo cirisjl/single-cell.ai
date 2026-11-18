@@ -238,8 +238,12 @@ def run_integration(job_id, ids:dict, fig_path=None, wf=False):
 
                         # Handle NaNs/Infinities, e.g., replace with 0 or a small value, or remove affected genes/cells
                         # Example: Replacing NaNs with 0 (use with caution based on your data)
-                        adata.X[np.isnan(adata.X)] = 0
-                        adata.X[np.isinf(adata.X)] = 0
+                        try:
+                            if np.isnan(adata.X.data).any() or np.isinf(adata.X.data).any():
+                                adata.X[np.isnan(adata.X)] = 0
+                                adata.X[np.isinf(adata.X)] = 0
+                        except AttributeError:
+                            redislogger.warning(job_id, "Unable to handle NaNs/Infinities in adata.X")
 
                         adata = scvi_integrate(adata, batch_key=batch_key, model_path=scvi_path)
 
@@ -257,7 +261,7 @@ def run_integration(job_id, ids:dict, fig_path=None, wf=False):
                         adata_path, zarr_output = save_anndata(adata, adata_path, zarr=True, n_hvg=n_hvg, obs_cols=[batch_key])
                         # adata.write_h5ad(adata_path, compression='gzip')
                         redislogger.info(job_id, "Retrieving metadata and embeddings from AnnData object.")
-                        integration_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, method, parameters, md5, layer=None, use_rep="X_scVI", adata_path=adata_path, scanpy_cluster=batch_key, zarr_path=zarr_output, obsSets=[{"name": "Batch", "path": "obs/" + batch_key}])
+                        integration_results = get_metadata_from_anndata(adata, pp_stage, process_id, process, method, parameters, md5, layer=None, use_rep="X_scVI", adata_path=adata_path, zarr_path=zarr_output, obsSets=[{"name": "Batch", "path": "obs/" + batch_key}])
 
                         # Add preset questions for tissue and species
                         if organ_part is not None and organ_part != "" and species is not None and species != "":
